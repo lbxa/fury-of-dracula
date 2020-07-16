@@ -34,20 +34,15 @@ int main(void) {
 
     printf("%s -> %d\n", a->key, a->value);
     printf("%s -> %d\n", b->key, b->value);
-    printf("%s -> %d\n", c->key, c->value);
+    printf("%s -> %d\n\n", c->key, c->value);
 
     Map map = MapNew();
     clock_t start = clock();
     HashTable distances;
-    int distance = 0;
-    for (int i = 0; i < 1000; ++i) {
-        distances = mapFindShortestPath(map, PLACES[0], PLACES[50]);
-        distance = mapFindAnyShortestPath(map, PLACES[50], PLACES[52]);
-    }
-
+    HashTable *paths_lookup = getAllPossiblePaths(map);
+    HashNode path = hash_get(paths_lookup[PLACES[2].id], PLACES[50].abbrev);
+    printf("%s -> %d\n", path->key, path->value);
     clock_t end = clock();
-    print_hash_table(distances);
-    printf("%d\n", distances->num_items);
 
     printf("%lf\n", (double) (end-start)/CLOCKS_PER_SEC);
 
