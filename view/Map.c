@@ -268,7 +268,7 @@ HashTable mapFindShortestPathsFrom(Map map, Place from) {
         PlaceId *reachable = get_reachable_places_in_move(map, 0, current_place, &reachable_count);
 
         for (int i = 0; i < reachable_count; ++i) {
-            char *vertex_abbrev = placeIdToAbbrev(reachable[i]);
+            const char *vertex_abbrev = placeIdToAbbrev(reachable[i]);
             int distance = current_distance + 1; // No weights on edges so far
             int neighbour_distance_lookup = hash_get(distances, vertex_abbrev)->value;
             if (distance < neighbour_distance_lookup) {

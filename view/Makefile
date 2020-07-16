@@ -15,24 +15,26 @@ BINS = testGameView testHunterView testDraculaView testMap
 
 all: $(BINS)
 
-testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o
+testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o binary_heap.o hash_table.o
 testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h
 
-testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o
+testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o binary_heap.o hash_table.o
 testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h
 
-testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o
+testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o binary_heap.o hash_table.o
 testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h
 
-testMap: testMap.o Map.o Places.o
+testMap: testMap.o Map.o Places.o binary_heap.o hash_table.o
 testMap.o: testMap.c Map.h Places.h
 
 Places.o: Places.c Places.h Game.h
-Map.o: Map.c Map.h Places.h Game.h
+Map.o: Map.c Map.h Places.h Game.h binary_heap.h
 GameView.o:	GameView.c GameView.h Game.h
 HunterView.o: HunterView.c HunterView.h Game.h
 DraculaView.o: DraculaView.c DraculaView.h Game.h
 testUtils.o: testUtils.c Places.h Game.h
+binary_heap.o: binary_heap.c binary_heap.h
+hash_table.o: hash_table.c hash_table.h
 
 .PHONY: clean
 clean:

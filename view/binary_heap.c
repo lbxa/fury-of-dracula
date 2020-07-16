@@ -70,10 +70,10 @@ HeapItem heap_pop(Heap heap) {
     return top;
 }
 
-HeapItem create_heap_item(int value, char *key) {
+HeapItem create_heap_item(int value, const char *key) {
     HeapItem heap_item = malloc(sizeof(struct heap_item));
     heap_item->value = value;
-    heap_item->key = key;
+    heap_item->key = (char*) key;
     return heap_item;
 }
 
@@ -93,7 +93,7 @@ int is_heap_empty(Heap heap) {
     return heap->size == 0;
 }
 
-int empty_heap(Heap heap) {
+void empty_heap(Heap heap) {
     while (heap->size) {
         heap_pop(heap);
     }

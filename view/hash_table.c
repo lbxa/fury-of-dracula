@@ -23,7 +23,7 @@ int hash(const char *str, int table_size) {
     return hashIndex;
 }
 
-int equal(HashNode node, char *key) {
+int equal(HashNode node, const char *key) {
     return strcmp(node->key, key) == 0;
 }
 
@@ -36,7 +36,7 @@ HashTable create_hash_table(int table_size) {
     return table;
 }
 
-HashNode hash_get(HashTable table, char *key) {
+HashNode hash_get(HashTable table, const char *key) {
     int hashVal = hash(key, table->table_size);
 
     if (table->items[hashVal] == NULL) {
@@ -54,7 +54,7 @@ HashNode hash_get(HashTable table, char *key) {
     }
 }
 
-void hash_insert(HashTable table, char *key, int value) {
+void hash_insert(HashTable table, const char *key, int value) {
     int hashVal = hash(key, table->table_size);
     HashNode newNode = malloc(sizeof(struct hash_node));
     newNode->head = NULL;
@@ -79,7 +79,7 @@ void hash_insert(HashTable table, char *key, int value) {
     }
 }
 
-void hash_delete(HashTable table, char *key) {
+void hash_delete(HashTable table, const char *key) {
     int hashVal = hash(key, table->table_size);
 
     if (table->items[hashVal] == NULL) {

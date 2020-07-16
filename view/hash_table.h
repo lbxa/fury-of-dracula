@@ -19,9 +19,9 @@ typedef struct hash_table {
 } *HashTable;
 
 HashTable create_hash_table(int table_size);
-HashNode hash_get(HashTable table, char *key);
-void hash_insert(HashTable table, char *key, int value);
-void hash_delete(HashTable table, char *key);
+HashNode hash_get(HashTable table, const char *key);
+void hash_insert(HashTable table, const char *key, int value);
+void hash_delete(HashTable table, const char *key);
 void drop_hash_table(HashTable table);
 void print_hash_table(HashTable table);
 

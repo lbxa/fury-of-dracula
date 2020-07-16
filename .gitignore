@@ -4,7 +4,8 @@
 
 
 # CMake
-cmake-build-*/
+cmake-build-debug-remote-host
+cmake-build-debug
 
 ### IDE Specific ####
 

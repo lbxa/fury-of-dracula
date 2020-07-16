@@ -1,0 +1,5 @@
+*.o
+testDraculaView
+testGameView
+testHunterView
+testMap
