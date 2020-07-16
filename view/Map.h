@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "Places.h"
+#include "hash_table.h"
 
 #ifndef FOD__MAP_H_
 #define FOD__MAP_H_
@@ -41,5 +42,7 @@ int MapNumConnections(Map m, TransportType type);
  *  The returned list should NOT be modified or freed.
  */
 ConnList MapGetConnections(Map m, PlaceId p);
+
+HashTable mapFindShortestPath(Map map, Place start, Place end);
 
 #endif // !defined(FOD__MAP_H_)

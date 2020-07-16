@@ -75,6 +75,7 @@ void hash_insert(HashTable table, char *key, int value) {
         } else {
             cur->value = value;
         }
+        table->num_items++;
     }
 }
 
@@ -99,6 +100,7 @@ void hash_delete(HashTable table, char *key) {
                 last->head = cur->head;
             }
             free(cur);
+            table->num_items--;
         }
     }
 }
@@ -120,4 +122,20 @@ void drop_hash_table(HashTable ht) {
         }
     }
     free(ht);
+}
+
+void print_node(HashNode node) {
+    printf("[%s -> %d]\n", node->key, node->value);
+}
+
+void print_hash_table(HashTable table) {
+    for (int i = 0; i < table->table_size; i++) {
+        if (table->items[i] != NULL) {
+            HashNode cur = table->items[i];
+            while (cur) {
+                print_node(cur);
+                cur = cur->head;
+            }
+        }
+    }
 }

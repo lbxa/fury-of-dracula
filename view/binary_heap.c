@@ -6,8 +6,8 @@
 #include <assert.h>
 #include "binary_heap.h"
 
-Heap *heap_create(int initial_capacity) {
-    Heap *heap = malloc(sizeof(struct heap));
+Heap heap_create(int initial_capacity) {
+    Heap heap = malloc(sizeof(struct heap));
     heap->capacity = initial_capacity;
     heap->size = 0;
     heap->arr = malloc(sizeof(HeapItem) * heap->capacity);
@@ -15,7 +15,7 @@ Heap *heap_create(int initial_capacity) {
     return heap;
 }
 
-void heap_display(Heap *heap) {
+void heap_display(Heap heap) {
     int i;
     for (i = 1; i <= heap->size; ++i) {
         printf("|%d|", heap->arr[i]->value);
@@ -52,7 +52,7 @@ void heapify_down(HeapItem *arr, int i, int n) {
     }
 }
 
-void heap_push(Heap *heap, HeapItem value) {
+void heap_push(Heap heap, HeapItem value) {
     if (is_heap_full(heap)) {
         heap->capacity *= 2;
         heap->arr = realloc(heap->arr, sizeof(struct heap_item) * heap->capacity);
@@ -62,7 +62,7 @@ void heap_push(Heap *heap, HeapItem value) {
     heapify_up(heap->arr, heap->size);
 }
 
-HeapItem heap_pop(Heap *heap) {
+HeapItem heap_pop(Heap heap) {
     HeapItem top = heap->arr[1];
     heap->arr[1] = heap->arr[heap->size];
     heap->size--;
@@ -77,7 +77,7 @@ HeapItem create_heap_item(int value, char *key) {
     return heap_item;
 }
 
-void heap_destroy(Heap *heap) {
+void heap_destroy(Heap heap) {
     for (int i = 1; i < heap->size; i++) {
         free(heap->arr[i]);
     }
@@ -85,15 +85,15 @@ void heap_destroy(Heap *heap) {
     free(heap);
 }
 
-int is_heap_full(Heap *heap) {
+int is_heap_full(Heap heap) {
     return heap->size >= heap->capacity;
 }
 
-int is_heap_empty(Heap *heap) {
+int is_heap_empty(Heap heap) {
     return heap->size == 0;
 }
 
-int empty_heap(Heap *heap) {
+int empty_heap(Heap heap) {
     while (heap->size) {
         heap_pop(heap);
     }

@@ -19,6 +19,10 @@
 
 #include "Map.h"
 #include "Places.h"
+#include "hash_table.h"
+#include "limits.h"
+#include "binary_heap.h"
+#include "Game.h"
 
 struct map {
     int nV; // number of vertices
@@ -194,3 +198,77 @@ ConnList MapGetConnections(Map m, PlaceId p)
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+/**
+ * Gets all reachable places in a single move for a player
+ * @return
+ */
+PlaceId *get_reachable_places_in_move(Map map, Player player, PlaceId currentId, int *places_count) {
+    // For now only return immediate connections no special regard for rail
+    ConnList connections = MapGetConnections(map, currentId);
+
+    *places_count = 0;
+    int places_allocation = 16;
+    // Initial size of 16
+    PlaceId *places = malloc(sizeof(PlaceId) * places_allocation);
+
+    ConnList cur = connections;
+    while (cur) {
+        if (*places_count > places_allocation) {
+            places_allocation++;
+            places = realloc(places, sizeof(PlaceId) * places_allocation);
+        }
+        places[(*places_count)++] = cur->p;
+        cur = cur->next;
+    }
+
+    if (*places_count < places_allocation) {
+        places = realloc(places, sizeof(PlaceId) * *places_count);
+    }
+    return places;
+}
+
+/**
+ * Uses djikstras path-finding algorithm with priority queue
+ * @param map
+ * @param start
+ * @param end
+ * @return
+ */
+HashTable mapFindShortestPath(Map map, Place start, Place end) {
+    // Create vertex dictionary
+
+    // Prime numbers are suitable table sizes and not that many vertices exist
+    // so can pick small value
+    HashTable distances = create_hash_table(181);
+
+    for (int i = 0; i < NUM_REAL_PLACES; ++i) {
+        Place p = PLACES[i];
+        hash_insert(distances, p.abbrev, INT_MAX);
+    }
+
+    Heap pq = heap_create(1024);
+    heap_push(pq, create_heap_item(0, start.abbrev));
+
+    while (!is_heap_empty(pq)) {
+        HeapItem current_vertex = heap_pop(pq);
+        PlaceId current_place = placeAbbrevToId(current_vertex->key);
+        int current_distance = current_vertex->value;
+
+        // Vertex can be added multiple times to pq. We only want to process it the first time
+        if (current_distance > hash_get(distances, current_vertex->key)->value) continue;
+        int reachable_count = 0;
+        PlaceId *reachable = get_reachable_places_in_move(map, 0, current_place, &reachable_count);
+
+        for (int i = 0; i < reachable_count; ++i) {
+            char *vertex_abbrev = placeIdToAbbrev(reachable[i]);
+            int distance = current_distance + 1; // No weights on edges so far
+            int neighbour_distance_lookup = hash_get(distances, vertex_abbrev)->value;
+            if (distance < neighbour_distance_lookup) {
+                hash_insert(distances, vertex_abbrev, distance);
+                heap_push(pq, create_heap_item(distance, vertex_abbrev));
+            }
+        }
+    }
+    return distances;
+}

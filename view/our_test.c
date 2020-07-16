@@ -4,6 +4,7 @@
 
 #include "binary_heap.h"
 #include "hash_table.h"
+#include "Map.h"
 #include <stdio.h>
 
 int main(void) {
@@ -33,6 +34,11 @@ int main(void) {
     printf("%s -> %d\n", a->key, a->value);
     printf("%s -> %d\n", b->key, b->value);
     printf("%s -> %d\n", c->key, c->value);
+
+    Map map = MapNew();
+    HashTable distances = mapFindShortestPath(map, PLACES[0], PLACES[50]);
+    print_hash_table(distances);
+    printf("%d\n", distances->num_items);
 
 //    heap_display(h);
 //    empty_heap(h);
