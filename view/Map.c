@@ -199,13 +199,19 @@ ConnList MapGetConnections(Map m, PlaceId p)
 }
 
 ////////////////////////////////////////////////////////////////////////
+// PATH FINDING
+// Full lookup if need to recreate each turn will entail creating 4 lookups for each starting initial state of having
+// 0, 1, 2, 3 rail moves + a lookup for no rail moves at any time (dracula)
 
 /**
  * Gets all reachable places in a single move for a player
  * @return
  */
-PlaceId *get_reachable_places_in_move(Map map, Player player, PlaceId currentId, int *places_count) {
+PlaceId *get_reachable_places_in_move(Map map, int distance_by_rail, PlaceId currentId, int *places_count) {
     // For now only return immediate connections no special regard for rail
+
+    // TODO: This function will need to determine additional reachable locations based on distance that can be travelled by rail
+
     ConnList connections = MapGetConnections(map, currentId);
 
     *places_count = 0;
@@ -230,13 +236,13 @@ PlaceId *get_reachable_places_in_move(Map map, Player player, PlaceId currentId,
 }
 
 /**
- * Uses djikstras path-finding algorithm with priority queue
+ * Uses djikstras path-finding algorithm with priority queue to find shortest path from 1 node to all other nodes
  * @param map
- * @param start
+ * @param from
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable mapFindShortestPath(Map map, Place start, Place end) {
+HashTable mapFindShortestPathsFrom(Map map, Place from) {
     // Create vertex dictionary
 
     // Prime numbers are suitable table sizes and not that many vertices exist
@@ -249,7 +255,7 @@ HashTable mapFindShortestPath(Map map, Place start, Place end) {
     }
 
     Heap pq = heap_create(1024);
-    heap_push(pq, create_heap_item(0, start.abbrev));
+    heap_push(pq, create_heap_item(0, from.abbrev));
 
     while (!is_heap_empty(pq)) {
         HeapItem current_vertex = heap_pop(pq);
@@ -275,49 +281,10 @@ HashTable mapFindShortestPath(Map map, Place start, Place end) {
     return distances;
 }
 
-/**
- * Uses djikstras path-finding algorithm with priority queue to find any path from start to end
- * @param map
- * @param start
- * @param end
- * @return HashTable containing all computed distances to places (place abbrev)
- */
-int mapFindAnyShortestPath(Map map, Place start, Place end) {
-    // Create vertex dictionary
-
-    // Prime numbers are suitable table sizes and not that many vertices exist
-    // so can pick small value
-    HashTable distances = create_hash_table(181);
-
-    for (int i = 0; i < NUM_REAL_PLACES; ++i) {
-        Place p = PLACES[i];
-        hash_insert(distances, p.abbrev, INT_MAX);
+HashTable* getAllPossiblePaths(Map map) {
+    HashTable *paths_lookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
+    for (int i = 0; i < NUM_REAL_PLACES; i++) {
+        paths_lookup[i] = mapFindShortestPathsFrom(map, PLACES[i]);
     }
-
-    Heap pq = heap_create(1024);
-    heap_push(pq, create_heap_item(0, start.abbrev));
-    char *vertex_abbrev;
-    while (!is_heap_empty(pq)) {
-        HeapItem current_vertex = heap_pop(pq);
-        PlaceId current_place = placeAbbrevToId(current_vertex->key);
-        int current_distance = current_vertex->value;
-
-        // Vertex can be added multiple times to pq. We only want to process it the first time
-        if (current_distance > hash_get(distances, current_vertex->key)->value) continue;
-        int reachable_count = 0;
-        PlaceId *reachable = get_reachable_places_in_move(map, 0, current_place, &reachable_count);
-
-        for (int i = 0; i < reachable_count; ++i) {
-            vertex_abbrev = placeIdToAbbrev(reachable[i]);
-            int distance = current_distance + 1; // No weights on edges so far
-            int neighbour_distance_lookup = hash_get(distances, vertex_abbrev)->value;
-            if (distance < neighbour_distance_lookup) {
-                hash_insert(distances, vertex_abbrev, distance);
-                if (strcmp(end.abbrev, vertex_abbrev) == 0) break;
-                heap_push(pq, create_heap_item(distance, vertex_abbrev));
-            }
-        }
-    }
-    heap_destroy(pq);
-    return hash_get(distances, vertex_abbrev)->value;
+    return paths_lookup;
 }

@@ -46,12 +46,12 @@ ConnList MapGetConnections(Map m, PlaceId p);
 /**
  * Uses dijkstra's path-finding algorithm with priority queue
  * @param map
- * @param start
+ * @param from
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable mapFindShortestPath(Map map, Place start, Place end);
+HashTable mapFindShortestPathsFrom(Map map, Place from);
 
-int mapFindAnyShortestPath(Map map, Place start, Place end);
+HashTable* getAllPossiblePaths(Map map);
 
 #endif // !defined(FOD__MAP_H_)
