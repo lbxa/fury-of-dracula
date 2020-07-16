@@ -9,14 +9,19 @@
 typedef struct heap {
     int capacity;
     int size;
-    int *arr;
+    struct heap_item  **arr;
 } Heap;
+
+typedef struct heap_item {
+    int value;
+    char *key;
+} *HeapItem;
 
 Heap *heap_create(int initial_capacity);
 
-void heap_push(Heap *heap, int value);
+void heap_push(Heap *heap, HeapItem value);
 
-int heap_pop(Heap *heap);
+HeapItem heap_pop(Heap *heap);
 
 void heap_display(Heap *heap);
 
@@ -27,6 +32,8 @@ void heap_destroy(Heap *heap);
 int is_heap_full(Heap *heap);
 
 int is_heap_empty(Heap *heap);
+
+HeapItem create_heap_item(int value, char *key);
 
 
 #endif //FURY_OF_DRACULA_BINARY_HEAP_H
