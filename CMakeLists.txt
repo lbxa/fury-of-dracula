@@ -9,4 +9,4 @@ add_executable(fury_of_dracula view/testGameView.c
         view/GameView.c
         view/HunterView.c
         view/Map.c
-        view/Places.c)
+        view/Places.c view/Players.h)

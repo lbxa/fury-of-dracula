@@ -18,12 +18,15 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
+#include "Players.h"
 // add your own #includes here
 
 // TODO: ADD YOUR OWN STRUCTS HERE
 
 struct gameView {
-	// TODO: ADD FIELDS HERE
+	Map map;
+	PlayerDetails players[NUM_PLAYERS];
+	int game_score;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -31,7 +34,6 @@ struct gameView {
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	GameView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate GameView!\n");
