@@ -31,7 +31,7 @@ HashTable create_hash_table(int table_size) {
     HashTable table = malloc(sizeof(struct hash_table));
     assert(table != NULL);
     table->table_size = table_size;
-    table->items = malloc(sizeof(struct hash_node) * table_size);
+    table->items = calloc(table_size, sizeof(struct hash_node));
     assert(table->items != NULL);
     return table;
 }

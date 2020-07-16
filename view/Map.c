@@ -23,6 +23,7 @@
 #include "limits.h"
 #include "binary_heap.h"
 #include "Game.h"
+#include <string.h>
 
 struct map {
     int nV; // number of vertices
@@ -233,7 +234,7 @@ PlaceId *get_reachable_places_in_move(Map map, Player player, PlaceId currentId,
  * @param map
  * @param start
  * @param end
- * @return
+ * @return HashTable containing all computed distances to places (place abbrev)
  */
 HashTable mapFindShortestPath(Map map, Place start, Place end) {
     // Create vertex dictionary
@@ -270,5 +271,53 @@ HashTable mapFindShortestPath(Map map, Place start, Place end) {
             }
         }
     }
+    heap_destroy(pq);
     return distances;
+}
+
+/**
+ * Uses djikstras path-finding algorithm with priority queue to find any path from start to end
+ * @param map
+ * @param start
+ * @param end
+ * @return HashTable containing all computed distances to places (place abbrev)
+ */
+int mapFindAnyShortestPath(Map map, Place start, Place end) {
+    // Create vertex dictionary
+
+    // Prime numbers are suitable table sizes and not that many vertices exist
+    // so can pick small value
+    HashTable distances = create_hash_table(181);
+
+    for (int i = 0; i < NUM_REAL_PLACES; ++i) {
+        Place p = PLACES[i];
+        hash_insert(distances, p.abbrev, INT_MAX);
+    }
+
+    Heap pq = heap_create(1024);
+    heap_push(pq, create_heap_item(0, start.abbrev));
+    char *vertex_abbrev;
+    while (!is_heap_empty(pq)) {
+        HeapItem current_vertex = heap_pop(pq);
+        PlaceId current_place = placeAbbrevToId(current_vertex->key);
+        int current_distance = current_vertex->value;
+
+        // Vertex can be added multiple times to pq. We only want to process it the first time
+        if (current_distance > hash_get(distances, current_vertex->key)->value) continue;
+        int reachable_count = 0;
+        PlaceId *reachable = get_reachable_places_in_move(map, 0, current_place, &reachable_count);
+
+        for (int i = 0; i < reachable_count; ++i) {
+            vertex_abbrev = placeIdToAbbrev(reachable[i]);
+            int distance = current_distance + 1; // No weights on edges so far
+            int neighbour_distance_lookup = hash_get(distances, vertex_abbrev)->value;
+            if (distance < neighbour_distance_lookup) {
+                hash_insert(distances, vertex_abbrev, distance);
+                if (strcmp(end.abbrev, vertex_abbrev) == 0) break;
+                heap_push(pq, create_heap_item(distance, vertex_abbrev));
+            }
+        }
+    }
+    heap_destroy(pq);
+    return hash_get(distances, vertex_abbrev)->value;
 }

@@ -43,6 +43,15 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
+/**
+ * Uses dijkstra's path-finding algorithm with priority queue
+ * @param map
+ * @param start
+ * @param end
+ * @return HashTable containing all computed distances to places (place abbrev)
+ */
 HashTable mapFindShortestPath(Map map, Place start, Place end);
+
+int mapFindAnyShortestPath(Map map, Place start, Place end);
 
 #endif // !defined(FOD__MAP_H_)
