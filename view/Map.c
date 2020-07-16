@@ -200,8 +200,8 @@ ConnList MapGetConnections(Map m, PlaceId p)
 
 ////////////////////////////////////////////////////////////////////////
 // PATH FINDING
-// Full lookup if need to recreate each turn will entail 3 lookups for each rail condition
-// and put this together
+// Full lookup if need to recreate each turn will entail creating 4 lookups for each starting initial state of having
+// 0, 1, 2, 3 rail moves + a lookup for no rail moves at any time (dracula)
 
 /**
  * Gets all reachable places in a single move for a player
@@ -210,8 +210,7 @@ ConnList MapGetConnections(Map m, PlaceId p)
 PlaceId *get_reachable_places_in_move(Map map, int distance_by_rail, PlaceId currentId, int *places_count) {
     // For now only return immediate connections no special regard for rail
 
-    // TODO: This function will need to given player and round number determine additional reachable locations
-    // based on number of rail connections that can be made
+    // TODO: This function will need to determine additional reachable locations based on distance that can be travelled by rail
 
     ConnList connections = MapGetConnections(map, currentId);
 
