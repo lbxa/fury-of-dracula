@@ -59,6 +59,7 @@ void hash_insert(HashTable table, char *key, int value) {
     HashNode newNode = malloc(sizeof(struct hash_node));
     newNode->head = NULL;
     newNode->value = value;
+    newNode->key = malloc(sizeof(strlen(key)));
     strcpy(newNode->key, key);
 
     if (table->items[hashVal] == NULL) {
@@ -102,9 +103,21 @@ void hash_delete(HashTable table, char *key) {
     }
 }
 
+void free_node(HashNode node) {
+    free(node->key);
+    free(node);
+}
+
 void drop_hash_table(HashTable ht) {
     for (int i = 0; i < ht->table_size; i++) {
-        if (ht->items[i] != NULL) free(ht->items[i]);
+        if (ht->items[i] != NULL) {
+            HashNode cur = ht->items[i];
+            while (cur) {
+                HashNode next = cur->head;
+                free_node(cur);
+                cur = next;
+            }
+        }
     }
     free(ht);
 }
