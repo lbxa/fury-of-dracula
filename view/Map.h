@@ -43,10 +43,4 @@ int MapNumPlaces(Map m);
 /** Gets the number of connections of a particular type. */
 int MapNumConnections(Map m, TransportType type);
 
-/**
- *  Gets a list of connections from the given place.
- *  The returned list should NOT be modified or freed.
- */
-ConnList MapGetConnections(Map m, PlaceId p);
-
 #endif // !defined(FOD__MAP_H_)

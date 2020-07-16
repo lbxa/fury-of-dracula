@@ -23,11 +23,12 @@
 struct map {
 	int nV; // number of vertices
 	int nE; // number of edges
-	ConnList connections[NUM_REAL_PLACES];
+	TransportType connections[NUM_REAL_PLACES][NUM_REAL_PLACES];
+	int connectionCounts[5]; // Store connection counts by type
 };
 
 static void addConnections(Map m);
-static void addConnection(Map m, PlaceId v, PlaceId w, TransportType type);
+static void addConnection(Map m, PlaceId start, PlaceId end, TransportType type);
 static inline bool isSentinelEdge(Connection c);
 
 static ConnList connListInsert(ConnList l, PlaceId v, TransportType type);
@@ -48,7 +49,9 @@ Map MapNew(void)
 	m->nV = NUM_REAL_PLACES;
 	m->nE = 0;
 	for (int i = 0; i < NUM_REAL_PLACES; i++) {
-		m->connections[i] = NULL;
+        for (int j = 0; j < NUM_REAL_PLACES; j++) {
+            m->connections[i][j] = NONE;
+        }
 	}
 
 	addConnections(m);
@@ -59,15 +62,6 @@ Map MapNew(void)
 void MapFree(Map m)
 {
 	assert (m != NULL);
-
-	for (int i = 0; i < m->nV; i++) {
-		ConnList curr = m->connections[i];
-		while (curr != NULL) {
-			ConnList next = curr->next;
-			free(curr);
-			curr = next;
-		}
-	}
 	free(m);
 }
 
@@ -80,13 +74,13 @@ void MapShow(Map m)
 
 	printf("V = %d, E = %d\n", m->nV, m->nE);
 	for (int i = 0; i < m->nV; i++) {
-		for (ConnList curr = m->connections[i]; curr != NULL; curr = curr->next) {
-			printf("%s connects to %s by %s\n",
-			       placeIdToName((PlaceId) i),
-			       placeIdToName(curr->p),
-			       transportTypeToString(curr->type)
-			);
-		}
+        for (int j = 0; j < m->nV; j++) {
+            printf("%s connects to %s by %s\n",
+                   placeIdToName((PlaceId) i),
+                   placeIdToName((PlaceId) j),
+                   transportTypeToString(m->connections[i][j])
+            );
+        }
 	}
 }
 
@@ -104,17 +98,10 @@ int MapNumConnections(Map m, TransportType type)
 {
 	assert(m != NULL);
 	assert(transportTypeIsValid(type) || type == ANY);
+	return m->connectionCounts[type];
+}
 
-	int nE = 0;
-	for (int i = 0; i < m->nV; i++) {
-		for (ConnList curr = m->connections[i]; curr != NULL; curr = curr->next) {
-			if (curr->type == type || type == ANY) {
-				nE++;
-			}
-		}
-	}
-
-	return nE;
+int MapMovesBetween(Map m, Place start, Place end) {
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -139,10 +126,13 @@ static void addConnection(Map m, PlaceId start, PlaceId end, TransportType type)
 	assert(transportTypeIsValid(type));
 
 	// don't add edges twice
-	if (connListContains(m->connections[start], end, type)) return;
+	if (m->connections[start][end] == type) return;
 
-	m->connections[start] = connListInsert(m->connections[start], end, type);
-	m->connections[end]   = connListInsert(m->connections[end], start, type);
+	m->connections[start][end] = type;
+	m->connections[end][start] = type;
+
+    // Not sure if should double size as connecting to each other
+	m->connectionCounts[type]++;
 	m->nE++;
 }
 
@@ -151,46 +141,3 @@ static inline bool isSentinelEdge(Connection c)
 {
 	return c.v == -1 && c.w == -1 && c.t == ANY;
 }
-
-/// Insert a node into an adjacency list.
-static ConnList connListInsert(ConnList l, PlaceId p, TransportType type)
-{
-	assert(placeIsReal(p));
-	assert(transportTypeIsValid(type));
-
-	ConnList new = malloc(sizeof(*new));
-	if (new == NULL) {
-		fprintf(stderr, "Couldn't allocate ConnNode");
-		exit(EXIT_FAILURE);
-	}
-	
-	new->p = p;
-	new->type = type;
-	new->next = l;
-	return new;
-}
-
-/// Does this adjacency list contain a particular value?
-static bool connListContains(ConnList l, PlaceId p, TransportType type)
-{
-	assert(placeIsReal(p));
-	assert(transportTypeIsValid(type));
-
-	for (ConnList curr = l; curr != NULL; curr = curr->next) {
-		if (curr->p == p && curr->type == type) {
-			return true;
-		}
-	}
-	
-	return false;
-}
-
-////////////////////////////////////////////////////////////////////////
-
-ConnList MapGetConnections(Map m, PlaceId p)
-{
-	assert(placeIsReal(p));
-	return m->connections[p];
-}
-
-////////////////////////////////////////////////////////////////////////
