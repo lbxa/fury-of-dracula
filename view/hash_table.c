@@ -8,7 +8,12 @@
 #include <stdlib.h>
 #include <assert.h>
 
-//djb2 hashing algorithm
+/**
+ * djb2 hashing algorithm implementation
+ * @param str
+ * @param table_size
+ * @return
+ */
 int hash(const char *str, int table_size) {
     unsigned long hash = 5381;
     int c;
@@ -23,11 +28,17 @@ int hash(const char *str, int table_size) {
     return hashIndex;
 }
 
+/**
+ * Returns boolean for whether the given node and key are equal
+ * @param node
+ * @param key
+ * @return
+ */
 int equal(HashNode node, const char *key) {
     return strcmp(node->key, key) == 0;
 }
 
-HashTable create_hash_table(int table_size) {
+HashTable HashTableCreate(int table_size) {
     HashTable table = malloc(sizeof(struct hash_table));
     assert(table != NULL);
     table->table_size = table_size;
@@ -36,7 +47,7 @@ HashTable create_hash_table(int table_size) {
     return table;
 }
 
-HashNode hash_get(HashTable table, const char *key) {
+HashNode HashGet(HashTable table, const char *key) {
     int hashVal = hash(key, table->table_size);
 
     if (table->items[hashVal] == NULL) {
@@ -54,7 +65,7 @@ HashNode hash_get(HashTable table, const char *key) {
     }
 }
 
-void hash_insert(HashTable table, const char *key, int value) {
+void HashInsert(HashTable table, const char *key, void *value) {
     int hashVal = hash(key, table->table_size);
     HashNode newNode = malloc(sizeof(struct hash_node));
     newNode->head = NULL;
@@ -79,7 +90,7 @@ void hash_insert(HashTable table, const char *key, int value) {
     }
 }
 
-void hash_delete(HashTable table, const char *key) {
+void HashDelete(HashTable table, const char *key) {
     int hashVal = hash(key, table->table_size);
 
     if (table->items[hashVal] == NULL) {
@@ -110,10 +121,10 @@ void free_node(HashNode node) {
     free(node);
 }
 
-void drop_hash_table(HashTable ht) {
-    for (int i = 0; i < ht->table_size; i++) {
-        if (ht->items[i] != NULL) {
-            HashNode cur = ht->items[i];
+void HashTableDestroy(HashTable table) {
+    for (int i = 0; i < table->table_size; i++) {
+        if (table->items[i] != NULL) {
+            HashNode cur = table->items[i];
             while (cur) {
                 HashNode next = cur->head;
                 free_node(cur);
@@ -121,14 +132,10 @@ void drop_hash_table(HashTable ht) {
             }
         }
     }
-    free(ht);
+    free(table);
 }
 
-void print_node(HashNode node) {
-    printf("[%s -> %d]\n", node->key, node->value);
-}
-
-void print_hash_table(HashTable table) {
+void HashTableDisplay(HashTable table, void (*print_node)(HashNode)) {
     for (int i = 0; i < table->table_size; i++) {
         if (table->items[i] != NULL) {
             HashNode cur = table->items[i];

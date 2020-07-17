@@ -11,9 +11,12 @@
 
 CC = gcc
 CFLAGS = -Wall -Werror -g
-BINS = testGameView testHunterView testDraculaView testMap
+BINS = our_test testGameView testHunterView testDraculaView testMap
 
 all: $(BINS)
+
+our_test: our_test.o GameView.o Map.o Places.o path_finding.o binary_heap.o hash_table.o
+our_test.o: our_test.c GameView.h Map.h Places.h Game.h
 
 testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o binary_heap.o hash_table.o
 testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h
@@ -35,6 +38,7 @@ DraculaView.o: DraculaView.c DraculaView.h Game.h
 testUtils.o: testUtils.c Places.h Game.h
 binary_heap.o: binary_heap.c binary_heap.h
 hash_table.o: hash_table.c hash_table.h
+path_finding.o: path_finding.c path_finding.h binary_heap.h hash_table.h
 
 .PHONY: clean
 clean:

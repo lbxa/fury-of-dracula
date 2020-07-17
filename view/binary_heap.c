@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "binary_heap.h"
 
-Heap heap_create(int initial_capacity) {
+Heap HeapCreate(int initial_capacity) {
     Heap heap = malloc(sizeof(struct heap));
     heap->capacity = initial_capacity;
     heap->size = 0;
@@ -15,32 +15,55 @@ Heap heap_create(int initial_capacity) {
     return heap;
 }
 
-void heap_display(Heap heap) {
-    int i;
-    for (i = 1; i <= heap->size; ++i) {
-        printf("|%d|", heap->arr[i]->value);
+void HeapDisplay(Heap heap, void (*print_node)(HeapItem)) {
+    for (int i = 1; i <= heap->size; ++i) {
+        print_node(heap->arr[i]);
     }
     printf("\n");
 }
 
+/**
+ * Swaps 2 given values at indexes i and j with each other
+ * @param arr
+ * @param i
+ * @param j
+ */
 void swap(HeapItem *arr, int i, int j) {
     HeapItem temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
 }
 
+/**
+ * Returns the lower of the items at indexes i and j
+ * @param arr
+ * @param i
+ * @param j
+ * @return
+ */
 int less(const HeapItem *arr, int i, int j) {
     return arr[i]->value < arr[j]->value;
 }
 
-void heapify_up(HeapItem *arr, int i) {
+/**
+ * Performs a heapify up operation for insertion handling
+ * @param arr
+ * @param i
+ */
+void HeapifyUp(HeapItem *arr, int i) {
     while (i > 1 && less(arr, i/2, i)) {
         swap(arr, i, i/2);
         i = i / 2;
     }
 }
 
-void heapify_down(HeapItem *arr, int i, int n) {
+/**
+ * Performs a heapify down operation for deletion handling
+ * @param arr
+ * @param i
+ * @param n
+ */
+void HeapifyDown(HeapItem *arr, int i, int n) {
     while (i * 2 <= n) {
         int j = i * 2;
         if (j < n && less(arr, j, j + 1)) {
@@ -52,32 +75,32 @@ void heapify_down(HeapItem *arr, int i, int n) {
     }
 }
 
-void heap_push(Heap heap, HeapItem value) {
-    if (is_heap_full(heap)) {
+void HeapPush(Heap heap, HeapItem value) {
+    if (HeapIsFull(heap)) {
         heap->capacity *= 2;
         heap->arr = realloc(heap->arr, sizeof(struct heap_item) * heap->capacity);
         assert(heap->arr != NULL);
     }
     heap->arr[++heap->size] = value;
-    heapify_up(heap->arr, heap->size);
+    HeapifyUp(heap->arr, heap->size);
 }
 
-HeapItem heap_pop(Heap heap) {
+HeapItem HeapPop(Heap heap) {
     HeapItem top = heap->arr[1];
     heap->arr[1] = heap->arr[heap->size];
     heap->size--;
-    heapify_down(heap->arr, 1, heap->size);
+    HeapifyDown(heap->arr, 1, heap->size);
     return top;
 }
 
-HeapItem create_heap_item(int value, const char *key) {
+HeapItem HeapItemCreate(int value, void *data) {
     HeapItem heap_item = malloc(sizeof(struct heap_item));
     heap_item->value = value;
-    heap_item->key = (char*) key;
+    heap_item->data = data;
     return heap_item;
 }
 
-void heap_destroy(Heap heap) {
+void HeapDestroy(Heap heap) {
     for (int i = 1; i < heap->size; i++) {
         free(heap->arr[i]);
     }
@@ -85,16 +108,16 @@ void heap_destroy(Heap heap) {
     free(heap);
 }
 
-int is_heap_full(Heap heap) {
+int HeapIsFull(Heap heap) {
     return heap->size >= heap->capacity;
 }
 
-int is_heap_empty(Heap heap) {
+int HeapIsEmpty(Heap heap) {
     return heap->size == 0;
 }
 
-void empty_heap(Heap heap) {
+void EmptyHeap(Heap heap) {
     while (heap->size) {
-        heap_pop(heap);
+        HeapPop(heap);
     }
 }
