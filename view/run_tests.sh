@@ -6,8 +6,8 @@ Red=$(tput setaf 1)
 Green=$(tput setaf 2)
 Reset=$(tput sgr0)
 
-testTotal=3
-testCount=0
+testTotal=4
+testCount=1
 testPass=0
 
 # Set bash time format
@@ -39,6 +39,14 @@ else
   echo "$Red""Failed.$Reset"
 fi
 testCount=$((testCount+1))
+
+echo "$Blue""[$testCount/$testTotal] ./testMap$Reset"
+if ./testMap; then
+    echo "$Green""Passing.$Reset"
+    testPass=$((testPass+1))
+else
+  echo "$Red""Failed.$Reset"
+fi
 
 echo
 echo "  🌈 SUMMARY RESULTS 🌈"
