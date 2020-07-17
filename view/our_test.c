@@ -23,7 +23,7 @@ int main(void) {
 
     Map map = MapNew();
     clock_t start = clock();
-    HashTable distances;
+//    HashTable distances;
     HashTable *paths_lookup = GetAllPathLookup(map);
     HashNode path = HashGet(paths_lookup[PLACES[2].id], "KL");
     printf("%s -> %d\n", path->key, ((Path) path->value)->distance);
