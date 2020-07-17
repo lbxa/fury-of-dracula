@@ -15,10 +15,9 @@ Heap heap_create(int initial_capacity) {
     return heap;
 }
 
-void heap_display(Heap heap) {
-    int i;
-    for (i = 1; i <= heap->size; ++i) {
-        printf("|%d|", heap->arr[i]->value);
+void heap_display(Heap heap, void (*print_node)(HeapItem)) {
+    for (int i = 1; i <= heap->size; ++i) {
+        print_node(heap->arr[i]);
     }
     printf("\n");
 }
@@ -70,10 +69,10 @@ HeapItem heap_pop(Heap heap) {
     return top;
 }
 
-HeapItem create_heap_item(int value, const char *key) {
+HeapItem create_heap_item(int value, void *data) {
     HeapItem heap_item = malloc(sizeof(struct heap_item));
     heap_item->value = value;
-    heap_item->key = (char*) key;
+    heap_item->data = data;
     return heap_item;
 }
 

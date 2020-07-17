@@ -15,7 +15,7 @@ typedef struct path {
     int sequence_capacity;
     int sequence_length;
     char *place;
-    PlaceId *sequence;
+    struct path *predecessor;
 } *Path;
 
 /**
@@ -29,9 +29,7 @@ HashTable mapFindShortestPathsFrom(Map map, Place from);
 
 HashTable* getAllPossiblePaths(Map map);
 
-Path create_path(char *place, int distance);
-
-void path_insert_place(Path path, PlaceId place);
+Path create_path(char *place, int distance, Path predecessor);
 
 void free_path_node(Path path);
 

@@ -59,19 +59,20 @@ HashTable mapFindShortestPathsFrom(Map map, Place from) {
 
     for (int i = 0; i < NUM_REAL_PLACES; ++i) {
         Place p = PLACES[i];
-        hash_insert(distances, p.abbrev, create_path(p.abbrev, INT_MAX));
+        hash_insert(distances, p.abbrev, create_path(p.abbrev, INT_MAX, NULL));
     }
 
     Heap pq = heap_create(1024);
-    heap_push(pq, create_heap_item(0, from.abbrev));
+    heap_push(pq, create_heap_item(0, create_path(from.abbrev, 0, NULL)));
 
     while (!is_heap_empty(pq)) {
-        HeapItem current_vertex = heap_pop(pq);
-        PlaceId current_place = placeAbbrevToId(current_vertex->key);
-        int current_distance = current_vertex->value;
+        HeapItem current_item = heap_pop(pq);
+        Path current_vertex = (Path) current_item->data;
+        PlaceId current_place = placeAbbrevToId(current_vertex->place);
+        int current_distance = current_vertex->distance;
 
         // Vertex can be added multiple times to pq. We only want to process it the first time
-        Path path_node = (Path) hash_get(distances, current_vertex->key)->value;
+        Path path_node = (Path) hash_get(distances, current_vertex->place)->value;
         if (current_distance > path_node->distance) continue;
         int reachable_count = 0;
         PlaceId *reachable = get_reachable_places_in_move(map, 0, current_place, &reachable_count);
@@ -82,8 +83,10 @@ HashTable mapFindShortestPathsFrom(Map map, Place from) {
             path_node = (Path) hash_get(distances, vertex_abbrev)->value;
             int neighbour_distance_lookup = path_node->distance;
             if (distance < neighbour_distance_lookup) {
-                hash_insert(distances, vertex_abbrev, create_path((char*)vertex_abbrev, distance));
-                heap_push(pq, create_heap_item(distance, vertex_abbrev));
+                // Create new node for path for found vertex and set predecessor as current_vertex
+                Path new = create_path((char*)vertex_abbrev, distance, current_vertex);
+                hash_insert(distances, vertex_abbrev, new);
+                heap_push(pq, create_heap_item(distance, new));
             }
         }
     }
@@ -99,28 +102,18 @@ HashTable* getAllPossiblePaths(Map map) {
     return paths_lookup;
 }
 
-Path create_path(char *place, int distance) {
+Path create_path(char *place, int distance, Path predecessor) {
     Path path = malloc(sizeof(*path));
     path->distance = distance;
     path->sequence_capacity = 1;
     path->sequence_length = 0;
     path->place = malloc(sizeof(strlen(place)));
     strcpy(path->place, place);
-    path->sequence = malloc(sizeof(PlaceId) * path->sequence_capacity);
+    path->predecessor = predecessor;
     return path;
-}
-
-void path_insert_place(Path path, PlaceId place) {
-    path->sequence_length++;
-    if (path->sequence_capacity < path->sequence_length) {
-        path->sequence_capacity++;
-        path->sequence = realloc(path->sequence, sizeof(PlaceId) * path->sequence_capacity);
-    }
-    path->sequence[path->sequence_length - 1] = place;
 }
 
 void free_path_node(Path path) {
     free(path->place);
-    free(path->sequence);
     free(path);
 }

@@ -14,14 +14,12 @@ void print_hash_node(HashNode node) {
     printf("[%s -> %d]\n", p->place, p->distance);
 }
 
-int main(void) {
+void print_heap_item(HeapItem node) {
+    Path p = (Path) node->data;
+    printf("[%s -> %d]\n", p->place, p->distance);
+}
 
-    Heap h = heap_create(32);
-    HeapItem it = create_heap_item(3, "test");
-    heap_push(h,it);
-    heap_display(h);
-    HeapItem v = heap_pop(h);
-    printf("%d\n", v->value);
+int main(void) {
 
     Map map = MapNew();
     clock_t start = clock();
