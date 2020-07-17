@@ -51,7 +51,7 @@ PlaceId *get_reachable_places_in_move(Map map, int distance_by_rail, PlaceId cur
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable mapFindShortestPathsFrom(Map map, Place from) {
+HashTable GetPathLookupTableFrom(Map map, Place from) {
     // Create vertex dictionary
 
     // Prime numbers are suitable table sizes and not that many vertices exist
@@ -60,14 +60,14 @@ HashTable mapFindShortestPathsFrom(Map map, Place from) {
 
     for (int i = 0; i < NUM_REAL_PLACES; ++i) {
         Place p = PLACES[i];
-        hash_insert(distances, p.abbrev, create_path(p.abbrev, INT_MAX, NULL));
+        hash_insert(distances, p.abbrev, CreatePath(p.abbrev, INT_MAX, NULL));
     }
 
-    Heap pq = heap_create(1024);
-    heap_push(pq, create_heap_item(0, create_path(from.abbrev, 0, NULL)));
+    Heap pq = HeapCreate(1024);
+    HeapPush(pq, CreateHeapItem(0, CreatePath(from.abbrev, 0, NULL)));
 
-    while (!is_heap_empty(pq)) {
-        HeapItem current_item = heap_pop(pq);
+    while (!IsHeapEmpty(pq)) {
+        HeapItem current_item = HeapPop(pq);
         Path current_vertex = (Path) current_item->data;
         PlaceId current_place = placeAbbrevToId(current_vertex->place);
         int current_distance = current_vertex->distance;
@@ -85,25 +85,25 @@ HashTable mapFindShortestPathsFrom(Map map, Place from) {
             int neighbour_distance_lookup = path_node->distance;
             if (distance < neighbour_distance_lookup) {
                 // Create new node for path for found vertex and set predecessor as current_vertex
-                Path new = create_path((char*)vertex_abbrev, distance, current_vertex);
+                Path new = CreatePath((char *) vertex_abbrev, distance, current_vertex);
                 hash_insert(distances, vertex_abbrev, new);
-                heap_push(pq, create_heap_item(distance, new));
+                HeapPush(pq, CreateHeapItem(distance, new));
             }
         }
     }
-    heap_destroy(pq);
+    HeapDestroy(pq);
     return distances;
 }
 
-HashTable* getAllPossiblePaths(Map map) {
+HashTable* GetAllPathLookup(Map map) {
     HashTable *paths_lookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
     for (int i = 0; i < NUM_REAL_PLACES; i++) {
-        paths_lookup[i] = mapFindShortestPathsFrom(map, PLACES[i]);
+        paths_lookup[i] = GetPathLookupTableFrom(map, PLACES[i]);
     }
     return paths_lookup;
 }
 
-Path create_path(char *place, int distance, Path predecessor) {
+Path CreatePath(char *place, int distance, Path predecessor) {
     Path path = malloc(sizeof(*path));
     path->distance = distance;
     path->place = malloc(sizeof(strlen(place)));
@@ -112,15 +112,12 @@ Path create_path(char *place, int distance, Path predecessor) {
     return path;
 }
 
-void free_path_node(Path path) {
+void FreePathNode(Path path) {
     free(path->place);
     free(path);
 }
 
-void print_path_sequence(Path path) {
-    int length = 4 * (path->distance + 1);
-    char *sequence_str = malloc(sizeof(char) * length);
-    sequence_str[length - 1] = '\0';
+Path* GetOrderedPathSequence(Path path) {
     Path *pathArr = malloc(sizeof(Path) * (path->distance + 1));
     int i = path->distance;
     Path cur = path;
@@ -129,7 +126,14 @@ void print_path_sequence(Path path) {
         cur = cur->predecessor;
         i--;
     }
+    return pathArr;
+}
 
+void PrintPathSequence(Path path) {
+    int length = 4 * (path->distance + 1);
+    char *sequence_str = malloc(sizeof(char) * length);
+    sequence_str[length - 1] = '\0';
+    Path *pathArr = GetOrderedPathSequence(path);
     for (int j = 0; j < path->distance + 1; ++j) {
         strcpy(&sequence_str[j*4], pathArr[j]->place);
         if (j == path->distance) break;

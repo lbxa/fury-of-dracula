@@ -17,20 +17,49 @@ typedef struct path {
 } *Path;
 
 /**
- * Uses dijkstra's path-finding algorithm with priority queue
+ * Gets a path lookup table which has distances and paths from the given place
+ * to any other place on the map
  * @param map
  * @param from
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable mapFindShortestPathsFrom(Map map, Place from);
+HashTable GetPathLookupTableFrom(Map map, Place from);
 
-HashTable* getAllPossiblePaths(Map map);
+/**
+ * Gets a path lookup table which has distances and paths from any
+ * place to any other place on the map
+ * @param map
+ * @return
+ */
+HashTable* GetAllPathLookup(Map map);
 
-Path create_path(char *place, int distance, Path predecessor);
+/**
+ * Creates a dynamically allocated path node and returns it
+ * @param place
+ * @param distance
+ * @param predecessor
+ * @return
+ */
+Path CreatePath(char *place, int distance, Path predecessor);
 
-void free_path_node(Path path);
+/**
+ * Frees all memory allocated to a given path
+ * @param path
+ */
+void FreePathNode(Path path);
 
-void print_path_sequence(Path path);
+/**
+ * Prints the path sequence of the given path to stdout
+ * @param path
+ */
+void PrintPathSequence(Path path);
+
+/**
+ * Gets an array of length path->distance + 1
+ * @param path
+ * @return
+ */
+Path* GetOrderedPathSequence(Path path);
 
 #endif //FURY_OF_DRACULA_PATH_FINDING_H

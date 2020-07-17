@@ -1,6 +1,5 @@
 /**
- * Binary Heap implementation for use as priority queue
- * for implementing fast djikstra search algorithm
+ * Binary Minimum Heap implementation
  */
 
 #ifndef FURY_OF_DRACULA_BINARY_HEAP_H
@@ -17,23 +16,68 @@ typedef struct heap_item {
     void *data;
 } *HeapItem;
 
-Heap heap_create(int initial_capacity);
+/**
+ * Creates a new minimum heap
+ * @param initial_capacity
+ * @return
+ */
+Heap HeapCreate(int initial_capacity);
 
-void heap_push(Heap heap, HeapItem value);
+/**
+ * Pushes a new element into the heap
+ * @param heap
+ * @param value
+ */
+void HeapPush(Heap heap, HeapItem value);
 
-HeapItem heap_pop(Heap heap);
+/**
+ * Pops the front element from a heap
+ * @param heap
+ * @return
+ */
+HeapItem HeapPop(Heap heap);
 
-void heap_display(Heap heap, void (*print_node)(HeapItem));
+/**
+ * Prints a given heap to stdout
+ * @param heap
+ * @param print_node Function for printing a HeapItem
+ */
+void HeapDisplay(Heap heap, void (*print_node)(HeapItem));
 
-void empty_heap(Heap heap);
+/**
+ * Removes all items from the heap and frees them
+ * @param heap
+ */
+void EmptyHeap(Heap heap);
 
-void heap_destroy(Heap heap);
+/**
+ * Frees all associated memory for a given heap
+ * @param heap
+ */
+void HeapDestroy(Heap heap);
 
-int is_heap_full(Heap heap);
+/**
+ * Returns whether the given heap is full
+ * @param heap
+ * @return
+ */
+int IsHeapFull(Heap heap);
 
-int is_heap_empty(Heap heap);
+/**
+ * Returns whether the given heap is empty
+ * @param heap
+ * @return
+ */
+int IsHeapEmpty(Heap heap);
 
-HeapItem create_heap_item(int value, void *data);
+
+/**
+ * Creates a Heap item from the given value and data
+ * @param value
+ * @param data
+ * @return
+ */
+HeapItem CreateHeapItem(int value, void *data);
 
 
 #endif //FURY_OF_DRACULA_BINARY_HEAP_H
