@@ -54,7 +54,7 @@ HashNode hash_get(HashTable table, const char *key) {
     }
 }
 
-void hash_insert(HashTable table, const char *key, int value) {
+void hash_insert(HashTable table, const char *key, void *value) {
     int hashVal = hash(key, table->table_size);
     HashNode newNode = malloc(sizeof(struct hash_node));
     newNode->head = NULL;
@@ -124,11 +124,7 @@ void drop_hash_table(HashTable ht) {
     free(ht);
 }
 
-void print_node(HashNode node) {
-    printf("[%s -> %d]\n", node->key, node->value);
-}
-
-void print_hash_table(HashTable table) {
+void print_hash_table(HashTable table, void (*print_node)(HashNode)) {
     for (int i = 0; i < table->table_size; i++) {
         if (table->items[i] != NULL) {
             HashNode cur = table->items[i];
