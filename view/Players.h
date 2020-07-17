@@ -10,8 +10,9 @@
 
 typedef struct playerDetails {
     Player player;
-    int location_history_count;
-    Place *location_history;
+    int locationHistoryCount;
+    Place *locationHistory;
+    int playerHealth;
 } PlayerDetails;
 
 

@@ -25,11 +25,10 @@ int main(void) {
     clock_t start = clock();
 //    HashTable distances;
     HashTable *paths_lookup = GetAllPathLookup(map);
-    HashNode path = HashGet(paths_lookup[PLACES[2].id], "KL");
-    printf("%s -> %d\n", path->key, ((Path) path->value)->distance);
+    HashNode path = HashGet(paths_lookup[placeAbbrevToId("LS")], "KL");
     clock_t end = clock();
     HashTableDisplay(paths_lookup[0], print_hash_node);
-
+    printf("%s -> %d\n", path->key, ((Path) path->value)->distance);
     printf("%lf\n", (double) (end-start)/CLOCKS_PER_SEC);
 
     PrintPathSequence((Path) path->value);

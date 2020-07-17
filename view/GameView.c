@@ -26,7 +26,8 @@
 struct gameView {
 	Map map;
 	PlayerDetails players[NUM_PLAYERS];
-	int game_score;
+	int gameScore;
+	int turnNumber;
 };
 
 ////////////////////////////////////////////////////////////////////////
