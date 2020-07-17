@@ -5,6 +5,7 @@
 #include "path_finding.h"
 #include <limits.h>
 #include <string.h>
+#include <stdio.h>
 
 ////////////////////////////////////////////////////////////////////////
 // PATH FINDING
@@ -105,8 +106,6 @@ HashTable* getAllPossiblePaths(Map map) {
 Path create_path(char *place, int distance, Path predecessor) {
     Path path = malloc(sizeof(*path));
     path->distance = distance;
-    path->sequence_capacity = 1;
-    path->sequence_length = 0;
     path->place = malloc(sizeof(strlen(place)));
     strcpy(path->place, place);
     path->predecessor = predecessor;
@@ -116,4 +115,26 @@ Path create_path(char *place, int distance, Path predecessor) {
 void free_path_node(Path path) {
     free(path->place);
     free(path);
+}
+
+void print_path_sequence(Path path) {
+    int length = 4 * (path->distance + 1);
+    char *sequence_str = malloc(sizeof(char) * length);
+    sequence_str[length - 1] = '\0';
+    Path *pathArr = malloc(sizeof(Path) * (path->distance + 1));
+    int i = path->distance;
+    Path cur = path;
+    while (cur) {
+        pathArr[i] = cur;
+        cur = cur->predecessor;
+        i--;
+    }
+
+    for (int j = 0; j < path->distance + 1; ++j) {
+        strcpy(&sequence_str[j*4], pathArr[j]->place);
+        if (j == path->distance) break;
+        sequence_str[(j*4) + 2] = '-';
+        sequence_str[(j*4) + 3] = '>';
+    }
+    printf("%s\n", sequence_str);
 }

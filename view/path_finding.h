@@ -12,8 +12,6 @@
 
 typedef struct path {
     int distance;
-    int sequence_capacity;
-    int sequence_length;
     char *place;
     struct path *predecessor;
 } *Path;
@@ -32,5 +30,7 @@ HashTable* getAllPossiblePaths(Map map);
 Path create_path(char *place, int distance, Path predecessor);
 
 void free_path_node(Path path);
+
+void print_path_sequence(Path path);
 
 #endif //FURY_OF_DRACULA_PATH_FINDING_H
