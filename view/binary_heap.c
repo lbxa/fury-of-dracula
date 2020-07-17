@@ -76,7 +76,7 @@ void HeapifyDown(HeapItem *arr, int i, int n) {
 }
 
 void HeapPush(Heap heap, HeapItem value) {
-    if (IsHeapFull(heap)) {
+    if (HeapIsFull(heap)) {
         heap->capacity *= 2;
         heap->arr = realloc(heap->arr, sizeof(struct heap_item) * heap->capacity);
         assert(heap->arr != NULL);
@@ -93,7 +93,7 @@ HeapItem HeapPop(Heap heap) {
     return top;
 }
 
-HeapItem CreateHeapItem(int value, void *data) {
+HeapItem HeapItemCreate(int value, void *data) {
     HeapItem heap_item = malloc(sizeof(struct heap_item));
     heap_item->value = value;
     heap_item->data = data;
@@ -108,11 +108,11 @@ void HeapDestroy(Heap heap) {
     free(heap);
 }
 
-int IsHeapFull(Heap heap) {
+int HeapIsFull(Heap heap) {
     return heap->size >= heap->capacity;
 }
 
-int IsHeapEmpty(Heap heap) {
+int HeapIsEmpty(Heap heap) {
     return heap->size == 0;
 }
 

@@ -61,14 +61,14 @@ void HeapDestroy(Heap heap);
  * @param heap
  * @return
  */
-int IsHeapFull(Heap heap);
+int HeapIsFull(Heap heap);
 
 /**
  * Returns whether the given heap is empty
  * @param heap
  * @return
  */
-int IsHeapEmpty(Heap heap);
+int HeapIsEmpty(Heap heap);
 
 
 /**
@@ -77,7 +77,7 @@ int IsHeapEmpty(Heap heap);
  * @param data
  * @return
  */
-HeapItem CreateHeapItem(int value, void *data);
+HeapItem HeapItemCreate(int value, void *data);
 
 
 #endif //FURY_OF_DRACULA_BINARY_HEAP_H

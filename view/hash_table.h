@@ -18,11 +18,47 @@ typedef struct hash_table {
     int num_items;
 } *HashTable;
 
-HashTable create_hash_table(int table_size);
-HashNode hash_get(HashTable table, const char *key);
-void hash_insert(HashTable table, const char *key, void *value);
-void hash_delete(HashTable table, const char *key);
-void drop_hash_table(HashTable table);
-void print_hash_table(HashTable table, void (*print_node)(HashNode));
+/**
+ * Creates a new hash table for the given table size
+ * @param initial_capacity
+ * @return
+ */
+HashTable HashTableCreate(int table_size);
+
+/**
+ * Gets the HashNode for the given key in the table
+ * @param table
+ * @param key
+ */
+HashNode HashGet(HashTable table, const char *key);
+
+/**
+ * Inserts a given key with given value to the hash table
+ * @param table
+ * @param key
+ */
+void HashInsert(HashTable table, const char *key, void *value);
+
+
+/**
+ * Deletes a given key from the given hash table
+ * @param table
+ * @param key
+ */
+void HashDelete(HashTable table, const char *key);
+
+
+/**
+ * Frees all associated memory for a given hash table
+ * @param table
+ */
+void HashTableDestroy(HashTable table);
+
+/**
+ * Prints a given hash table to stdout
+ * @param table
+ * @param print_node
+ */
+void HashTableDisplay(HashTable table, void (*print_node)(HashNode));
 
 #endif //FURY_OF_DRACULA_HASH_TABLE_H
