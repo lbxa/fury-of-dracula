@@ -18,14 +18,12 @@ int hash(const char *str, int table_size) {
     unsigned long hash = 5381;
     int c;
 
-    for (int i = 0; i < strlen(str); i++) {
-        if (str[i] == '\0') break;
-        c = str[i];
-        hash = ((hash << 5) + hash) + c;
+    char *ptr = (char *) str;
+    while((c = *ptr++) != '\0') {
+        hash = ((hash << 5) + hash) ^ c;
     }
 
-    int hashIndex = hash % table_size;
-    return hashIndex;
+    return hash % table_size;
 }
 
 /**

@@ -47,10 +47,10 @@ typedef struct gameView *GameView;
 GameView GvNew(char *pastPlays, Message messages[]);
 
 /**
- * Frees all memory allocated for `gv`.
- * After this has been called, `gv` should not be accessed.
+ * Frees all memory allocated for `gameView`.
+ * After this has been called, `gameView` should not be accessed.
  */
-void GvFree(GameView gv);
+void GvFree(GameView gameView);
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
