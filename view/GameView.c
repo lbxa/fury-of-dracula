@@ -28,20 +28,72 @@ struct gameView {
 	PlayerDetails players[NUM_PLAYERS];
 	int gameScore;
 	int turnNumber;
+	Place vampireLocation;
+	Place *trapLocations;
 };
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
+GameView ConstructGameView() {
+    GameView new = malloc(sizeof(*new));
+    if (new == NULL) {
+        fprintf(stderr, "Couldn't allocate GameView!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Create hunters
+    for (int i = 0; i < NUM_PLAYERS - 1; ++i) {
+        new->players[i] = CreatePlayer(i, GAME_START_HUNTER_LIFE_POINTS);
+    }
+    new->players[PLAYER_DRACULA] = CreatePlayer(PLAYER_DRACULA, GAME_START_BLOOD_POINTS);
+
+    return new;
+}
+
+/**
+ * Handle encounter events
+ * @param gameView
+ */
+void ProcessEncounter(GameView gameView, Player player, char encounter) {
+
+}
+
+/**
+ * Handle location of move where a is first char b is second char
+ * @param gameView
+ */
+void ProcessLocation(GameView gameView, Player player, char a, char b) {
+
+}
+
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	GameView new = malloc(sizeof(*new));
-	if (new == NULL) {
-		fprintf(stderr, "Couldn't allocate GameView!\n");
-		exit(EXIT_FAILURE);
+	//
+	GameView gameView = ConstructGameView();
+
+	char cur = pastPlays[0];
+	while (cur != '\0') {
+	    int startTurnCharIndex = gameView->turnNumber * 8;
+	    Player currentPlayer = gameView->turnNumber % NUM_PLAYERS;
+	    /** Offsets from startTurnCharIndex are:
+	        0 -> player
+	        1-2 -> place
+	        3-6 -> encounters
+	    */
+	    ProcessLocation(gameView, currentPlayer, pastPlays[startTurnCharIndex + 1],
+	            pastPlays[startTurnCharIndex + 2]);
+	    ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 3]);
+        ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 4]);
+        ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 5]);
+        ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 6]);
+
+        gameView->turnNumber++;
+        putchar('\n');
+        cur = pastPlays[gameView->turnNumber * 8 - 1];
 	}
 
-	return new;
+	return gameView;
 }
 
 void GvFree(GameView gv)
