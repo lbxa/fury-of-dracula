@@ -29,6 +29,7 @@ struct gameView {
 	int gameScore;
 	int turnNumber;
 	Place vampireLocation;
+	int numberTraps;
 	Place *trapLocations;
 };
 
@@ -42,10 +43,16 @@ GameView ConstructGameView() {
         exit(EXIT_FAILURE);
     }
 
+    new->map = MapNew();
+    new->gameScore = GAME_START_SCORE;
+    new->turnNumber = 0;
+    new->trapLocations = NULL;
+
     // Create hunters
     for (int i = 0; i < NUM_PLAYERS - 1; ++i) {
         new->players[i] = CreatePlayer(i, GAME_START_HUNTER_LIFE_POINTS);
     }
+    // Create dracula
     new->players[PLAYER_DRACULA] = CreatePlayer(PLAYER_DRACULA, GAME_START_BLOOD_POINTS);
 
     return new;
@@ -74,32 +81,37 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 	char cur = pastPlays[0];
 	while (cur != '\0') {
-	    int startTurnCharIndex = gameView->turnNumber * 8;
-	    Player currentPlayer = gameView->turnNumber % NUM_PLAYERS;
-	    /** Offsets from startTurnCharIndex are:
+	    int charIndex = gameView->turnNumber * 8;
+	    Player player = gameView->turnNumber % NUM_PLAYERS;
+	    /** Offsets from charIndex are:
 	        0 -> player
 	        1-2 -> place
 	        3-6 -> encounters
 	    */
-	    ProcessLocation(gameView, currentPlayer, pastPlays[startTurnCharIndex + 1],
-	            pastPlays[startTurnCharIndex + 2]);
-	    ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 3]);
-        ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 4]);
-        ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 5]);
-        ProcessEncounter(gameView, currentPlayer, pastPlays[startTurnCharIndex + 6]);
+	    ProcessLocation(gameView, player, pastPlays[charIndex + 1], pastPlays[charIndex + 2]);
+
+	    // Process turn encounters -> might need to check in specific order if not ordered in play string
+	    int encounterIndex = charIndex + 3;
+	    while (pastPlays[encounterIndex] != '.' && encounterIndex < charIndex + 7) {
+            ProcessEncounter(gameView, player, pastPlays[encounterIndex]);
+	        ++encounterIndex;
+	    }
 
         gameView->turnNumber++;
-        putchar('\n');
         cur = pastPlays[gameView->turnNumber * 8 - 1];
 	}
 
 	return gameView;
 }
 
-void GvFree(GameView gv)
+void GvFree(GameView gameView)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	free(gv);
+    for (Player i = 0; i < NUM_PLAYERS; ++i) {
+        FreePlayer(gameView->players[i]);
+    }
+
+    free(gameView->trapLocations);
+	free(gameView);
 }
 
 ////////////////////////////////////////////////////////////////////////

@@ -28,5 +28,10 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
     return playerDetails;
 }
 
+void FreePlayer(PlayerDetails player) {
+    free(player->locationHistory);
+    free(player);
+}
+
 
 #endif //FURY_OF_DRACULA_PLAYERS_H
