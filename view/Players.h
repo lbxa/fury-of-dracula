@@ -10,8 +10,8 @@
 
 typedef struct playerDetails {
     Player player;
-    int locationHistoryCount;
-    Place *locationHistory;
+    int moveCount;
+    Place *moves;
     int playerHealth;
 } *PlayerDetails;
 
@@ -21,15 +21,15 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
         fprintf(stderr, "Couldn't allocate PlayerDetails!\n");
         exit(EXIT_FAILURE);
     }
-    playerDetails->locationHistoryCount = 0;
-    playerDetails->locationHistory = NULL;
+    playerDetails->moveCount = 0;
+    playerDetails->moves = NULL;
     playerDetails->playerHealth = initialHealth;
     playerDetails->player = player;
     return playerDetails;
 }
 
 void FreePlayer(PlayerDetails player) {
-    free(player->locationHistory);
+    free(player->moves);
     free(player);
 }
 

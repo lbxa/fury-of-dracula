@@ -28,9 +28,9 @@ struct gameView {
 	PlayerDetails players[NUM_PLAYERS];
 	int gameScore;
 	int turnNumber;
-	Place vampireLocation;
 	int numberTraps;
 	Place *trapLocations;
+    Place vampireLocation;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ GameView ConstructGameView() {
 }
 
 /**
- * Handle encounter events
+ * Handle encounter events, guaranteed to be an encounter and not '.'
  * @param gameView
  */
 void ProcessEncounter(GameView gameView, Player player, char encounter) {
@@ -70,15 +70,15 @@ void ProcessEncounter(GameView gameView, Player player, char encounter) {
  * Handle location of move where a is first char b is second char
  * @param gameView
  */
-void ProcessLocation(GameView gameView, Player player, char a, char b) {
-
+void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
+    PlaceId placeId = placeAbbrevToId(placeAbbrev);
 }
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
 	//
 	GameView gameView = ConstructGameView();
-
+    char placeAbbrev[3] = {0};
 	char cur = pastPlays[0];
 	while (cur != '\0') {
 	    int charIndex = gameView->turnNumber * 8;
@@ -88,7 +88,9 @@ GameView GvNew(char *pastPlays, Message messages[])
 	        1-2 -> place
 	        3-6 -> encounters
 	    */
-	    ProcessLocation(gameView, player, pastPlays[charIndex + 1], pastPlays[charIndex + 2]);
+        placeAbbrev[0] = pastPlays[charIndex + 1];
+        placeAbbrev[1] = pastPlays[charIndex + 2];
+	    ProcessLocation(gameView, player, placeAbbrev);
 
 	    // Process turn encounters -> might need to check in specific order if not ordered in play string
 	    int encounterIndex = charIndex + 3;
@@ -97,10 +99,10 @@ GameView GvNew(char *pastPlays, Message messages[])
 	        ++encounterIndex;
 	    }
 
+
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
 	}
-
 	return gameView;
 }
 
