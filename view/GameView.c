@@ -121,26 +121,35 @@ void GvFree(GameView gameView)
 
 Round GvGetRound(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	assert (gv != NULL);	
+    return gv->turnNumber;
 }
 
 Player GvGetPlayer(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return PLAYER_LORD_GODALMING;
+	assert (gv != NULL);
+	return gv->turnNumber % NUM_PLAYERS;
 }
 
 int GvGetScore(GameView gv)
-{
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+{	
+	assert (gv != NULL);
+	return gv->gameScore;
 }
 
 int GvGetHealth(GameView gv, Player player)
-{
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+{	
+	assert (gv != NULL);
+
+	if (player >= NUM_PLAYERS || player < 0) {
+
+		return -1;
+
+	} else {
+
+		return gv->players[player]->playerHealth;
+	}
+	
 }
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
