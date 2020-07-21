@@ -46,6 +46,7 @@ GameView ConstructGameView() {
     new->map = MapNew();
     new->gameScore = GAME_START_SCORE;
     new->turnNumber = 0;
+    new->numberTraps = 0;
     new->trapLocations = NULL;
 
     // Create hunters
@@ -72,6 +73,15 @@ void ProcessEncounter(GameView gameView, Player player, char encounter) {
  */
 void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
     PlaceId placeId = placeAbbrevToId(placeAbbrev);
+
+
+    // Resolve special cases to find actual location
+
+    /**
+     * Find player type; handle sea damage for dracula
+     * Handle castle dracula health gain +10
+
+     */
 }
 
 GameView GvNew(char *pastPlays, Message messages[])

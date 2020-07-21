@@ -11,7 +11,8 @@
 typedef struct playerDetails {
     Player player;
     int moveCount;
-    Place *moves;
+    PlaceId *moves;
+    PlaceId *resolvedMoves;
     int playerHealth;
 } *PlayerDetails;
 
@@ -23,6 +24,7 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
     }
     playerDetails->moveCount = 0;
     playerDetails->moves = NULL;
+    playerDetails->resolvedMoves = NULL;
     playerDetails->playerHealth = initialHealth;
     playerDetails->player = player;
     return playerDetails;
