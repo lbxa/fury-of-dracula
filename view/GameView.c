@@ -19,9 +19,6 @@
 #include "Map.h"
 #include "Places.h"
 #include "Players.h"
-// add your own #includes here
-
-// TODO: ADD YOUR OWN STRUCTS HERE
 
 struct gameView {
 	Map map;
@@ -29,8 +26,9 @@ struct gameView {
 	int gameScore;
 	int turnNumber;
 	int numberTraps;
-	Place *trapLocations;
-    Place vampireLocation;
+	PlaceId trapLocations[TRAIL_SIZE];
+    PlaceId vampireLocation;
+    int roundVampirePlaced;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -47,7 +45,7 @@ GameView ConstructGameView() {
     new->gameScore = GAME_START_SCORE;
     new->turnNumber = 0;
     new->numberTraps = 0;
-    new->trapLocations = NULL;
+    new->roundVampirePlaced = -1;
 
     // Create hunters
     for (int i = 0; i < NUM_PLAYERS - 1; ++i) {
@@ -60,11 +58,52 @@ GameView ConstructGameView() {
 }
 
 /**
- * Handle encounter events, guaranteed to be an encounter and not '.'
+ * Handle the process of clearing traps and mature vampires
  * @param gameView
  */
-void ProcessEncounter(GameView gameView, Player player, char encounter) {
+void ProcessTraps(GameView gameView) {
+    int roundNumber = gameView->turnNumber / 5;
 
+    // Remove trap
+    gameView->trapLocations[roundNumber % TRAIL_SIZE] = NOWHERE;
+
+    // Handle maturing vampire
+    if (gameView->vampireLocation != NOWHERE) {
+        if (roundNumber - gameView->roundVampirePlaced == TRAIL_SIZE) {
+            gameView->gameScore -= SCORE_LOSS_VAMPIRE_MATURES;
+            gameView->vampireLocation = NOWHERE;
+            gameView->roundVampirePlaced = -1;
+        }
+    }
+
+}
+
+/**
+ * Handle encounter events, guaranteed to be an encounter and not '.'
+ * @param gameView
+ * @return was player killed in encounter
+ */
+int ProcessEncounter(GameView gameView, Player player, char encounter) {
+    /**
+     * Clear traps/vampire
+     */
+    if (encounter == TRAP_ENCOUNTER) {
+        gameView->players[player]->playerHealth -= LIFE_LOSS_TRAP_ENCOUNTER;
+        PlaceId currentPlayerLocation = gameView->players[player]->lastResolvedLocation;
+        for (int i = 0; i < TRAIL_SIZE; ++i) {
+            if (gameView->trapLocations[i] == currentPlayerLocation) {
+                gameView->trapLocations[i] = NOWHERE;
+                break;
+            }
+        }
+    } else if (encounter == VAMPIRE_ENCOUNTER) {
+        gameView->roundVampirePlaced = -1;
+        gameView->vampireLocation = NOWHERE;
+    } else { // Dracula
+        gameView->players[PLAYER_DRACULA]->playerHealth -= LIFE_LOSS_HUNTER_ENCOUNTER;
+        gameView->players[player]->playerHealth -= LIFE_LOSS_DRACULA_ENCOUNTER;
+    }
+    return gameView->players[player] <= 0;
 }
 
 /**
@@ -74,13 +113,21 @@ void ProcessEncounter(GameView gameView, Player player, char encounter) {
 void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
     PlaceId placeId = placeAbbrevToId(placeAbbrev);
 
-
     // Resolve special cases to find actual location
 
     /**
      * Find player type; handle sea damage for dracula
      * Handle castle dracula health gain +10
+     *
+     * Hunter rest -> gain +3 health
+     */
 
+    /**
+     * Placement of traps (every city unknown) + vampires
+     */
+
+    /**
+     * Update player histories
      */
 }
 
@@ -91,8 +138,16 @@ GameView GvNew(char *pastPlays, Message messages[])
     char placeAbbrev[3] = {0};
 	char cur = pastPlays[0];
 	while (cur != '\0') {
-	    int charIndex = gameView->turnNumber * 8;
-	    Player player = gameView->turnNumber % NUM_PLAYERS;
+        Player player = gameView->turnNumber % NUM_PLAYERS;
+
+        if (player == PLAYER_DRACULA) {
+            // On Dracula's turn
+            ProcessTraps(gameView);
+        }
+
+
+	    int charIndex = gameView->turnNumber * (PLAY_STR_LENGTH + 1);
+
 	    /** Offsets from charIndex are:
 	        0 -> player
 	        1-2 -> place
@@ -104,8 +159,11 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 	    // Process turn encounters -> might need to check in specific order if not ordered in play string
 	    int encounterIndex = charIndex + 3;
-	    while (pastPlays[encounterIndex] != '.' && encounterIndex < charIndex + 7) {
-            ProcessEncounter(gameView, player, pastPlays[encounterIndex]);
+	    while (pastPlays[encounterIndex] != '.'
+	            && encounterIndex < charIndex + PLAY_STR_LENGTH) {
+            if (!ProcessEncounter(gameView, player, pastPlays[encounterIndex])) {
+                break;
+            }
 	        ++encounterIndex;
 	    }
 
@@ -179,6 +237,8 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	// use void *memcpy(void *dest, const void * src, size_t n)
+	// to copy over
 	*numReturnedMoves = 0;
 	*canFree = false;
 	return NULL;
