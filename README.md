@@ -6,6 +6,13 @@
 
 ### CS2521 Assignment 
 
+Group Name: stephen-eric-lucas-debbie
+Tutorial Code: T17A
+
+Github Names: Stephenmorrisunsw, 
+Real Names: Stephen Morris,
+zID's: z5230723,
+
 All we do is code and win.
 
 Lucas Barbosa | Stephen Morris | Eric Holmstrom | Debbie-Tommy
