@@ -24,6 +24,11 @@
 
 typedef struct gameView *GameView;
 
+#define TRAP_ENCOUNTER 'T'
+#define VAMPIRE_ENCOUNTER 'V'
+#define DRACULA_ENCOUNTER 'D'
+#define PLAY_STR_LENGTH 7
+
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 

@@ -11,8 +11,9 @@
 typedef struct playerDetails {
     Player player;
     int moveCount;
-    PlaceId *moves;
-    PlaceId *resolvedMoves;
+    PlaceId moves[GAME_START_SCORE];
+    PlaceId resolvedMoves[GAME_START_SCORE];
+    PlaceId lastResolvedLocation;
     int playerHealth;
 } *PlayerDetails;
 
@@ -23,8 +24,6 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
         exit(EXIT_FAILURE);
     }
     playerDetails->moveCount = 0;
-    playerDetails->moves = NULL;
-    playerDetails->resolvedMoves = NULL;
     playerDetails->playerHealth = initialHealth;
     playerDetails->player = player;
     return playerDetails;
