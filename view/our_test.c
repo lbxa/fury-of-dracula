@@ -33,9 +33,7 @@ int main(void) {
 //    printf("%lf\n", (double) (end-start)/CLOCKS_PER_SEC);
 //    PrintPathSequence((Path) path->value);
 
-    GvNew("GMN.... SPL.... HAM.... MPA.... DC?.V.. GLV.... SLO.... HNS.... MST.... DC?T...", NULL);
-
-
+    GameView gameView = GvNew("GED.... SGE.... HZU.... MCA.... DCF.V.. GMN.... SCFVD.. HGE.... MLS.... DBOT... GLO.... SMR.... HCF.... MMA.... DC?T... GPL.... SMS.... HMR.... MGR.... DBAT... GLO.... SBATD.. HMS.... MMA.... DC?T... GPL.... SSJ.... HBA.... MGR.... DC?T... GPL.... SSJ.... HBA.... MGR.... DC?T...", NULL);
 
 //    heap_display(h);
 //    EmptyHeap(h);
