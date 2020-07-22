@@ -30,6 +30,7 @@ struct gameView {
 	int turnNumber;
 	int numberTraps;
 	Place *trapLocations;
+	Place playerlocation[NUM_PLAYERS];
     Place vampireLocation;
 };
 
@@ -99,7 +100,6 @@ GameView GvNew(char *pastPlays, Message messages[])
 	        ++encounterIndex;
 	    }
 
-
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
 	}
@@ -145,6 +145,10 @@ int GvGetHealth(GameView gv, Player player)
 
 		return -1;
 
+	} else if (player == PLAYER_DRACULA) {
+
+		return gv->players[PLAYER_DRACULA]->playerHealth;
+	
 	} else {
 
 		return gv->players[player]->playerHealth;
@@ -154,9 +158,60 @@ int GvGetHealth(GameView gv, Player player)
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	return gv->playerlocation[player];
 }
+
+/*not sure if needed
+PlaceId playerlocation(char *pastPlays, int array_num) {
+	PlaceId place;
+	char player_loc[3] = {};
+
+	strcpy(player_loc, &pastPlays[array_num], 2);
+	player_loc[2] = '\0git ';
+
+	place = placeAbbrevToId(player_loc);
+
+	if (place == UNKNOWN_PLACE) {
+		place = DraculaLocation(player_loc);
+	}
+		return place;
+}
+
+PlaceId DraculaLocation(char *place) {
+	int plc = UNKNOWN_PLACE;
+	switch (place) {
+		case "C?":
+			plc = CITY_UNKNOWN;
+			break;
+		case "S?":
+			plc = SEA_UNKNOWN;
+			break;
+		case "HI":
+			plc = HIDE;
+			break;
+		case "D1":
+			plc = DOUBLE_BACK_1;
+			break;
+		case "D2":
+			plc = DOUBLE_BACK_2;
+			break;
+		case "D3":
+			plc = DOUBLE_BACK_3;
+			break;
+		case "D4":
+			plc = DOUBLE_BACK_4;
+			break;
+		case "D5":
+			plc = DOUBLE_BACK_5;
+			break;
+		case "TP":
+			plc = TELEPORT;
+	}
+
+	return plc;
+}
+*/
+
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
