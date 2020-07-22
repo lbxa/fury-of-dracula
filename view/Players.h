@@ -11,7 +11,9 @@
 typedef struct playerDetails {
     Player player;
     int moveCount;
-    Place *moves;
+    PlaceId moves[GAME_START_SCORE];
+    PlaceId resolvedMoves[GAME_START_SCORE];
+    PlaceId lastResolvedLocation;
     int playerHealth;
 } *PlayerDetails;
 
@@ -22,15 +24,28 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
         exit(EXIT_FAILURE);
     }
     playerDetails->moveCount = 0;
-    playerDetails->moves = NULL;
     playerDetails->playerHealth = initialHealth;
     playerDetails->player = player;
+    playerDetails->lastResolvedLocation = NOWHERE;
     return playerDetails;
 }
 
 void FreePlayer(PlayerDetails player) {
     free(player->moves);
     free(player);
+}
+
+void PrintPlayer(PlayerDetails player) {
+    char* names[NUM_PLAYERS];
+    names[PLAYER_LORD_GODALMING] = "PLAYER_LORD_GODALMING";
+    names[PLAYER_DR_SEWARD] = "PLAYER_DR_SEWARD";
+    names[PLAYER_MINA_HARKER] = "PLAYER_MINA_HARKER";
+    names[PLAYER_VAN_HELSING] = "PLAYER_VAN_HELSING";
+    names[PLAYER_DRACULA] = "PLAYER_DRACULA";
+
+    printf("Player: %s\n", names[player->player]);
+    printf("\t- Health: %d\n", player->playerHealth);
+    printf("\t- Last Location: %s\n", placeIdToName(player->lastResolvedLocation));
 }
 
 
