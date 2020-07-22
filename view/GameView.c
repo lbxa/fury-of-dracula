@@ -84,14 +84,15 @@ void ProcessTraps(GameView gameView) {
 }
 
 /**
- * Handle encounter events, guaranteed to be an encounter and not '.'
+ * Handle encounter events
  * @param gameView
  * @return was player killed in encounter
  */
-int ProcessEncounter(GameView gameView, Player player, char encounter) {
+bool ProcessEncounter(GameView gameView, Player player, char encounter) {
     /**
      * Clear traps/vampire
      */
+     if (encounter == '.') return false;
     if (encounter == TRAP_ENCOUNTER) {
         gameView->players[player]->playerHealth -= LIFE_LOSS_TRAP_ENCOUNTER;
         PlaceId currentPlayerLocation = gameView->players[player]->lastResolvedLocation;
@@ -175,6 +176,7 @@ void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
     //Update player histories
     playerDetails->moves[moveCount] = placeId;
     playerDetails->resolvedMoves[moveCount] = resolvedId;
+    playerDetails->lastResolvedLocation = resolvedId;
     playerDetails->moveCount++;
 }
 
@@ -183,6 +185,7 @@ GameView GvNew(char *pastPlays, Message messages[]) {
     GameView gameView = ConstructGameView();
     char placeAbbrev[3] = {0};
     char cur = pastPlays[0];
+
     while (cur != '\0') {
         Player player = gameView->turnNumber % NUM_PLAYERS;
 
@@ -217,7 +220,9 @@ GameView GvNew(char *pastPlays, Message messages[]) {
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
     }
-
+    for (int i = 0; i < NUM_PLAYERS; ++i) {
+        PrintPlayer(gameView->players[i]);
+    }
     printf("Score: %d", gameView->gameScore);
     return gameView;
 }
