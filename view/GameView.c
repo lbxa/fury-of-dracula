@@ -27,7 +27,6 @@ struct Vampire {
 };
 
 struct gameView {
-
     Map map;
     PlayerDetails players[NUM_PLAYERS];
     int gameScore;
@@ -231,7 +230,10 @@ GameView GvNew(char *pastPlays, Message messages[]) {
 
         gameView->gameScore -= (player == PLAYER_DRACULA) * 1;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b0e1c7b7e8a4bc42592b186caf36c3fcb438b14e
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
     }
@@ -348,6 +350,7 @@ PlaceId DraculaLocation(char *place) {
 	return plc;
 }
 */
+
 
 // does GvGetPlayerLocation get the current location? or new function tbm?
 PlaceId GvSetVampire(GameView gv) {
