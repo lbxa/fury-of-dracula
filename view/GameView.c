@@ -230,10 +230,6 @@ GameView GvNew(char *pastPlays, Message messages[]) {
 
         gameView->gameScore -= (player == PLAYER_DRACULA) * 1;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b0e1c7b7e8a4bc42592b186caf36c3fcb438b14e
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
     }
