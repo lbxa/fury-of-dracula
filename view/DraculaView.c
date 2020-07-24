@@ -82,38 +82,49 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps) {
 // Making a Move
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves) {
-
+    *numReturnedMoves = 0;
+    Map map = GetMap(dv->gameView);
+    PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+            true, false, true, 0, numReturnedMoves, false, true);
 }
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs) {
     *numReturnedLocs = 0;
+    Map map = GetMap(dv->gameView);
     PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
-    return GvGetReachable(dv->gameView, PLAYER_DRACULA, -1, currentLocation, numReturnedLocs);
+    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                            true, false, true, 0, numReturnedLocs, true, true);
 }
 
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
                              int *numReturnedLocs) {
     *numReturnedLocs = 0;
+    Map map = GetMap(dv->gameView);
     PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
-    return GvGetReachableByType(dv->gameView, PLAYER_DRACULA, -1, currentLocation, road, false, boat, numReturnedLocs);
+    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                            road, false, boat, 0, numReturnedLocs, true, true);
 }
 
 PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
                           int *numReturnedLocs) {
     *numReturnedLocs = 0;
+    Map map = GetMap(dv->gameView);
+    int round = GvGetRound(dv->gameView);
     PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
-    Round round = GvGetRound(dv->gameView);
-    return GvGetReachable(dv->gameView, player, round, currentLocation, numReturnedLocs);
+    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                            true, true, true, round, numReturnedLocs, true, true);
 }
 
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
     *numReturnedLocs = 0;
+    Map map = GetMap(dv->gameView);
+    int round = GvGetRound(dv->gameView);
     PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
-    Round round = GvGetRound(dv->gameView);
-    return GvGetReachableByType(dv->gameView, player, round, currentLocation, road, rail, boat, numReturnedLocs);
+    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                            road, rail, boat, round, numReturnedLocs, true, true);
 }
 
 ////////////////////////////////////////////////////////////////////////
