@@ -339,7 +339,8 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs) {
     *numReturnedLocs = 0;
     // Right now applies trail restriction which shouldn't be done
-    return GetPossibleMoves(gv, gv->map, player, from, true, true, true, round, numReturnedLocs, 1, false);
+    return GetPossibleMoves(gv, gv->map, player, from, true, true, true,
+            round, numReturnedLocs, 1, false);
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
@@ -347,7 +348,8 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               bool boat, int *numReturnedLocs) {
     *numReturnedLocs = 0;
     // Right now applies trail restriction which shouldn't be done
-    return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat, round, numReturnedLocs, 1, false);
+    return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat,
+            round, numReturnedLocs, 1, false);
 }
 
 ////////////////////////////////////////////////////////////////////////

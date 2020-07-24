@@ -87,8 +87,10 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
 
     ConnList connections = MapGetConnections(map, currentId);
 
+    // Calculate number of rail moves player can make
     int numberRailMoves = rail ? (((int) player + round) % 4) * (player != PLAYER_DRACULA) : 0;
 
+    // Variables for dracula trail handling
     int trailNumMoves = 0;
     bool canFree = false;
     PlaceId *trail = NULL;
@@ -96,7 +98,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     bool canDoubleBack = true;
     bool onTrailLookup[NUM_REAL_PLACES] = {false};
 
-    // Determine whether can hide and double back
+    // Determine whether can hide and double back based on if those moves are in trail
     if (player == PLAYER_DRACULA && applyTrailRestrictions) {
         trail = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE, &trailNumMoves, &canFree);
         for (int i = 0; i < trailNumMoves; ++i) {
@@ -111,8 +113,13 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
 
     *placesCount = 0;
     PlaceId *places = malloc(sizeof(PlaceId) * NUM_REAL_PLACES);
+
+    // Use as lookup to stop placing duplicates moves/locations in output
     bool placesAdded[NUM_REAL_PLACES] = {false};
 
+    // Handle checking whether current place can be added as possible location
+    // as dracula can only move to current location as HIDE if not HIDE not already
+    // in trail
     if (player != PLAYER_DRACULA || canHide) {
         if (player != PLAYER_DRACULA || resolveMoves) {
             places[0] = currentId;
@@ -122,6 +129,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
         (*placesCount)++;
     }
 
+    // Loop through connections and add possible locations/moves
     ConnList cur = connections;
     while (cur) {
         if (cur->p == HOSPITAL_PLACE) continue;
@@ -152,6 +160,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
         cur = cur->next;
     }
 
+    // Handle dracula double back moves
     if (player == PLAYER_DRACULA && canDoubleBack && applyTrailRestrictions) {
         int locationCount = 0;
         PlaceId *resolvedLocations = GvGetLocationHistory(gameView, player, &locationCount, &canFree);
@@ -172,6 +181,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
         }
     }
 
+    // Reallocate to needed size
     if (*placesCount < NUM_REAL_PLACES) {
         places = realloc(places, sizeof(PlaceId) * (*placesCount));
     }
@@ -179,7 +189,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
 }
 
 /**
- * Uses djikstras path-finding algorithm with priority queue to find shortest path from 1 node to all other nodes
+ * Uses dijkstra's path-finding algorithm with priority queue to find shortest path from 1 node to all other nodes
  * @param map
  * @param from
  * @param end
