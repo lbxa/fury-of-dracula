@@ -26,7 +26,6 @@ struct gameView {
     int gameScore;
     int turnNumber;
     int numberTraps;
-    // ( is trapLocations same as the trail?)
     PlaceId trapLocations[TRAIL_SIZE];
     PlaceId vampireLocation;
     int roundVampirePlaced;
@@ -235,7 +234,7 @@ GameView GvNew(char *pastPlays, Message messages[]) {
 }
 
 void GvFree(GameView gameView) {
-    for (Player i = 0; i < NUM_PLAYERS; ++i) {
+    for (int i = 0; i < NUM_PLAYERS; ++i) {
         FreePlayer(gameView->players[i]);
     }
 
@@ -269,7 +268,7 @@ int GvGetHealth(GameView gv, Player player)
 {	
 	assert (gv != NULL);
 
-	if (player >= NUM_PLAYERS || player < 0) {
+	if ((int)player >= NUM_PLAYERS || (int)player < 0) {
 
 		return -1;
 
@@ -287,7 +286,7 @@ int GvGetHealth(GameView gv, Player player)
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-	gv->players[player]->lastResolvedLocation;
+	return gv->players[player]->lastResolvedLocation;
 }
 
 PlaceId GvGetVampireLocation(GameView gv)
@@ -302,11 +301,19 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
     *numTraps = 0;
     for (int i = 0; i < TRAIL_SIZE; i++) {
         if (gv->trapLocations[i] != NOWHERE) {
-            gv->trapLocations[numTraps] = gv->trapLocations[i];
+            (*numTraps)++;
         }
-        i++;
+        
     }
-    return gv->trapLocations[numTraps];
+    int count = 0;
+    PlaceId *traps = malloc(sizeof(PlaceId) * (*numTraps));
+    for (int i = 0; i < TRAIL_SIZE; i++) {
+        if (gv->trapLocations[i] != NOWHERE) {
+            traps[count] =  gv->trapLocations[i];        
+            count++;
+        }
+    }
+    return traps;
 }
 
 ////////////////////////////////////////////////////////////////////////
