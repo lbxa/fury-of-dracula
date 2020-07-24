@@ -24,6 +24,7 @@
 // TODO: ADD YOUR OWN STRUCTS HERE
 
 struct hunterView {
+	GameView gameView;
 	// TODO: ADD FIELDS HERE
 };
 
@@ -39,12 +40,19 @@ HunterView HvNew(char *pastPlays, Message messages[])
 		exit(EXIT_FAILURE);
 	}
 
+	GameView gameView = GvNew(pastPlays, messages);
+    new->gameView = gameView;
+	
+
+	// TODO: Add helper function to copy messages into messageList   
+
 	return new;
 }
 
 void HvFree(HunterView hv)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	GvFree(hv->gameView);
 	free(hv);
 }
 
