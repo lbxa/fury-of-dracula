@@ -62,4 +62,17 @@ void PrintPathSequence(Path path);
  */
 Path* GetOrderedPathSequence(Path path);
 
+/**
+ * Gets reachable places in move given travel type restirctions from given PlaceId
+ * @param map
+ * @param distanceByRail
+ * @param currentId
+ * @param placesCount
+ * @param road
+ * @param boat
+ * @return array of PlaceId for reachable locations
+ */
+PlaceId *
+GetReachablePlacesInMove(Map map, PlaceId currentId, bool road, bool boat, int distanceByRail, int *placesCount);
+
 #endif //FURY_OF_DRACULA_PATH_FINDING_H

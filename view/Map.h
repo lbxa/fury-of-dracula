@@ -43,4 +43,5 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
+
 #endif // !defined(FOD__MAP_H_)

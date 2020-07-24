@@ -3,9 +3,11 @@
 //
 
 #include "path_finding.h"
+#include "Queue.h"
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 ////////////////////////////////////////////////////////////////////////
 // PATH FINDING
@@ -13,33 +15,92 @@
 // 0, 1, 2, 3 rail moves + a lookup for no rail moves at any time (dracula)
 
 /**
+ * Returns array of reachable locations by rail given distance by rail
+ * //TODO: Check if requires minor optimisations as looked like returned duplicates
+ * @param map
+ * @param distanceByRail
+ * @param currentId
+ * @param placesCount
+ * @return
+ */
+PlaceId *getRailReachable(Map map, int distanceByRail, PlaceId currentId, int *placesCount) {
+    Queue q = newQueue();
+    PlaceId *reachablePlaces = malloc(sizeof(*reachablePlaces) * NUM_REAL_PLACES);
+    bool *visited = calloc(NUM_REAL_PLACES, sizeof(*visited));
+    int *distances = calloc(NUM_REAL_PLACES, sizeof(*distances));
+
+    assert(visited != NULL);
+    assert(reachablePlaces != NULL);
+    assert(distances != NULL);
+
+    visited[currentId] = true;
+    QueueJoin(q, currentId);
+
+    while (!QueueIsEmpty(q)) {
+        PlaceId currentPlace = QueueLeave(q);
+        if (distances[currentPlace] >= distanceByRail) continue;
+        ConnList connections = MapGetConnections(map, currentPlace);
+        for (ConnList cur = connections; cur != NULL; cur = cur->next) {
+            if (cur->type != RAIL) continue;
+            if (visited[cur->p]) continue;
+            QueueJoin(q, cur->p);
+            visited[cur->p] = true;
+            distances[cur->p] = distances[currentPlace] + 1;
+            reachablePlaces[*placesCount] = cur->p;
+            (*placesCount)++;
+        }
+    }
+
+    dropQueue(q);
+    free(visited);
+    free(distances);
+    return reachablePlaces;
+}
+
+/**
  * Gets all reachable places in a single move for a player
  * @return
  */
-PlaceId *get_reachable_places_in_move(Map map, int distance_by_rail, PlaceId currentId, int *places_count) {
+PlaceId *
+GetReachablePlacesInMove(Map map, PlaceId currentId, bool road, bool boat, int distanceByRail, int *placesCount) {
     // For now only return immediate connections no special regard for rail
-
-    // TODO: This function will need to determine additional reachable locations based on distance that can be travelled by rail
 
     ConnList connections = MapGetConnections(map, currentId);
 
-    *places_count = 0;
-    int places_allocation = 16;
-    // Initial size of 16
-    PlaceId *places = malloc(sizeof(PlaceId) * places_allocation);
+    *placesCount = 0;
+    PlaceId *places = malloc(sizeof(PlaceId) * NUM_REAL_PLACES);
+    bool placesAdded[NUM_REAL_PLACES] = {false};
 
     ConnList cur = connections;
     while (cur) {
-        if (*places_count > places_allocation) {
-            places_allocation++;
-            places = realloc(places, sizeof(PlaceId) * places_allocation);
+        if (cur->type == RAIL) {
+            if (distanceByRail > 0) {
+                places[(*placesCount)++] = cur->p;
+                placesAdded[cur->p] = true;
+                int railReachableCount = 0;
+                PlaceId *railReachable = getRailReachable(map, distanceByRail, currentId, &railReachableCount);
+                for (int i = 0; i < railReachableCount; ++i) {
+                    if (placesAdded[railReachable[i]]) continue;
+                    places[(*placesCount)++] = railReachable[i];
+                    placesAdded[railReachable[i]] = true;
+                }
+                free(railReachable);
+            }
+        } else {
+            if (!placesAdded[cur->p]) {
+                if (cur->type == ROAD && road) {
+                    places[(*placesCount)++] = cur->p;
+                } else if (cur->type == BOAT && boat) {
+                    places[(*placesCount)++] = cur->p;
+                }
+                placesAdded[cur->p] = true;
+            }
         }
-        places[(*places_count)++] = cur->p;
         cur = cur->next;
     }
 
-    if (*places_count < places_allocation) {
-        places = realloc(places, sizeof(PlaceId) * *places_count);
+    if (*placesCount < NUM_REAL_PLACES) {
+        places = realloc(places, sizeof(PlaceId) * (*placesCount));
     }
     return places;
 }
@@ -67,26 +128,26 @@ HashTable GetPathLookupTableFrom(Map map, Place from) {
     HeapPush(pq, HeapItemCreate(0, CreatePath(from.abbrev, 0, NULL)));
 
     while (!HeapIsEmpty(pq)) {
-        HeapItem current_item = HeapPop(pq);
-        Path current_vertex = (Path) current_item->data;
-        PlaceId current_place = placeAbbrevToId(current_vertex->place);
-        int current_distance = current_vertex->distance;
+        HeapItem currentItem = HeapPop(pq);
+        Path currentVertex = (Path) currentItem->data;
+        PlaceId currentPlace = placeAbbrevToId(currentVertex->place);
+        int currentDistance = currentVertex->distance;
 
         // Vertex can be added multiple times to pq. We only want to process it the first time
-        Path path_node = (Path) HashGet(distances, current_vertex->place)->value;
-        if (current_distance > path_node->distance) continue;
-        int reachable_count = 0;
-        PlaceId *reachable = get_reachable_places_in_move(map, 0, current_place, &reachable_count);
+        Path pathNode = (Path) HashGet(distances, currentVertex->place)->value;
+        if (currentDistance > pathNode->distance) continue;
+        int reachableCount = 0;
+        PlaceId *reachable = GetReachablePlacesInMove(map, currentPlace, true, true, 3, &reachableCount);
 
-        for (int i = 0; i < reachable_count; ++i) {
-            const char *vertex_abbrev = placeIdToAbbrev(reachable[i]);
-            int distance = current_distance + 1; // No weights on edges so simply add 1
-            path_node = (Path) HashGet(distances, vertex_abbrev)->value;
-            int neighbour_distance_lookup = path_node->distance;
-            if (distance < neighbour_distance_lookup) {
-                // Create new node for path for found vertex and set predecessor as current_vertex
-                Path new = CreatePath((char *) vertex_abbrev, distance, current_vertex);
-                HashInsert(distances, vertex_abbrev, new);
+        for (int i = 0; i < reachableCount; ++i) {
+            const char *vertexAbbrev = placeIdToAbbrev(reachable[i]);
+            int distance = currentDistance + 1; // No weights on edges so simply add 1
+            pathNode = (Path) HashGet(distances, vertexAbbrev)->value;
+            int neighbourDistanceLookup = pathNode->distance;
+            if (distance < neighbourDistanceLookup) {
+                // Create new node for path for found vertex and set predecessor as currentVertex
+                Path new = CreatePath((char *) vertexAbbrev, distance, currentVertex);
+                HashInsert(distances, vertexAbbrev, new);
                 HeapPush(pq, HeapItemCreate(distance, new));
             }
         }
@@ -96,11 +157,11 @@ HashTable GetPathLookupTableFrom(Map map, Place from) {
 }
 
 HashTable* GetAllPathLookup(Map map) {
-    HashTable *paths_lookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
+    HashTable *pathsLookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
     for (int i = 0; i < NUM_REAL_PLACES; i++) {
-        paths_lookup[i] = GetPathLookupTableFrom(map, PLACES[i]);
+        pathsLookup[i] = GetPathLookupTableFrom(map, PLACES[i]);
     }
-    return paths_lookup;
+    return pathsLookup;
 }
 
 Path CreatePath(char *place, int distance, Path predecessor) {
@@ -131,14 +192,14 @@ Path* GetOrderedPathSequence(Path path) {
 
 void PrintPathSequence(Path path) {
     int length = 4 * (path->distance + 1);
-    char *sequence_str = malloc(sizeof(char) * length);
-    sequence_str[length - 1] = '\0';
+    char *sequenceStr = malloc(sizeof(char) * length);
+    sequenceStr[length - 1] = '\0';
     Path *pathArr = GetOrderedPathSequence(path);
     for (int j = 0; j < path->distance + 1; ++j) {
-        strcpy(&sequence_str[j*4], pathArr[j]->place);
+        strcpy(&sequenceStr[j * 4], pathArr[j]->place);
         if (j == path->distance) break;
-        sequence_str[(j*4) + 2] = '-';
-        sequence_str[(j*4) + 3] = '>';
+        sequenceStr[(j * 4) + 2] = '-';
+        sequenceStr[(j * 4) + 3] = '>';
     }
-    printf("%s\n", sequence_str);
+    printf("%s\n", sequenceStr);
 }
