@@ -31,7 +31,6 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
 }
 
 void FreePlayer(PlayerDetails player) {
-    free(player->moves);
     free(player);
 }
 

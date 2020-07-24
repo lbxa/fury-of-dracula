@@ -239,7 +239,6 @@ void GvFree(GameView gameView) {
         FreePlayer(gameView->players[i]);
     }
 
-    free(gameView->trapLocations);
     free(gameView);
 }
 
