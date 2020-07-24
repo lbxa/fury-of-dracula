@@ -20,22 +20,16 @@
 #include "Places.h"
 #include "Players.h"
 
-struct Vampire {
-    int vampirelife;
-    int vampire_has_matured;
-    int dracula_revealed;
-};
-
 struct gameView {
     Map map;
     PlayerDetails players[NUM_PLAYERS];
     int gameScore;
     int turnNumber;
     int numberTraps;
+    // ( is trapLocations same as the trail?)
     PlaceId trapLocations[TRAIL_SIZE];
     PlaceId vampireLocation;
     int roundVampirePlaced;
-    Vampire vamps;
     
 
 };
@@ -296,109 +290,9 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 	gv->players[player]->lastResolvedLocation;
 }
 
-/*not sure if needed
-PlaceId playerlocation(char *pastPlays, int array_num) {
-	PlaceId place;
-	char player_loc[3] = {};
-
-	strcpy(player_loc, &pastPlays[array_num], 2);
-	player_loc[2] = '\0';
-
-	place = placeAbbrevToId(player_loc);
-
-	if (place == UNKNOWN_PLACE) {
-		place = DraculaLocation(player_loc);
-	}
-		return place;
-}
-
-PlaceId DraculaLocation(char *place) {
-	int plc = UNKNOWN_PLACE;
-	switch (place) {
-		case "C?":
-			plc = CITY_UNKNOWN;
-			break;
-		case "S?":
-			plc = SEA_UNKNOWN;
-			break;
-		case "HI":
-			plc = HIDE;
-			break;
-		case "D1":
-			plc = DOUBLE_BACK_1;
-			break;
-		case "D2":
-			plc = DOUBLE_BACK_2;
-			break;
-		case "D3":
-			plc = DOUBLE_BACK_3;
-			break;
-		case "D4":
-			plc = DOUBLE_BACK_4;
-			break;
-		case "D5":
-			plc = DOUBLE_BACK_5;
-			break;
-		case "TP":
-			plc = TELEPORT;
-	}
-
-	return plc;
-}
-*/
-
-
-// does GvGetPlayerLocation get the current location? or new function tbm?
-PlaceId GvSetVampire(GameView gv) {
-    int vampround = GvGetRound(gv);
-    PlaceId vamplocation = GvGetPlayerLocation(gv, PLAYER_DRACULA);
-    
-    if (vampround % 13 == 0 || vampround == 1) {
-        // aims to check with the current location of player who is dracula
-        if (placeIdToType(GvGetPlayerLocation(gv, PLAYER_DRACULA) != SEA)) {
-            gv->vampireLocation = vamplocation;
-            gv->vamps.vampirelife =  true;
-            return vamplocation;
-        }
-    }
-    return NOWHERE;
-}
-
-// Reveals the dracula and assigns roles
-// function to check if the vampire has been vanquished
-static bool GvSetVampireDead(Gameview gv, GvGetPlayer(gv)) {
-    Vampire vamp_buddy;
-    // if the hunters and the vampire are in the same location,
-    //the vampire is dead}
-    if (GvGetPlayer(gv) != PLAYER_DRACULA) {
-        if (gv->players[GvGetPlayer(gv)].lastResolvedLocation == gv->vampireLocation) {
-            vamp_buddy->vampirelife = false;
-            return false;
-        }
-    } else {
-        return true;
-    }
-    
-
 PlaceId GvGetVampireLocation(GameView gv)
 {
-	PlaceId vamplocation = GvSetVampire(gv);
-    Vampire vamp_buddy = gv->vamps;
-    if (gv->GvSetVampireDead(gv, GvGetPlayer(gv)) == false) {
-        return NOWHERE;
-    }
-    else if (vamplocation == NOWHERE) {
-        return NOWHERE;
-    }
-    else if (vamp_buddy->vampire_has_matured == true) {
-        return NOWHERE;
-    }
-    else if (vamp_buddy.dracula_revealed == true) {
-        return gv->vampireLocation;
-    }
-    else {
-        return vamplocation;
-    }
+	return gv->vampireLocation;
 }
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
