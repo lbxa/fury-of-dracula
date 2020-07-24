@@ -9,4 +9,4 @@ add_executable(fury_of_dracula view/our_test.c
         view/GameView.c
         view/HunterView.c
         view/Map.c
-        view/Places.c view/Players.h view/binary_heap.c view/our_test.c view/binary_heap.h view/hash_table.c view/hash_table.h view/path_finding.c view/path_finding.h)
+        view/Places.c view/Players.h view/binary_heap.c view/our_test.c view/binary_heap.h view/hash_table.c view/hash_table.h view/path_finding.c view/path_finding.h view/Queue.c view/Queue.h)

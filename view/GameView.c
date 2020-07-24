@@ -229,7 +229,7 @@ GameView GvNew(char *pastPlays, Message messages[]) {
 }
 
 void GvFree(GameView gameView) {
-    for (Player i = 0; i < NUM_PLAYERS; ++i) {
+    for (int i = 0; i < NUM_PLAYERS; ++i) {
         FreePlayer(gameView->players[i]);
     }
 
