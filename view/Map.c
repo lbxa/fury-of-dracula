@@ -192,8 +192,7 @@ static bool connListContains(ConnList l, PlaceId p, TransportType type)
 
 ////////////////////////////////////////////////////////////////////////
 
-ConnList MapGetConnections(Map m, PlaceId p)
-{
+ConnList MapGetConnections(Map m, PlaceId p) {
     assert(placeIsReal(p));
     return m->connections[p];
 }

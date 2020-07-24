@@ -34,6 +34,13 @@ int main(void) {
 //    PrintPathSequence((Path) path->value);
 
     GameView gameView = GvNew("GED.... SGE.... HZU.... MCA.... DCF.V.. GMN.... SCFVD.. HGE.... MLS.... DBOT... GLO.... SMR.... HCF.... MMA.... DC?T... GPL.... SMS.... HMR.... MGR.... DBAT... GLO.... SBATD.. HMS.... MMA.... DC?T... GPL.... SSJ.... HBA.... MGR.... DC?T... GPL.... SSJ.... HBA.... MGR.... DC?T...", NULL);
+    int numLocs = 0;
+    PlaceId *reachable = GvGetReachableByType(gameView, 0, 3,
+            placeAbbrevToId("LS"), true, true, true, &numLocs);
+    printf("\n");
+    for (int i = 0; i < numLocs; i++) {
+        printf("%s\n", placeIdToName(reachable[i]));
+    }
 
 //    heap_display(h);
 //    EmptyHeap(h);

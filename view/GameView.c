@@ -19,6 +19,7 @@
 #include "Map.h"
 #include "Places.h"
 #include "Players.h"
+#include "path_finding.h"
 
 struct gameView {
     Map map;
@@ -223,12 +224,12 @@ GameView GvNew(char *pastPlays, Message messages[]) {
     for (int i = 0; i < NUM_PLAYERS; ++i) {
         PrintPlayer(gameView->players[i]);
     }
-    printf("Score: %d", gameView->gameScore);
+    printf("Score: %d\n", gameView->gameScore);
     return gameView;
 }
 
 void GvFree(GameView gameView) {
-    for (Player i = 0; i < NUM_PLAYERS; ++i) {
+    for (int i = 0; i < NUM_PLAYERS; ++i) {
         FreePlayer(gameView->players[i]);
     }
 
@@ -317,16 +318,20 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+    // Does rail move calculation and if player is dracula it becomes 0
+    int numberRailMoves = (((int) player + round) % 4) * (player != PLAYER_DRACULA);
     *numReturnedLocs = 0;
-    return NULL;
+    return GetReachablePlacesInMove(gv->map, from, true, true, numberRailMoves, numReturnedLocs);
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
     *numReturnedLocs = 0;
+    // Does rail move calculation if rail bool is set to true and if player is dracula it becomes 0
+    int numberRailMoves = rail ? (((int) player + round) % 4) * (player != PLAYER_DRACULA) : 0;
+    printf("%d\n", numberRailMoves);
+    return GetReachablePlacesInMove(gv->map, from, road, boat, numberRailMoves, numReturnedLocs);
     return NULL;
 }
 
