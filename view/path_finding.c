@@ -4,6 +4,7 @@
 
 #include "path_finding.h"
 #include "Queue.h"
+#include "GameView.h"
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
@@ -13,6 +14,25 @@
 // PATH FINDING
 // Full lookup if need to recreate each turn will entail creating 4 lookups for each starting initial state of having
 // 0, 1, 2, 3 rail moves + a lookup for no rail moves at any time (dracula)
+
+
+/**
+ * Resolves a location on draculas trail
+ * @param gameView
+ * @param resolvedLocations
+ * @param unresolvedLocation
+ * @param moveIndex
+ * @return
+ */
+PlaceId ResolveTrailLocation(GameView gameView, PlaceId *resolvedLocations, PlaceId unresolvedLocation, int moveIndex) {
+    if (unresolvedLocation >= HIDE && unresolvedLocation <= DOUBLE_BACK_5) {
+        int resolvedIndex = moveIndex - (unresolvedLocation - HIDE);
+        return resolvedLocations[resolvedIndex];
+    } else if (unresolvedLocation == TELEPORT) {
+        return CASTLE_DRACULA;
+    }
+    return unresolvedLocation;
+}
 
 /**
  * Returns array of reachable locations by rail given distance by rail
@@ -61,24 +81,64 @@ PlaceId *getRailReachable(Map map, int distanceByRail, PlaceId currentId, int *p
  * Gets all reachable places in a single move for a player
  * @return
  */
-PlaceId *
-GetReachablePlacesInMove(Map map, PlaceId currentId, bool road, bool boat, int distanceByRail, int *placesCount) {
-    // For now only return immediate connections no special regard for rail
+PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
+                            PlaceId currentId, bool road, bool rail, bool boat,
+                            int round, int *placesCount, bool resolveMoves, bool applyTrailRestrictions) {
 
     ConnList connections = MapGetConnections(map, currentId);
 
+    // Calculate number of rail moves player can make
+    int numberRailMoves = rail ? (((int) player + round) % 4) * (player != PLAYER_DRACULA) : 0;
+
+    // Variables for dracula trail handling
+    int trailNumMoves = 0;
+    bool canFree = false;
+    PlaceId *trail = NULL;
+    bool canHide = true;
+    bool canDoubleBack = true;
+    bool onTrailLookup[NUM_REAL_PLACES] = {false};
+
+    // Determine whether can hide and double back based on if those moves are in trail
+    if (player == PLAYER_DRACULA && applyTrailRestrictions) {
+        trail = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE, &trailNumMoves, &canFree);
+        for (int i = 0; i < trailNumMoves; ++i) {
+            onTrailLookup[trail[i]] = true;
+            if (trail[i] == HIDE) {
+                canHide = false;
+            } else if (trail[i] >= DOUBLE_BACK_1 && trail[i] <= DOUBLE_BACK_5) {
+                canDoubleBack = false;
+            }
+        }
+    }
+
     *placesCount = 0;
     PlaceId *places = malloc(sizeof(PlaceId) * NUM_REAL_PLACES);
+
+    // Use as lookup to stop placing duplicates moves/locations in output
     bool placesAdded[NUM_REAL_PLACES] = {false};
 
+    // Handle checking whether current place can be added as possible location
+    // as dracula can only move to current location as HIDE if not HIDE not already
+    // in trail
+    if (player != PLAYER_DRACULA || canHide) {
+        if (player != PLAYER_DRACULA || resolveMoves) {
+            places[0] = currentId;
+        } else {
+            places[0] = HIDE;
+        }
+        (*placesCount)++;
+    }
+
+    // Loop through connections and add possible locations/moves
     ConnList cur = connections;
     while (cur) {
+        if (cur->p == HOSPITAL_PLACE) continue;
         if (cur->type == RAIL) {
-            if (distanceByRail > 0) {
+            if (numberRailMoves > 0) {
                 places[(*placesCount)++] = cur->p;
                 placesAdded[cur->p] = true;
                 int railReachableCount = 0;
-                PlaceId *railReachable = getRailReachable(map, distanceByRail, currentId, &railReachableCount);
+                PlaceId *railReachable = getRailReachable(map, round, currentId, &railReachableCount);
                 for (int i = 0; i < railReachableCount; ++i) {
                     if (placesAdded[railReachable[i]]) continue;
                     places[(*placesCount)++] = railReachable[i];
@@ -87,7 +147,8 @@ GetReachablePlacesInMove(Map map, PlaceId currentId, bool road, bool boat, int d
                 free(railReachable);
             }
         } else {
-            if (!placesAdded[cur->p]) {
+            // Applies movement restriction if dracula
+            if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
                 if (cur->type == ROAD && road) {
                     places[(*placesCount)++] = cur->p;
                 } else if (cur->type == BOAT && boat) {
@@ -99,6 +160,28 @@ GetReachablePlacesInMove(Map map, PlaceId currentId, bool road, bool boat, int d
         cur = cur->next;
     }
 
+    // Handle dracula double back moves
+    if (player == PLAYER_DRACULA && canDoubleBack && applyTrailRestrictions) {
+        int locationCount = 0;
+        PlaceId *resolvedLocations = GvGetLocationHistory(gameView, player, &locationCount, &canFree);
+
+        for (int i = 0; i < trailNumMoves - 1; i++) {
+            // Need to perform resolve location of moves
+            PlaceId place;
+            if (resolveMoves) {
+               place = ResolveTrailLocation(gameView, resolvedLocations,
+                        trail[i], locationCount - (trailNumMoves - 1 - i));
+            } else {
+                place = DOUBLE_BACK_1 + (trailNumMoves - 2 - i);
+            }
+            if (!placesAdded[place]) {
+                placesAdded[place] = true;
+                places[(*placesCount)++] = place;
+            }
+        }
+    }
+
+    // Reallocate to needed size
     if (*placesCount < NUM_REAL_PLACES) {
         places = realloc(places, sizeof(PlaceId) * (*placesCount));
     }
@@ -106,13 +189,14 @@ GetReachablePlacesInMove(Map map, PlaceId currentId, bool road, bool boat, int d
 }
 
 /**
- * Uses djikstras path-finding algorithm with priority queue to find shortest path from 1 node to all other nodes
+ * Uses dijkstra's path-finding algorithm with priority queue to find shortest path from 1 node to all other nodes
  * @param map
  * @param from
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable GetPathLookupTableFrom(Map map, Place from) {
+HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Place from, bool road, bool rail, bool boat,
+                                 int round) {
     // Create vertex dictionary
 
     // Prime numbers are suitable table sizes and not that many vertices exist
@@ -137,7 +221,8 @@ HashTable GetPathLookupTableFrom(Map map, Place from) {
         Path pathNode = (Path) HashGet(distances, currentVertex->place)->value;
         if (currentDistance > pathNode->distance) continue;
         int reachableCount = 0;
-        PlaceId *reachable = GetReachablePlacesInMove(map, currentPlace, true, true, 3, &reachableCount);
+        PlaceId *reachable = GetPossibleMoves(gameView, map, player, currentPlace, road, rail, boat, round,
+                                              &reachableCount, 0, true);
 
         for (int i = 0; i < reachableCount; ++i) {
             const char *vertexAbbrev = placeIdToAbbrev(reachable[i]);
@@ -159,7 +244,7 @@ HashTable GetPathLookupTableFrom(Map map, Place from) {
 HashTable* GetAllPathLookup(Map map) {
     HashTable *pathsLookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
     for (int i = 0; i < NUM_REAL_PLACES; i++) {
-        pathsLookup[i] = GetPathLookupTableFrom(map, PLACES[i]);
+        pathsLookup[i] = GetPathLookupTableFrom(NULL, map, PLAYER_MINA_HARKER, PLACES[i], 0, 0, 0, 0);
     }
     return pathsLookup;
 }

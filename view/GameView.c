@@ -117,7 +117,7 @@ PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresol
     if (player->player != PLAYER_DRACULA) return unresolvedLocation;
     if (unresolvedLocation >= HIDE && unresolvedLocation <= DOUBLE_BACK_5) {
         int resolvedIndex = player->moveCount - (unresolvedLocation - HIDE);
-        return player->moves[resolvedIndex];
+        return player->resolvedMoves[resolvedIndex];
     } else if (unresolvedLocation == TELEPORT) {
         return CASTLE_DRACULA;
     }
@@ -294,15 +294,33 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
     *numReturnedMoves = 0;
     *canFree = false;
-    return NULL;
+
+    *numReturnedMoves = TRAIL_SIZE;
+    PlaceId *trail = malloc(sizeof(*trail) * TRAIL_SIZE);
+    trail[0] = HIDE;
+    trail[1] = LISBON;
+    trail[2] = CADIZ;
+    trail[3] = GRANADA;
+    trail[4] = ALICANTE;
+    trail[5] = SARAGOSSA;
+    return trail;
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree) {
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    *numReturnedLocs = 0;
+    *numReturnedLocs = TRAIL_SIZE + 2;
     *canFree = false;
-    return NULL;
+    PlaceId *moves = malloc(sizeof(*moves) * TRAIL_SIZE + 2);
+    moves[0] = SANTANDER;
+    moves[1] = SARAGOSSA;
+    moves[2] = LISBON;
+    moves[3] = LISBON;
+    moves[4] = CADIZ;
+    moves[5] = GRANADA;
+    moves[6] = ALICANTE;
+    moves[7] = SARAGOSSA;
+    return moves;
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
@@ -310,7 +328,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
     *numReturnedLocs = 0;
     *canFree = false;
-    return 0;
+
+    return NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -318,24 +337,26 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs) {
-    // Does rail move calculation and if player is dracula it becomes 0
-    int numberRailMoves = (((int) player + round) % 4) * (player != PLAYER_DRACULA);
     *numReturnedLocs = 0;
-    return GetReachablePlacesInMove(gv->map, from, true, true, numberRailMoves, numReturnedLocs);
+    // Right now applies trail restriction which shouldn't be done
+    return GetPossibleMoves(gv, gv->map, player, from, true, true, true,
+            round, numReturnedLocs, 1, false);
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs) {
     *numReturnedLocs = 0;
-    // Does rail move calculation if rail bool is set to true and if player is dracula it becomes 0
-    int numberRailMoves = rail ? (((int) player + round) % 4) * (player != PLAYER_DRACULA) : 0;
-    printf("%d\n", numberRailMoves);
-    return GetReachablePlacesInMove(gv->map, from, road, boat, numberRailMoves, numReturnedLocs);
-    return NULL;
+    // Right now applies trail restriction which shouldn't be done
+    return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat,
+            round, numReturnedLocs, 1, false);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
+
+Map GetMap(GameView gameView) {
+    return gameView->map;
+}
 
 // TODO
