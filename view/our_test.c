@@ -33,7 +33,23 @@ int main(void) {
 //    printf("%lf\n", (double) (end-start)/CLOCKS_PER_SEC);
 //    PrintPathSequence((Path) path->value);
 
-    GameView gameView = GvNew("GED.... SGE.... HZU.... MCA.... DCF.V.. GMN.... SCFVD.. HGE.... MLS.... DBOT... GLO.... SMR.... HCF.... MMA.... DC?T... GPL.... SMS.... HMR.... MGR.... DBAT... GLO.... SBATD.. HMS.... MMA.... DC?T... GPL.... SSJ.... HBA.... MGR.... DC?T... GPL.... SSJ.... HBA.... MGR.... DC?T...", NULL);
+    GameView gameView = GvNew("GED.... SGE.... HZU.... MCA.... DCF.V.. GMN.... SCFVD.. HGE.... MLS.... DBOT... GLO.... SMR.... HCF.... MMA.... DTOT... GPL.... SMS.... HMR.... MGR.... DBAT... GLO.... SBATD.. HMS.... MMA.... DSRT... GPL.... SSJ.... HBA.... MGR.... DALT... GPL.... SSJ.... HBA.... MGR.... DMAT... GLO.... SBE.... HMS.... MMATD..", NULL);
+    int numLocs = 0;
+
+    int numMoves = 0;
+    bool canFree = false;
+    PlaceId *trail = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE, &numMoves, &canFree);
+    printf("Dracula trail:\n");
+    for (int i = 0; i < numMoves; i++) {
+        printf("%s\n", placeIdToName(trail[i]));
+    }
+
+    PlaceId *reachable = GvGetReachableByType(gameView, PLAYER_DRACULA, -1,
+                                              trail[TRAIL_SIZE - 1], true, true, true, &numLocs);
+    printf("\n");
+    for (int i = 0; i < numLocs; i++) {
+        printf("%s\n", placeIdToName(reachable[i]));
+    }
 
 //    heap_display(h);
 //    EmptyHeap(h);

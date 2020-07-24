@@ -20,16 +20,9 @@
 
 #include "Game.h"
 #include "Places.h"
-#include "Map.h"
 // add your own #includes here
 
 typedef struct gameView *GameView;
-
-#define TRAP_ENCOUNTER 'T'
-#define VAMPIRE_ENCOUNTER 'V'
-#define DRACULA_ENCOUNTER 'D'
-#define PLAY_STR_LENGTH 7
-#define VAMPIRE_PLACE_ROUNDS 13
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -54,10 +47,10 @@ typedef struct gameView *GameView;
 GameView GvNew(char *pastPlays, Message messages[]);
 
 /**
- * Frees all memory allocated for `gameView`.
- * After this has been called, `gameView` should not be accessed.
+ * Frees all memory allocated for `gv`.
+ * After this has been called, `gv` should not be accessed.
  */
-void GvFree(GameView gameView);
+void GvFree(GameView gv);
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
@@ -260,8 +253,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
-
-Map GetMap(GameView gameView);
 
 // TODO
 

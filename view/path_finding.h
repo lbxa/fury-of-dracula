@@ -9,6 +9,7 @@
 #include "hash_table.h"
 #include "binary_heap.h"
 #include "Map.h"
+#include "GameView.h"
 
 typedef struct path {
     int distance;
@@ -24,7 +25,8 @@ typedef struct path {
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable GetPathLookupTableFrom(Map map, Place from);
+HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Place from, bool road, bool rail, bool boat,
+                                 int round);
 
 /**
  * Gets a path lookup table which has distances and paths from any
@@ -61,5 +63,19 @@ void PrintPathSequence(Path path);
  * @return
  */
 Path* GetOrderedPathSequence(Path path);
+
+/**
+ * Gets reachable places in move given travel type restirctions from given PlaceId
+ * @param map
+ * @param round
+ * @param currentId
+ * @param placesCount
+ * @param road
+ * @param boat
+ * @return array of PlaceId for reachable locations
+ */
+PlaceId *
+GetPossibleMoves(GameView gameView, Map map, Player player, PlaceId currentId, bool road, bool rail, bool boat,
+                 int round, int *placesCount, bool resolveMoves, bool applyTrailRestrictions);
 
 #endif //FURY_OF_DRACULA_PATH_FINDING_H
