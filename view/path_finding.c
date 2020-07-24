@@ -25,11 +25,13 @@
  * @return
  */
 PlaceId ResolveTrailLocation(GameView gameView, PlaceId *resolvedLocations, PlaceId unresolvedLocation, int moveIndex) {
-    if (unresolvedLocation >= HIDE && unresolvedLocation <= DOUBLE_BACK_5) {
-        int resolvedIndex = moveIndex - (unresolvedLocation - HIDE);
+    if (unresolvedLocation >= DOUBLE_BACK_1 && unresolvedLocation <= DOUBLE_BACK_5) {
+        int resolvedIndex = moveIndex - (unresolvedLocation - DOUBLE_BACK_1);
         return resolvedLocations[resolvedIndex];
     } else if (unresolvedLocation == TELEPORT) {
         return CASTLE_DRACULA;
+    } else if (unresolvedLocation == HIDE) {
+        return resolvedLocations[moveIndex];
     }
     return unresolvedLocation;
 }
@@ -88,7 +90,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     ConnList connections = MapGetConnections(map, currentId);
 
     // Calculate number of rail moves player can make
-    int numberRailMoves = rail ? (((int) player + round) % 4) * (player != PLAYER_DRACULA) : 0;
+    int numberRailMoves = rail * (((int) player + round) % 4) * (player != PLAYER_DRACULA);
 
     // Variables for dracula trail handling
     int trailNumMoves = 0;
@@ -129,31 +131,28 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
         (*placesCount)++;
     }
 
+    if (numberRailMoves > 0) {
+        int railReachableCount = 0;
+        PlaceId *railReachable = getRailReachable(map, numberRailMoves, currentId, &railReachableCount);
+        for (int i = 0; i < railReachableCount; ++i) {
+            if (placesAdded[railReachable[i]]) continue;
+            places[(*placesCount)++] = railReachable[i];
+            placesAdded[railReachable[i]] = true;
+        }
+        free(railReachable);
+    }
+
     // Loop through connections and add possible locations/moves
     ConnList cur = connections;
     while (cur) {
         if (cur->p == HOSPITAL_PLACE) continue;
-        if (cur->type == RAIL) {
-            if (numberRailMoves > 0) {
+        // Applies movement restriction if dracula
+        if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
+            if (cur->type == ROAD && road) {
                 places[(*placesCount)++] = cur->p;
                 placesAdded[cur->p] = true;
-                int railReachableCount = 0;
-                PlaceId *railReachable = getRailReachable(map, round, currentId, &railReachableCount);
-                for (int i = 0; i < railReachableCount; ++i) {
-                    if (placesAdded[railReachable[i]]) continue;
-                    places[(*placesCount)++] = railReachable[i];
-                    placesAdded[railReachable[i]] = true;
-                }
-                free(railReachable);
-            }
-        } else {
-            // Applies movement restriction if dracula
-            if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
-                if (cur->type == ROAD && road) {
-                    places[(*placesCount)++] = cur->p;
-                } else if (cur->type == BOAT && boat) {
-                    places[(*placesCount)++] = cur->p;
-                }
+            } else if (cur->type == BOAT && boat) {
+                places[(*placesCount)++] = cur->p;
                 placesAdded[cur->p] = true;
             }
         }
@@ -196,7 +195,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
  * @return HashTable containing all computed distances to places (place abbrev)
  */
 HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Place from, bool road, bool rail, bool boat,
-                                 int round) {
+                                 int round, bool resolveMoves, bool applyTrailRestrictions) {
     // Create vertex dictionary
 
     // Prime numbers are suitable table sizes and not that many vertices exist
@@ -222,7 +221,7 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Plac
         if (currentDistance > pathNode->distance) continue;
         int reachableCount = 0;
         PlaceId *reachable = GetPossibleMoves(gameView, map, player, currentPlace, road, rail, boat, round,
-                                              &reachableCount, 0, true);
+                                              &reachableCount, resolveMoves, applyTrailRestrictions);
 
         for (int i = 0; i < reachableCount; ++i) {
             const char *vertexAbbrev = placeIdToAbbrev(reachable[i]);
@@ -244,7 +243,7 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Plac
 HashTable* GetAllPathLookup(Map map) {
     HashTable *pathsLookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
     for (int i = 0; i < NUM_REAL_PLACES; i++) {
-        pathsLookup[i] = GetPathLookupTableFrom(NULL, map, PLAYER_MINA_HARKER, PLACES[i], 0, 0, 0, 0);
+        pathsLookup[i] = GetPathLookupTableFrom(NULL, map, PLAYER_MINA_HARKER, PLACES[i], 0, 0, 0, 0, true, true);
     }
     return pathsLookup;
 }

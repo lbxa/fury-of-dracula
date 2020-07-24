@@ -11,6 +11,7 @@
 typedef struct playerDetails {
     Player player;
     int moveCount;
+    bool isDead;
     PlaceId moves[GAME_START_SCORE];
     PlaceId resolvedMoves[GAME_START_SCORE];
     PlaceId lastResolvedLocation;
@@ -26,6 +27,7 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
     playerDetails->moveCount = 0;
     playerDetails->playerHealth = initialHealth;
     playerDetails->player = player;
+    playerDetails->isDead = false;
     playerDetails->lastResolvedLocation = NOWHERE;
     return playerDetails;
 }

@@ -95,6 +95,8 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+    //	HashTable pathLookup = GetPathLookupTableFrom();
+	// HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
 	*pathLength = 0;
 	return NULL;
 }
