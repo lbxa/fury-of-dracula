@@ -295,10 +295,18 @@ PlaceId GvGetVampireLocation(GameView gv)
 	return gv->vampireLocation;
 }
 
+//loop through gv traplocations and look for all the values in the array
+// without a value of NOWHERE
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+    
     *numTraps = 0;
-    return NULL;
+    for (int i = 0; i < TRAIL_SIZE; i++) {
+        if (gv->trapLocations[i] != NOWHERE) {
+            gv->trapLocations[numTraps] = gv->trapLocations[i];
+        }
+        i++;
+    }
+    return gv->trapLocations[numTraps];
 }
 
 ////////////////////////////////////////////////////////////////////////
