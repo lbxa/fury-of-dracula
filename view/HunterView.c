@@ -19,6 +19,7 @@
 #include "HunterView.h"
 #include "Map.h"
 #include "Places.h"
+#include "path_finding.h"
 // add your own #includes here
 
 // TODO: ADD YOUR OWN STRUCTS HERE
@@ -130,7 +131,12 @@ PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	Player currentPlayer = GvGetPlayer(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
+	int currentRound = GvGetRound(hv->gameView);
+
+	return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation, true, true, true, currentRound, numReturnedLocs, true, false);
 }
 
 PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
