@@ -12,11 +12,9 @@ Tutorial Code: T17A
 | -------------      | -------------   | ------------- |
 | Stephenmorrisunsw  | Stephen Morris  | z5230723  |
 | ericholm           | Eric Holsmstrom | z5310814  |
-| lucasbrsa.         | Lucas Barbosa   | z5259433  |
+| lucasbrsa         | Lucas Barbosa   | z5259433  |
 
 All we do is code and win.
-
-Lucas Barbosa | Stephen Morris | Eric Holmstrom | Debbie-Tommy
 
 
 ### Usage
@@ -36,3 +34,6 @@ and ADT implementation test.
 Additionally, there is a test script which runs the supplied tests to run these combined tests run ```run_tests.sh```. Also
 a `.travis.yml` file has been added which when this repository is connected up to Travis CI will allow us to run automated testing
 upon every commit to master to ensure that any of the latest changes haven't broken anything.
+
+Lucas Barbosa | Stephen Morris | Eric Holmstrom | Debbie-Tommy
+
