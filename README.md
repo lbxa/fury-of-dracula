@@ -1,7 +1,5 @@
 ![Fury of Dracula](https://www.cse.unsw.edu.au/~cs2521/20T2/ass/ass2/Pics/drac.png)
 
-# Demo change
-
 # fury-of-dracula
 
 ### CS2521 Assignment 
