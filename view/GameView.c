@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Game.h"
 #include "GameView.h"
@@ -30,12 +31,7 @@ struct gameView {
     PlaceId trapLocations[TRAIL_SIZE];
     PlaceId vampireLocation;
     int roundVampirePlaced;
-    
-
 };
-
-
-
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -330,26 +326,42 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
     // use void *memcpy(void *dest, const void * src, size_t n)
     // to copy over
-    *numReturnedMoves = 0;
+    PlayerDetails currPlayer = gv->players[player];
+    *numReturnedMoves =  currPlayer->moveCount;
     *canFree = false;
-    return NULL;
+
+    PlaceId *moveHistory = malloc(sizeof(PlaceId*) * currPlayer->moveCount);
+    // copy the moves from the struct onto a dynamically allocated array!
+    memcpy(moveHistory, currPlayer->resolvedMoves, currPlayer->moveCount);
+
+    return moveHistory;
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree) {
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    *numReturnedMoves = 0;
+    PlayerDetails currPlayer = gv->players[player];
+    *numReturnedMoves =  currPlayer->moveCount;
     *canFree = false;
 
-    *numReturnedMoves = TRAIL_SIZE;
-    PlaceId *trail = malloc(sizeof(*trail) * TRAIL_SIZE);
-    trail[0] = HIDE;
-    trail[1] = LISBON;
-    trail[2] = CADIZ;
-    trail[3] = GRANADA;
-    trail[4] = ALICANTE;
-    trail[5] = SARAGOSSA;
-    return trail;
+    if (numMoves > currPlayer->moveCount) {
+        numMoves = currPlayer->moveCount;
+    }
+
+    PlaceId *nLastMoves = malloc(sizeof(PlaceId*) * numMoves);
+    for (int i = numMoves - 1; i >= 0; i--) {
+        nLastMoves[i - (numMoves - 1)] = currPlayer->resolvedMoves[i];
+    }
+
+    // *numReturnedMoves = TRAIL_SIZE;
+    // PlaceId *trail = malloc(sizeof(*trail) * TRAIL_SIZE);
+    // trail[0] = HIDE;
+    // trail[1] = LISBON;
+    // trail[2] = CADIZ;
+    // trail[3] = GRANADA;
+    // trail[4] = ALICANTE;
+    // trail[5] = SARAGOSSA;
+    return nLastMoves;
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
