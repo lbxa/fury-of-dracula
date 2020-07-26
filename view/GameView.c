@@ -350,7 +350,8 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 
     PlaceId *nLastMoves = malloc(sizeof(PlaceId*) * numMoves);
     for (int i = numMoves - 1; i >= 0; i--) {
-        nLastMoves[i - (numMoves - 1)] = currPlayer->resolvedMoves[i];
+        int offset = (numMoves - 1);
+        nLastMoves[i - offset] = currPlayer->resolvedMoves[i];
     }
 
     // *numReturnedMoves = TRAIL_SIZE;
@@ -367,27 +368,45 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree) {
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    *numReturnedLocs = TRAIL_SIZE + 2;
+    PlayerDetails currPlayer = gv->players[player];
+    *numReturnedLocs =  currPlayer->moveCount;
     *canFree = false;
-    PlaceId *moves = malloc(sizeof(*moves) * TRAIL_SIZE + 2);
-    moves[0] = SANTANDER;
-    moves[1] = SARAGOSSA;
-    moves[2] = LISBON;
-    moves[3] = LISBON;
-    moves[4] = CADIZ;
-    moves[5] = GRANADA;
-    moves[6] = ALICANTE;
-    moves[7] = SARAGOSSA;
-    return moves;
+
+    // ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation)
+    PlaceId *locationHistory = malloc(sizeof(PlaceId*) * currPlayer->moveCount);
+    // copy the moves from the struct onto a dynamically allocated array!
+    memcpy(locationHistory, currPlayer->resolvedMoves, currPlayer->moveCount);
+
+    // PlaceId *moves = malloc(sizeof(*moves) * TRAIL_SIZE + 2);
+    // moves[0] = SANTANDER;
+    // moves[1] = SARAGOSSA;
+    // moves[2] = LISBON;
+    // moves[3] = LISBON;
+    // moves[4] = CADIZ;
+    // moves[5] = GRANADA;
+    // moves[6] = ALICANTE;
+    // moves[7] = SARAGOSSA;
+    return locationHistory;
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree) {
     // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    *numReturnedLocs = 0;
+    PlayerDetails currPlayer = gv->players[player];
+    *numReturnedLocs =  currPlayer->moveCount;
     *canFree = false;
 
-    return NULL;
+    if (numLocs > currPlayer->moveCount) {
+        numLocs = currPlayer->moveCount;
+    }
+
+    PlaceId *nLastLocations = malloc(sizeof(PlaceId*) * numLocs);
+    for (int i = numLocs - 1; i >= 0; i--) {
+        int offset = (numLocs - 1);
+        nLastLocations[i - offset] = currPlayer->resolvedMoves[i];
+    }
+
+    return nLastLocations;
 }
 
 ////////////////////////////////////////////////////////////////////////
