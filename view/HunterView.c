@@ -129,7 +129,6 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
 	Map map = GetMap(hv->gameView);
 	Player currentPlayer = GvGetPlayer(hv->gameView);
@@ -150,9 +149,11 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
 PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
                           int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
+	int currentRound = GvGetRound(hv->gameView);
+	return GetPossibleMoves(hv->gameView, map, player, currentLocation, true, true, true, currentRound, numReturnedLocs, true, false);
 }
 
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
