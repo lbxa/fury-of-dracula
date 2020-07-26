@@ -97,6 +97,18 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 	// Dracula player struct, go backwards through his resolved location array
 	// check between MIN_REAL_PLACE AND MAX_REAL_PLACE
 	
+	int *numReturnedMoves = 0;
+	bool canModify = true;
+	PlaceId *draculaHistory = GvGetMoveHistory(hv->gameView, PLAYER_DRACULA, numReturnedMoves, &canModify);
+	
+
+	for (int i = *numReturnedMoves; i >= 0; i--) {
+		PlaceId currentMove = draculaHistory[i];
+		if (currentMove >= MIN_REAL_PLACE && currentMove <= MAX_REAL_PLACE) {
+			*round = i;
+			return draculaHistory[i];
+		}
+	}
 	*round = 0;
 	return NOWHERE;
 }
