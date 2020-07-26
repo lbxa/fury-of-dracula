@@ -30,7 +30,12 @@ struct gameView {
     PlaceId trapLocations[TRAIL_SIZE];
     PlaceId vampireLocation;
     int roundVampirePlaced;
+    
+
 };
+
+
+
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -93,7 +98,7 @@ bool ProcessEncounter(GameView gameView, Player player, char encounter) {
     /**
      * Clear traps/vampire
      */
-     if (encounter == '.') return false;
+    if (encounter == '.') return false;
     if (encounter == TRAP_ENCOUNTER) {
         gameView->players[player]->playerHealth -= LIFE_LOSS_TRAP_ENCOUNTER;
         PlaceId currentPlayerLocation = gameView->players[player]->lastResolvedLocation;
@@ -110,18 +115,28 @@ bool ProcessEncounter(GameView gameView, Player player, char encounter) {
         gameView->players[PLAYER_DRACULA]->playerHealth -= LIFE_LOSS_HUNTER_ENCOUNTER;
         gameView->players[player]->playerHealth -= LIFE_LOSS_DRACULA_ENCOUNTER;
     }
-    return gameView->players[player] <= 0;
+    return gameView->players[player]->playerHealth <= 0;
 }
 
 PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation) {
     if (player->player != PLAYER_DRACULA) return unresolvedLocation;
-    if (unresolvedLocation >= HIDE && unresolvedLocation <= DOUBLE_BACK_5) {
-        int resolvedIndex = player->moveCount - (unresolvedLocation - HIDE);
+    if (unresolvedLocation >= DOUBLE_BACK_1 && unresolvedLocation <= DOUBLE_BACK_5) {
+        int resolvedIndex = player->moveCount - 1 - (unresolvedLocation - DOUBLE_BACK_1);
         return player->resolvedMoves[resolvedIndex];
     } else if (unresolvedLocation == TELEPORT) {
         return CASTLE_DRACULA;
+    } else if (unresolvedLocation == HIDE) {
+        return player->resolvedMoves[player->moveCount - 1];
     }
     return unresolvedLocation;
+}
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
 }
 
 /**
@@ -163,7 +178,7 @@ void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
                 gameView->trapLocations[roundNumber % TRAIL_SIZE] = resolvedId;
             }
 
-            if (placeId == CASTLE_DRACULA) {
+            if (resolvedId == CASTLE_DRACULA) {
                 playerDetails->playerHealth += LIFE_GAIN_CASTLE_DRACULA;
             }
         }
@@ -171,7 +186,8 @@ void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
         // Avoid branching by evaluation the conditional only
         bool hasRested = playerDetails->lastResolvedLocation
                          == playerDetails->resolvedMoves[playerDetails->moveCount - 2];
-        playerDetails->playerHealth += (LIFE_GAIN_REST * hasRested);
+        playerDetails->playerHealth = min(GAME_START_HUNTER_LIFE_POINTS,
+                playerDetails->playerHealth + LIFE_GAIN_REST * hasRested);
     }
 
     //Update player histories
@@ -193,6 +209,9 @@ GameView GvNew(char *pastPlays, Message messages[]) {
         if (player == PLAYER_DRACULA) {
             // On Dracula's turn
             ProcessTraps(gameView);
+        } else if (gameView->players[player]->isDead) {
+            gameView->players[player]->playerHealth = GAME_START_HUNTER_LIFE_POINTS;
+            gameView->players[player]->isDead = false;
         }
 
 
@@ -208,12 +227,19 @@ GameView GvNew(char *pastPlays, Message messages[]) {
         ProcessLocation(gameView, player, placeAbbrev);
 
         // Process turn encounters -> might need to check in specific order if not ordered in play string
-        int encounterIndex = charIndex + 3;
-        while (encounterIndex < charIndex + PLAY_STR_LENGTH) {
-            if (!ProcessEncounter(gameView, player, pastPlays[encounterIndex])) {
-                break;
+        if (player != PLAYER_DRACULA) {
+            int encounterIndex = charIndex + 3;
+            while (encounterIndex < charIndex + PLAY_STR_LENGTH) {
+                if (ProcessEncounter(gameView, player, pastPlays[encounterIndex])) {
+                    // Hunter has died
+                    gameView->players[player]->playerHealth = 0;
+                    gameView->players[player]->isDead = true;
+                    gameView->players[player]->lastResolvedLocation = HOSPITAL_PLACE;
+                    gameView->gameScore -= SCORE_LOSS_HUNTER_HOSPITAL;
+                    break;
+                }
+                ++encounterIndex;
             }
-            ++encounterIndex;
         }
 
         gameView->gameScore -= (player == PLAYER_DRACULA) * 1;
@@ -221,10 +247,10 @@ GameView GvNew(char *pastPlays, Message messages[]) {
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
     }
-    for (int i = 0; i < NUM_PLAYERS; ++i) {
-        PrintPlayer(gameView->players[i]);
-    }
-    printf("Score: %d\n", gameView->gameScore);
+//    for (int i = 0; i < NUM_PLAYERS; ++i) {
+//        PrintPlayer(gameView->players[i]);
+//    }
+//    printf("Score: %d\n", gameView->gameScore);
     return gameView;
 }
 
@@ -233,47 +259,67 @@ void GvFree(GameView gameView) {
         FreePlayer(gameView->players[i]);
     }
 
-    free(gameView->trapLocations);
     free(gameView);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
-Round GvGetRound(GameView gv) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    return 0;
+Round GvGetRound(GameView gv)
+{
+	assert (gv != NULL);	
+    return gv->turnNumber / 5;
 }
 
-Player GvGetPlayer(GameView gv) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    return PLAYER_LORD_GODALMING;
+Player GvGetPlayer(GameView gv)
+{
+	assert (gv != NULL);
+	return gv->turnNumber % NUM_PLAYERS;
 }
 
-int GvGetScore(GameView gv) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    return 0;
+int GvGetScore(GameView gv)
+{	
+	assert (gv != NULL);
+    assert (gv->gameScore <= 366);
+	return gv->gameScore;
 }
 
-int GvGetHealth(GameView gv, Player player) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    return 0;
+int GvGetHealth(GameView gv, Player player)
+{	
+	assert (gv != NULL);
+    return gv->players[player]->playerHealth;
 }
 
-PlaceId GvGetPlayerLocation(GameView gv, Player player) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    return NOWHERE;
+PlaceId GvGetPlayerLocation(GameView gv, Player player)
+{
+	return gv->players[player]->lastResolvedLocation;
 }
 
-PlaceId GvGetVampireLocation(GameView gv) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    return NOWHERE;
+PlaceId GvGetVampireLocation(GameView gv)
+{
+	return gv->vampireLocation;
 }
 
+//loop through gv traplocations and look for all the values in the array
+// without a value of NOWHERE
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+    
     *numTraps = 0;
-    return NULL;
+    for (int i = 0; i < TRAIL_SIZE; i++) {
+        if (gv->trapLocations[i] != NOWHERE) {
+            (*numTraps)++;
+        }
+        
+    }
+    int count = 0;
+    PlaceId *traps = malloc(sizeof(PlaceId) * (*numTraps));
+    for (int i = 0; i < TRAIL_SIZE; i++) {
+        if (gv->trapLocations[i] != NOWHERE) {
+            traps[count] =  gv->trapLocations[i];        
+            count++;
+        }
+    }
+    return traps;
 }
 
 ////////////////////////////////////////////////////////////////////////

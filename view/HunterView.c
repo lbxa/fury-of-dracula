@@ -25,7 +25,6 @@
 
 struct hunterView {
 	GameView gameView;
-	// TODO: ADD FIELDS HERE
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -61,37 +60,31 @@ void HvFree(HunterView hv)
 
 Round HvGetRound(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return GvGetRound(hv->gameView);
 }
 
 Player HvGetPlayer(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return GvGetPlayer(hv->gameView);
 }
 
 int HvGetScore(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return GvGetScore(hv->gameView);
 }
 
 int HvGetHealth(HunterView hv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return GvGetHealth(hv->gameView, player);
 }
 
 PlaceId HvGetPlayerLocation(HunterView hv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return GvGetPlayerLocation(hv->gameView, player);
 }
 
 PlaceId HvGetVampireLocation(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return GvGetVampireLocation(hv->gameView);
 }
 
@@ -112,6 +105,8 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+    //	HashTable pathLookup = GetPathLookupTableFrom();
+	// HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
 	*pathLength = 0;
 	return NULL;
 }
