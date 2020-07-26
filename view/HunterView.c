@@ -164,9 +164,11 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
+	int currentRound = GvGetRound(hv->gameView);
+	return GetPossibleMoves(hv->gameView, map, player, currentLocation, road, rail, boat, currentRound, numReturnedLocs, true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////
