@@ -7,12 +7,14 @@
 ### CS2521 Assignment 
 
 Group Name: stephen-eric-lucas-debbie
+
 Tutorial Code: T17A
 
-Github Names: Stephenmorrisunsw | Real Names: Stephen Morris | zID's: z5230723
-Github Names: ericholm | Real Names: Eric Holsmstrom | zID's: z5310814
-Github Names: Stephenmorrisunsw | Real Names: Stephen Morris | zID's: z5230723
-Github Names: Stephenmorrisunsw | Real Names: Stephen Morris | zID's: z5230723
+| Github Name  | Real Name | zID |
+| -------------      | -------------   | ------------- |
+| Stephenmorrisunsw  | Stephen Morris  | z5230723  |
+| ericholm           | Eric Holsmstrom | z5310814  |
+| lucasbrsa.         | Lucas Barbosa   | z5259433  |
 
 All we do is code and win.
 
