@@ -19,6 +19,8 @@
 #include "HunterView.h"
 #include "Map.h"
 #include "Places.h"
+#include "path_finding.h"
+#include "hash_table.h"
 // add your own #includes here
 
 // TODO: ADD YOUR OWN STRUCTS HERE
@@ -39,12 +41,19 @@ HunterView HvNew(char *pastPlays, Message messages[])
 		exit(EXIT_FAILURE);
 	}
 
+	GameView gameView = GvNew(pastPlays, messages);
+    new->gameView = gameView;
+	
+
+	// TODO: Add helper function to copy messages into messageList   
+
 	return new;
 }
 
 void HvFree(HunterView hv)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	GvFree(hv->gameView);
 	free(hv);
 }
 
@@ -87,6 +96,21 @@ PlaceId HvGetVampireLocation(HunterView hv)
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	// Dracula player struct, go backwards through his resolved location array
+	// check between MIN_REAL_PLACE AND MAX_REAL_PLACE
+	
+	int *numReturnedMoves = 0;
+	bool canModify = true;
+	PlaceId *draculaHistory = GvGetMoveHistory(hv->gameView, PLAYER_DRACULA, numReturnedMoves, &canModify);
+	
+
+	for (int i = *numReturnedMoves; i >= 0; i--) {
+		PlaceId currentMove = draculaHistory[i];
+		if (currentMove >= MIN_REAL_PLACE && currentMove <= MAX_REAL_PLACE) {
+			*round = i;
+			return draculaHistory[i];
+		}
+	}
 	*round = 0;
 	return NOWHERE;
 }
@@ -94,9 +118,35 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    //	HashTable pathLookup = GetPathLookupTableFrom();
+    // HashTable pathLookup = GetPathLookupTableFrom();
 	// HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
+	
+	// Getting map
+	Map map = GetMap(hv->gameView);
+	// Getting data for Place
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, hunter);
+	
+	Place *from = malloc(sizeof(struct place));
+	if (from == NULL) {
+		fprintf(stderr, "Couldn't allocate Place!\n");
+        exit(EXIT_FAILURE);
+	}
+
+	from->id = currentLocation;
+	from->name = placeIdToName(from->id);
+	from->abbrev = placeIdToAbbrev(from->id);
+	from->type = placeIdToType(from->id);
+
+	int round = GvGetRound(hv->gameView);
+
+	HashTable pathLookup = GetPathLookupTableFrom(hv->gameView, map, hunter, *from, true, true, true, round, true, false);
+
+	HashNode path = HashGet(pathLookup, from->abbrev);
+
+	// Allocate memory for the PlaceId *array that will be returned
+	// Loop through the HashNode to get the path and use charAbbrevToId to convert char *key into PlaceId
+	// Update length of the array with each node added to the path and return the full array
+
 	*pathLength = 0;
 	return NULL;
 }
@@ -106,34 +156,46 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	Player currentPlayer = GvGetPlayer(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
+	int currentRound = GvGetRound(hv->gameView);
+
+	return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation, true, true, true, currentRound, numReturnedLocs, true, false);
 }
 
 PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
                              bool boat, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	Player currentPlayer = GvGetPlayer(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
+	int currentRound = GvGetRound(hv->gameView);
+
+	return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation, road, rail, boat, currentRound, numReturnedLocs, true, false);
 }
 
 PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
                           int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
+	int currentRound = GvGetRound(hv->gameView);
+	return GetPossibleMoves(hv->gameView, map, player, currentLocation, true, true, true, currentRound, numReturnedLocs, true, false);
 }
 
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
-	return NULL;
+	Map map = GetMap(hv->gameView);
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
+	int currentRound = GvGetRound(hv->gameView);
+	return GetPossibleMoves(hv->gameView, map, player, currentLocation, road, rail, boat, currentRound, numReturnedLocs, true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////
