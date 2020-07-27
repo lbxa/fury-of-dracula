@@ -20,6 +20,7 @@
 #include "Map.h"
 #include "Places.h"
 #include "path_finding.h"
+#include "hash_table.h"
 // add your own #includes here
 
 // TODO: ADD YOUR OWN STRUCTS HERE
@@ -117,9 +118,35 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    //	HashTable pathLookup = GetPathLookupTableFrom();
+    // HashTable pathLookup = GetPathLookupTableFrom();
 	// HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
+	
+	// Getting map
+	Map map = GetMap(hv->gameView);
+	// Getting data for Place
+	PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, hunter);
+	
+	Place *from = malloc(sizeof(struct place));
+	if (from == NULL) {
+		fprintf(stderr, "Couldn't allocate Place!\n");
+        exit(EXIT_FAILURE);
+	}
+
+	from->id = currentLocation;
+	from->name = placeIdToName(from->id);
+	from->abbrev = placeIdToAbbrev(from->id);
+	from->type = placeIdToType(from->id);
+
+	int round = GvGetRound(hv->gameView);
+
+	HashTable pathLookup = GetPathLookupTableFrom(hv->gameView, map, hunter, *from, true, true, true, round, true, false);
+
+	HashNode path = HashGet(pathLookup, from->abbrev);
+
+	// Allocate memory for the PlaceId *array that will be returned
+	// Loop through the HashNode to get the path and use charAbbrevToId to convert char *key into PlaceId
+	// Update length of the array with each node added to the path and return the full array
+
 	*pathLength = 0;
 	return NULL;
 }
