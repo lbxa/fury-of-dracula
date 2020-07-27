@@ -11,7 +11,7 @@ Tutorial Code: T17A
 | Github Name  | Real Name | zID |
 | -------------      | -------------   | ------------- |
 | Stephenmorrisunsw  | Stephen Morris  | z5230723  |
-| ericholm           | Eric Holsmstrom | z5310814  |
+| ericholm           | Eric Holmstrom | z5310814  |
 | lucasbrsa         | Lucas Barbosa   | z5259433  |
 
 All we do is code and win.
