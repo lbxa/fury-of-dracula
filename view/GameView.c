@@ -317,22 +317,20 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
 
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    // use void *memcpy(void *dest, const void * src, size_t n)
-    // to copy over
+    
     PlayerDetails currPlayer = gv->players[player];
     *numReturnedMoves = currPlayer->moveCount;
-    *canFree = true;
+    *canFree = true;        // should be true if using a copy of the original array. 
 
     PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
-    // copy the moves from the struct onto a dynamically allocated array!
     memcpy(moveHistory, currPlayer->moves, sizeof(PlaceId) * currPlayer->moveCount);
+
     return moveHistory;
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+
     PlayerDetails currPlayer = gv->players[player];
     *numReturnedMoves = currPlayer->moveCount;
     *canFree = false;
@@ -348,45 +346,25 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
         nLastMoves[offset - i] = currPlayer->moves[i];
     }
 
-    // *numReturnedMoves = TRAIL_SIZE;
-    // PlaceId *trail = malloc(sizeof(*trail) * TRAIL_SIZE);
-    // trail[0] = HIDE;
-    // trail[1] = LISBON;
-    // trail[2] = CADIZ;
-    // trail[3] = GRANADA;
-    // trail[4] = ALICANTE;
-    // trail[5] = SARAGOSSA;
     return nLastMoves;
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+
     PlayerDetails currPlayer = gv->players[player];
     *numReturnedLocs = currPlayer->moveCount;
-    // should be true if using a copy of the original array. 
-    *canFree = true;
+    *canFree = true;            // should be true if using a copy of the original array. 
 
-    // ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation)
     PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
-    // copy the moves from the struct onto a dynamically allocated array!
     memcpy(locationHistory, currPlayer->resolvedMoves, sizeof(PlaceId) * currPlayer->moveCount);
 
-    // PlaceId *moves = malloc(sizeof(*moves) * TRAIL_SIZE + 2);
-    // moves[0] = SANTANDER;
-    // moves[1] = SARAGOSSA;
-    // moves[2] = LISBON;
-    // moves[3] = LISBON;
-    // moves[4] = CADIZ;
-    // moves[5] = GRANADA;
-    // moves[6] = ALICANTE;
-    // moves[7] = SARAGOSSA;
     return locationHistory;
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+
     PlayerDetails currPlayer = gv->players[player];
     *numReturnedLocs = currPlayer->moveCount;
     *canFree = false;
