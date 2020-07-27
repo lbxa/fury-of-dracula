@@ -15,6 +15,7 @@ Tutorial Code: T17A
 | Stephenmorrisunsw  | Stephen Morris  | z5230723  |
 | ericholm           | Eric Holmstrom | z5310814  |
 | lucasbrsa         | Lucas Barbosa   | z5259433  |
+| debbie-tommy      | Debbie Tommy    | z5280685  |
 
 All we do is code and win.
 
