@@ -370,7 +370,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
     // ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation)
     PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
     // copy the moves from the struct onto a dynamically allocated array!
-    memcpy(locationHistory, currPlayer->resolvedMoves, currPlayer->moveCount);
+    memcpy(locationHistory, currPlayer->resolvedMoves, sizeof(PlaceId) * currPlayer->moveCount);
 
     // PlaceId *moves = malloc(sizeof(*moves) * TRAIL_SIZE + 2);
     // moves[0] = SANTANDER;
