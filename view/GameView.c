@@ -349,7 +349,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
     }
 
     PlaceId *nLastMoves = malloc(sizeof(PlaceId*) * numMoves);
-    memcpy(nLastMoves, currPlayer->resolvedMoves[currPlayer->moveCount - numMoves - 1], numMoves);
+    memcpy(nLastMoves, &currPlayer->resolvedMoves[currPlayer->moveCount - numMoves - 1], numMoves);
 
     // for (int i = numMoves - 1; i >= 0; i--) {
     //     int offset = (numMoves - 1);
@@ -404,7 +404,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
     }
 
     PlaceId *nLastLocations = malloc(sizeof(PlaceId*) * numLocs);
-    memcpy(nLastLocations, currPlayer->resolvedMoves[currPlayer->moveCount - numLocs - 1], numLocs);
+    memcpy(nLastLocations, &currPlayer->resolvedMoves[currPlayer->moveCount - numLocs - 1], numLocs);
 
     // for (int i = numLocs - 1; i >= 0; i--) {
     //     int offset = (numLocs - 1);
