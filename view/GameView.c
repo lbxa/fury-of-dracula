@@ -324,10 +324,9 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
     *numReturnedMoves = currPlayer->moveCount;
     *canFree = true;
 
-    PlaceId *moveHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
+    PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
     // copy the moves from the struct onto a dynamically allocated array!
-    memcpy(moveHistory, currPlayer->moves, currPlayer->moveCount);
-
+    memcpy(moveHistory, currPlayer->moves, sizeof(PlaceId) * currPlayer->moveCount);
     return moveHistory;
 }
 

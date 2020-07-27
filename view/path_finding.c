@@ -149,15 +149,16 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     // Loop through connections and add possible locations/moves
     ConnList cur = connections;
     while (cur) {
-        if (cur->p == HOSPITAL_PLACE) continue;
-        // Applies movement restriction if dracula
-        if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
-            if (cur->type == ROAD && road) {
-                places[(*placesCount)++] = cur->p;
-                placesAdded[cur->p] = true;
-            } else if (cur->type == BOAT && boat) {
-                places[(*placesCount)++] = cur->p;
-                placesAdded[cur->p] = true;
+        if (!(player == PLAYER_DRACULA && cur->p == HOSPITAL_PLACE)) {
+            // Applies movement restriction if dracula
+            if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
+                if (cur->type == ROAD && road) {
+                    places[(*placesCount)++] = cur->p;
+                    placesAdded[cur->p] = true;
+                } else if (cur->type == BOAT && boat) {
+                    places[(*placesCount)++] = cur->p;
+                    placesAdded[cur->p] = true;
+                }
             }
         }
         cur = cur->next;
@@ -224,10 +225,11 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Plac
         Path pathNode = (Path) HashGet(distances, currentVertex->place)->value;
         if (currentDistance > pathNode->distance) continue;
         int reachableCount = 0;
-        PlaceId *reachable = GetPossibleMoves(gameView, map, player, currentPlace, road, rail, boat, round,
+        PlaceId *reachable = GetPossibleMoves(gameView, map, player, currentPlace, road, rail, boat, round + currentDistance,
                                               &reachableCount, resolveMoves, applyTrailRestrictions);
 
         for (int i = 0; i < reachableCount; ++i) {
+            if (reachable[i] == currentPlace) continue;
             const char *vertexAbbrev = placeIdToAbbrev(reachable[i]);
             int distance = currentDistance + 1; // No weights on edges so simply add 1
             pathNode = (Path) HashGet(distances, vertexAbbrev)->value;
@@ -276,6 +278,18 @@ Path* GetOrderedPathSequence(Path path) {
         i--;
     }
     return pathArr;
+}
+
+PlaceId* GetOrderedPlaceIds(Path path) {
+    PlaceId *placeIdArr = malloc(sizeof(PlaceId) * (path->distance));
+    int i = path->distance - 1;
+    Path cur = path;
+    while (cur && cur->predecessor) {
+        placeIdArr[i] = placeAbbrevToId(cur->place);
+        cur = cur->predecessor;
+        i--;
+    }
+    return placeIdArr;
 }
 
 void PrintPathSequence(Path path) {

@@ -65,6 +65,13 @@ void PrintPathSequence(Path path);
 Path* GetOrderedPathSequence(Path path);
 
 /**
+ * Gets an array of PlaceId's in order from given path
+ * @param path
+ * @return
+ */
+PlaceId* GetOrderedPlaceIds(Path path);
+
+/**
  * Gets reachable places in move given travel type restirctions from given PlaceId
  * @param map
  * @param round
