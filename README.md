@@ -1,5 +1,7 @@
 ![Fury of Dracula](https://www.cse.unsw.edu.au/~cs2521/20T2/ass/ass2/Pics/drac.png)
 
+![](https://travis-ci.com/lucasbrsa/fury-of-dracula.svg?token=T88Zm2yy8Q4icx3jiDrh&branch=master)
+
 # fury-of-dracula
 
 ### CS2521 Assignment 
