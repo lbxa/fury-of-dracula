@@ -94,7 +94,7 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs) {
     Map map = GetMap(dv->gameView);
     PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
     return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-                            true, false, true, 0, numReturnedLocs, true, true);
+                            true, false, true, 0, numReturnedLocs, false, true);
 }
 
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,

@@ -96,6 +96,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     int trailNumMoves = 0;
     bool canFree = false;
     PlaceId *trail = NULL;
+    PlaceId *locationHistory = NULL;
     bool canHide = true;
     bool canDoubleBack = true;
     bool onTrailLookup[NUM_REAL_PLACES] = {false};
@@ -103,8 +104,11 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     // Determine whether can hide and double back based on if those moves are in trail
     if (player == PLAYER_DRACULA && applyTrailRestrictions) {
         trail = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE, &trailNumMoves, &canFree);
+        locationHistory = GvGetLastLocations(gameView, PLAYER_DRACULA, TRAIL_SIZE, &trailNumMoves, &canFree);
         for (int i = 0; i < trailNumMoves; ++i) {
-            onTrailLookup[trail[i]] = true;
+            onTrailLookup[locationHistory[i]] = true;
+            PlaceId move = trail[i];
+            printf("Trail[%d] -> %s\n", i, placeIdToName(move));
             if (trail[i] == HIDE) {
                 canHide = false;
             } else if (trail[i] >= DOUBLE_BACK_1 && trail[i] <= DOUBLE_BACK_5) {
@@ -164,14 +168,14 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
         int locationCount = 0;
         PlaceId *resolvedLocations = GvGetLocationHistory(gameView, player, &locationCount, &canFree);
 
-        for (int i = 0; i < trailNumMoves - 1; i++) {
+        for (int i = 0; i < trailNumMoves; i++) {
             // Need to perform resolve location of moves
             PlaceId place;
             if (resolveMoves) {
                place = ResolveTrailLocation(gameView, resolvedLocations,
                         trail[i], locationCount - (trailNumMoves - 1 - i));
             } else {
-                place = DOUBLE_BACK_1 + (trailNumMoves - 2 - i);
+                place = DOUBLE_BACK_1 + (trailNumMoves - 1 - i);
             }
             if (!placesAdded[place]) {
                 placesAdded[place] = true;

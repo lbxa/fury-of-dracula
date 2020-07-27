@@ -128,6 +128,7 @@ int main(void)
 		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
 		assert(numMoves == 4);
 		sortPlaces(moves, numMoves);
+
 		assert(moves[0] == GALATZ);
 		assert(moves[1] == KLAUSENBURG);
 		assert(moves[2] == HIDE);
@@ -154,7 +155,8 @@ int main(void)
 		
 		int numLocs = -1;
 		PlaceId *locs = DvWhereCanIGo(dv, &numLocs);
-		assert(numLocs == 4);
+
+        assert(numLocs == 4);
 		sortPlaces(locs, numLocs);
 		assert(locs[0] == BELGRADE);
 		assert(locs[1] == CONSTANTA);
