@@ -1,22 +1,20 @@
 ![Fury of Dracula](https://www.cse.unsw.edu.au/~cs2521/20T2/ass/ass2/Pics/drac.png)
 
-# Demo change
-
 # fury-of-dracula
 
 ### CS2521 Assignment 
 
 Group Name: stephen-eric-lucas-debbie
+
 Tutorial Code: T17A
 
-Github Names: Stephenmorrisunsw | Real Names: Stephen Morris | zID's: z5230723
-Github Names: ericholm | Real Names: Eric Holsmstrom | zID's: z5310814
-Github Names: Stephenmorrisunsw | Real Names: Stephen Morris | zID's: z5230723
-Github Names: Stephenmorrisunsw | Real Names: Stephen Morris | zID's: z5230723
+| Github Name  | Real Name | zID |
+| -------------      | -------------   | ------------- |
+| Stephenmorrisunsw  | Stephen Morris  | z5230723  |
+| ericholm           | Eric Holsmstrom | z5310814  |
+| lucasbrsa         | Lucas Barbosa   | z5259433  |
 
 All we do is code and win.
-
-Lucas Barbosa | Stephen Morris | Eric Holmstrom | Debbie-Tommy
 
 
 ### Usage
@@ -36,3 +34,6 @@ and ADT implementation test.
 Additionally, there is a test script which runs the supplied tests to run these combined tests run ```run_tests.sh```. Also
 a `.travis.yml` file has been added which when this repository is connected up to Travis CI will allow us to run automated testing
 upon every commit to master to ensure that any of the latest changes haven't broken anything.
+
+Lucas Barbosa | Stephen Morris | Eric Holmstrom | Debbie-Tommy
+
