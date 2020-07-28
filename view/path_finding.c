@@ -305,3 +305,39 @@ void PrintPathSequence(Path path) {
     }
     printf("%s\n", sequenceStr);
 }
+
+PlaceId *GetShortestPathTo(GameView gameView, Player player, PlaceId dest,
+                           int *pathLength) {
+    // HashTable pathLookup = GetPathLookupTableFrom();
+    // HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
+
+    // Getting map
+    Map map = GetMap(gameView);
+    // Getting data for Place
+    *pathLength = 0;
+    PlaceId currentLocation = GvGetPlayerLocation(gameView, player);
+    if (currentLocation == dest) return NULL;
+
+    Place *from = malloc(sizeof(struct place));
+    if (from == NULL) {
+        fprintf(stderr, "Couldn't allocate Place!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int round = GvGetRound(gameView);
+    HashTable pathLookup = NULL;
+
+    if (player == PLAYER_DRACULA) {
+        pathLookup = GetPathLookupTableFrom(gameView, map, player, PLACES[currentLocation], true, false, true, round, true,
+                                 true);
+    } else {
+        pathLookup = GetPathLookupTableFrom(gameView, map, player, PLACES[currentLocation], true, true, true, round, true,
+                                            false);
+    }
+    if (pathLookup == NULL) return NULL;
+
+    Path path = (Path) HashGet(pathLookup, placeIdToAbbrev(dest))->value;
+
+    *pathLength = path->distance;
+    return GetOrderedPlaceIds(path);
+}
