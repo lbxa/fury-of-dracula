@@ -21,6 +21,7 @@
 #include "Game.h"
 #include "Places.h"
 #include "Map.h"
+#include "Players.h"
 // add your own #includes here
 
 typedef struct gameView *GameView;
@@ -261,7 +262,28 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
+/**
+ * Gets gameview map
+ * @param gameView
+ * @return
+ */
 Map GetMap(GameView gameView);
+
+/**
+ * Gets array of player detail structs
+ * @param gameView
+ * @return
+ */
+PlayerDetails *GetPlayerDetailsArray(GameView gameView);
+
+/**
+ * Resolves the given location for player
+ * @param gameView
+ * @param player
+ * @param unresolvedLocation
+ * @return
+ */
+PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation);
 
 // TODO
 
