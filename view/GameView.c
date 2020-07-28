@@ -19,7 +19,6 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
-#include "Players.h"
 #include "path_finding.h"
 
 struct gameView {
@@ -408,6 +407,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 Map GetMap(GameView gameView) {
     return gameView->map;
+}
+
+PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
+    return gameView->players;
 }
 
 // TODO
