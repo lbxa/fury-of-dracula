@@ -9,12 +9,21 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+#include <stdio.h>
+#include <time.h>
+#include <pthread.h>
 #include "Game.h"
 #include "hunter.h"
 #include "HunterView.h"
 
-void decideHunterMove(HunterView hv)
+void decideHunterMove(void* hv)
 {
-	// TODO: Replace this with something better!
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	HunterView view = (HunterView) hv;
 	registerBestPlay("TO", "Have we nothing Toulouse?");
+    time_t start = clock();
+    while ((((double) (clock() - start)) / CLOCKS_PER_SEC) < ((double) 2)) {}
+    printf("Run\n\n");
+    registerBestPlay("SO", "Have we nothing Toulouse?");
 }

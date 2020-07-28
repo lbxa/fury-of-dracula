@@ -242,10 +242,6 @@ GameView GvNew(char *pastPlays, Message messages[]) {
         gameView->turnNumber++;
         cur = pastPlays[gameView->turnNumber * 8 - 1];
     }
-//    for (int i = 0; i < NUM_PLAYERS; ++i) {
-//        PrintPlayer(gameView->players[i]);
-//    }
-//    printf("Score: %d\n", gameView->gameScore);
     return gameView;
 }
 
@@ -433,6 +429,10 @@ Map GetMap(GameView gameView) {
 
 PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
     return gameView->players;
+}
+
+int GvGetTurnNumber(GameView gameView) {
+    return gameView->turnNumber;
 }
 
 // TODO

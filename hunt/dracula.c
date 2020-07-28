@@ -9,12 +9,19 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+#include <time.h>
+#include <pthread.h>
 #include "dracula.h"
 #include "DraculaView.h"
 #include "Game.h"
 
-void decideDraculaMove(DraculaView dv)
+void decideDraculaMove(void* dv)
 {
-	// TODO: Replace this with something better!
-	registerBestPlay("CD", "Mwahahahaha");
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	DraculaView view = (DraculaView) dv;
+
+	// Loop through possible moves and pick best one
+
+//	registerBestPlay("LS", "Mwahahahaha");
 }

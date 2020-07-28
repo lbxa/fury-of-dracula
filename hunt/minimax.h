@@ -1,0 +1,8 @@
+//
+// Created by eric on 28/7/20.
+//
+
+#ifndef FURY_OF_DRACULA_HUNT_MINIMAX_H
+#define FURY_OF_DRACULA_HUNT_MINIMAX_H
+
+#endif //FURY_OF_DRACULA_HUNT_MINIMAX_H

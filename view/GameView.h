@@ -285,6 +285,14 @@ PlayerDetails *GetPlayerDetailsArray(GameView gameView);
  */
 PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation);
 
+/**
+ * Gets turn number
+ * @param gameView
+ * @return
+ */
+int GvGetTurnNumber(GameView gameView);
+
+
 // TODO
 
 #endif // !defined (FOD__GAME_VIEW_H_)
