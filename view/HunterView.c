@@ -184,9 +184,19 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs) {
     *numReturnedLocs = 0;
+    bool canFree = true;
+    int numReturnedMoves;
     Map map = GetMap(hv->gameView);
     PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
-    int currentRound = GvGetRound(hv->gameView) + 1; //TODO: Verify this
+    int currentRound = GvGetRound(hv->gameView);
+    
+    PlaceId *history = GvGetMoveHistory(hv->gameView, player,
+                          &numReturnedMoves, &canFree);
+
+    if (history[currentRound] == currentLocation) {
+        currentRound += 1;
+    }
+
     return GetPossibleMoves(hv->gameView, map, player, currentLocation, road, rail, boat, currentRound, numReturnedLocs,
                             true, false);
 }
