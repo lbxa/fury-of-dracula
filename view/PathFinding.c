@@ -2,22 +2,17 @@
 // Created by eric on 17/7/20.
 //
 
-#include "path_finding.h"
+#include "PathFinding.h"
 #include "Queue.h"
 #include "GameView.h"
+#include "Utilities.h"
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 
-////////////////////////////////////////////////////////////////////////
-// PATH FINDING
-// Full lookup if need to recreate each turn will entail creating 4 lookups for each starting initial state of having
-// 0, 1, 2, 3 rail moves + a lookup for no rail moves at any time (dracula)
-
-
 /**
- * Resolves a location on draculas trail
+ * Resolves a location on dracula's trail
  * @param gameView
  * @param resolvedLocations
  * @param unresolvedLocation
@@ -38,7 +33,6 @@ PlaceId ResolveTrailLocation(GameView gameView, PlaceId *resolvedLocations, Plac
 
 /**
  * Returns array of reachable locations by rail given distance by rail
- * //TODO: Check if requires minor optimisations as looked like returned duplicates
  * @param map
  * @param distanceByRail
  * @param currentId
@@ -51,6 +45,7 @@ PlaceId *getRailReachable(Map map, int distanceByRail, PlaceId currentId, int *p
     bool *visited = calloc(NUM_REAL_PLACES, sizeof(*visited));
     int *distances = calloc(NUM_REAL_PLACES, sizeof(*distances));
 
+    // Check memory got allocated successfully
     assert(visited != NULL);
     assert(reachablePlaces != NULL);
     assert(distances != NULL);
@@ -58,12 +53,17 @@ PlaceId *getRailReachable(Map map, int distanceByRail, PlaceId currentId, int *p
     visited[currentId] = true;
     QueueJoin(q, currentId);
 
+    // Breadth first search to get reachable locations by rail
     while (!QueueIsEmpty(q)) {
         PlaceId currentPlace = QueueLeave(q);
+        // Skip place if it is not reachable within the given number of
+        // rail moves
         if (distances[currentPlace] >= distanceByRail) continue;
         ConnList connections = MapGetConnections(map, currentPlace);
         for (ConnList cur = connections; cur != NULL; cur = cur->next) {
+            // This function only deals with rail connections
             if (cur->type != RAIL) continue;
+            // If already visited then skip
             if (visited[cur->p]) continue;
             QueueJoin(q, cur->p);
             visited[cur->p] = true;
@@ -73,9 +73,11 @@ PlaceId *getRailReachable(Map map, int distanceByRail, PlaceId currentId, int *p
         }
     }
 
+    // Free allocated memory
     dropQueue(q);
     free(visited);
     free(distances);
+
     return reachablePlaces;
 }
 
@@ -87,6 +89,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
                             PlaceId currentId, bool road, bool rail, bool boat,
                             int round, int *placesCount, bool resolveMoves, bool applyTrailRestrictions) {
 
+    // Get places the given place is connected to
     ConnList connections = MapGetConnections(map, currentId);
 
     // Calculate number of rail moves player can make
@@ -95,7 +98,7 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     // Variables for dracula trail handling
     int trailNumMoves = 0;
     bool canFree = false;
-    PlaceId *trail = NULL;
+    PlaceId *trailMoves = NULL;
     PlaceId *locationHistory = NULL;
     bool canHide = true;
     bool canDoubleBack = true;
@@ -103,15 +106,15 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
 
     // Determine whether can hide and double back based on if those moves are in trail
     if (player == PLAYER_DRACULA && applyTrailRestrictions) {
-        trail = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE, &trailNumMoves, &canFree);
-        locationHistory = GvGetLastLocations(gameView, PLAYER_DRACULA, TRAIL_SIZE, &trailNumMoves, &canFree);
+        trailMoves = GvGetLastMoves(gameView, PLAYER_DRACULA,
+                                    TRAIL_SIZE, &trailNumMoves, &canFree);
+        locationHistory = GvGetLastLocations(gameView, PLAYER_DRACULA,
+                TRAIL_SIZE, &trailNumMoves, &canFree);
         for (int i = 0; i < trailNumMoves; ++i) {
             onTrailLookup[locationHistory[i]] = true;
-            PlaceId move = trail[i];
-            printf("Trail[%d] -> %s\n", i, placeIdToName(move));
-            if (trail[i] == HIDE) {
+            if (trailMoves[i] == HIDE) {
                 canHide = false;
-            } else if (trail[i] >= DOUBLE_BACK_1 && trail[i] <= DOUBLE_BACK_5) {
+            } else if (trailMoves[i] >= DOUBLE_BACK_1 && trailMoves[i] <= DOUBLE_BACK_5) {
                 canDoubleBack = false;
             }
         }
@@ -119,13 +122,14 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
 
     *placesCount = 0;
     PlaceId *places = malloc(sizeof(PlaceId) * NUM_REAL_PLACES);
+    CheckMallocSuccess(places, "Couldn't allocate for places array!\n");
 
     // Use as lookup to stop placing duplicates moves/locations in output
     bool placesAdded[NUM_REAL_PLACES] = {false};
 
     // Handle checking whether current place can be added as possible location
     // as dracula can only move to current location as HIDE if not HIDE not already
-    // in trail
+    // in trailMoves
     if (player != PLAYER_DRACULA || canHide) {
         if (player != PLAYER_DRACULA || resolveMoves) {
             places[0] = currentId;
@@ -137,7 +141,8 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
 
     if (numberRailMoves > 0) {
         int railReachableCount = 0;
-        PlaceId *railReachable = getRailReachable(map, numberRailMoves, currentId, &railReachableCount);
+        PlaceId *railReachable = getRailReachable(map, numberRailMoves,
+                currentId, &railReachableCount);
         for (int i = 0; i < railReachableCount; ++i) {
             if (placesAdded[railReachable[i]]) continue;
             places[(*placesCount)++] = railReachable[i];
@@ -149,13 +154,16 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     // Loop through connections and add possible locations/moves
     ConnList cur = connections;
     while (cur) {
+        // Apply restriction that dracula can't go to HOSPITAL_PLACE
         if (!(player == PLAYER_DRACULA && cur->p == HOSPITAL_PLACE)) {
             // Applies movement restriction if dracula
             if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
                 if (cur->type == ROAD && road) {
+                    // If can use road connections then add it
                     places[(*placesCount)++] = cur->p;
                     placesAdded[cur->p] = true;
                 } else if (cur->type == BOAT && boat) {
+                    // If can use boat connections then add it
                     places[(*placesCount)++] = cur->p;
                     placesAdded[cur->p] = true;
                 }
@@ -167,14 +175,15 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
     // Handle dracula double back moves
     if (player == PLAYER_DRACULA && canDoubleBack && applyTrailRestrictions) {
         int locationCount = 0;
-        PlaceId *resolvedLocations = GvGetLocationHistory(gameView, player, &locationCount, &canFree);
+        PlaceId *resolvedLocations = GvGetLocationHistory(gameView, player,
+                &locationCount, &canFree);
 
         for (int i = 0; i < trailNumMoves; i++) {
             // Need to perform resolve location of moves
             PlaceId place;
             if (resolveMoves) {
-               place = ResolveTrailLocation(gameView, resolvedLocations,
-                        trail[i], locationCount - (trailNumMoves - 1 - i));
+               place = ResolveTrailLocation(gameView, resolvedLocations, trailMoves[i],
+                       locationCount - (trailNumMoves - 1 - i));
             } else {
                 place = DOUBLE_BACK_1 + (trailNumMoves - 1 - i);
             }
@@ -201,19 +210,20 @@ PlaceId * GetPossibleMoves(GameView gameView, Map map, Player player,
  */
 HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Place from, bool road, bool rail, bool boat,
                                  int round, bool resolveMoves, bool applyTrailRestrictions) {
-    // Create vertex dictionary
-
     // Prime numbers are suitable table sizes and not that many vertices exist
     // so can pick small value
     HashTable distances = HashTableCreate(181);
 
     for (int i = 0; i < NUM_REAL_PLACES; ++i) {
         Place p = PLACES[i];
-        HashInsert(distances, p.abbrev, CreatePath(p.abbrev, INT_MAX, NULL));
+        HashInsert(distances, p.abbrev,
+                CreatePath(p.abbrev, INT_MAX, NULL));
     }
 
+    // Create priority queue and push starting location with distance of 0
     Heap pq = HeapCreate(1024);
-    HeapPush(pq, HeapItemCreate(0, CreatePath(from.abbrev, 0, NULL)));
+    HeapPush(pq, HeapItemCreate(0,
+            CreatePath(from.abbrev, 0, NULL)));
 
     while (!HeapIsEmpty(pq)) {
         HeapItem currentItem = HeapPop(pq);
@@ -221,43 +231,51 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Plac
         PlaceId currentPlace = placeAbbrevToId(currentVertex->place);
         int currentDistance = currentVertex->distance;
 
-        // Vertex can be added multiple times to pq. We only want to process it the first time
+        // Vertex can be added multiple times to priority queue
+        // We only want to process it the first time
         Path pathNode = (Path) HashGet(distances, currentVertex->place)->value;
         if (currentDistance > pathNode->distance) continue;
         int reachableCount = 0;
-        PlaceId *reachable = GetPossibleMoves(gameView, map, player, currentPlace, road, rail, boat, round + currentDistance,
-                                              &reachableCount, resolveMoves, applyTrailRestrictions);
 
+        // Gets possible moves/locations using restrictions as passed into function
+        PlaceId *reachable = GetPossibleMoves(gameView, map, player, currentPlace,
+                road, rail, boat, round + currentDistance,
+                &reachableCount, resolveMoves, applyTrailRestrictions);
+
+        // Loop through possible moves at the currently processed vertex
         for (int i = 0; i < reachableCount; ++i) {
+            // Since reachable includes currentPlace then skip it
             if (reachable[i] == currentPlace) continue;
             const char *vertexAbbrev = placeIdToAbbrev(reachable[i]);
-            int distance = currentDistance + 1; // No weights on edges so simply add 1
+
+            // No weights on edges so simply add 1
+            int distance = currentDistance + 1;
+
             pathNode = (Path) HashGet(distances, vertexAbbrev)->value;
             int neighbourDistanceLookup = pathNode->distance;
+
+            // If distance is better then what has been currently found then set that as path
             if (distance < neighbourDistanceLookup) {
                 // Create new node for path for found vertex and set predecessor as currentVertex
                 Path new = CreatePath((char *) vertexAbbrev, distance, currentVertex);
+
+                // Updated distances and insert to priority queue
                 HashInsert(distances, vertexAbbrev, new);
                 HeapPush(pq, HeapItemCreate(distance, new));
             }
         }
     }
+    // Free the priority queue
     HeapDestroy(pq);
     return distances;
 }
 
-HashTable* GetAllPathLookup(Map map) {
-    HashTable *pathsLookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
-    for (int i = 0; i < NUM_REAL_PLACES; i++) {
-        pathsLookup[i] = GetPathLookupTableFrom(NULL, map, PLAYER_MINA_HARKER, PLACES[i], 0, 0, 0, 0, true, true);
-    }
-    return pathsLookup;
-}
-
 Path CreatePath(char *place, int distance, Path predecessor) {
     Path path = malloc(sizeof(*path));
+    CheckMallocSuccess(path, "Couldn't allocate for path!\n");
     path->distance = distance;
     path->place = malloc(sizeof(strlen(place)));
+    CheckMallocSuccess(path, "Couldn't allocate for place string!\n");
     strcpy(path->place, place);
     path->predecessor = predecessor;
     return path;
@@ -270,6 +288,7 @@ void FreePathNode(Path path) {
 
 Path* GetOrderedPathSequence(Path path) {
     Path *pathArr = malloc(sizeof(Path) * (path->distance + 1));
+    CheckMallocSuccess(pathArr, "Couldn't allocate path array!\n");
     int i = path->distance;
     Path cur = path;
     while (cur) {
@@ -282,8 +301,11 @@ Path* GetOrderedPathSequence(Path path) {
 
 PlaceId* GetOrderedPlaceIds(Path path) {
     PlaceId *placeIdArr = malloc(sizeof(PlaceId) * (path->distance));
+    CheckMallocSuccess(placeIdArr, "Couldn't allocate place id array!\n");
     int i = path->distance - 1;
     Path cur = path;
+    // Step through predecessors and reorder so that they are in ascending order
+    // instead of reverse
     while (cur && cur->predecessor) {
         placeIdArr[i] = placeAbbrevToId(cur->place);
         cur = cur->predecessor;
@@ -295,6 +317,7 @@ PlaceId* GetOrderedPlaceIds(Path path) {
 void PrintPathSequence(Path path) {
     int length = 4 * (path->distance + 1);
     char *sequenceStr = malloc(sizeof(char) * length);
+    CheckMallocSuccess(sequenceStr, "Couldn't allocate sequence string!\n");
     sequenceStr[length - 1] = '\0';
     Path *pathArr = GetOrderedPathSequence(path);
     for (int j = 0; j < path->distance + 1; ++j) {
@@ -308,31 +331,27 @@ void PrintPathSequence(Path path) {
 
 PlaceId *GetShortestPathTo(GameView gameView, Player player, PlaceId dest,
                            int *pathLength) {
-    // HashTable pathLookup = GetPathLookupTableFrom();
-    // HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
-
     // Getting map
     Map map = GetMap(gameView);
+
     // Getting data for Place
     *pathLength = 0;
     PlaceId currentLocation = GvGetPlayerLocation(gameView, player);
     if (currentLocation == dest) return NULL;
 
     Place *from = malloc(sizeof(struct place));
-    if (from == NULL) {
-        fprintf(stderr, "Couldn't allocate Place!\n");
-        exit(EXIT_FAILURE);
-    }
+    CheckMallocSuccess(from, "Couldn't allocate Place!\n");
 
     int round = GvGetRound(gameView);
     HashTable pathLookup = NULL;
 
+    // Finds path given appropriate player restrictions
     if (player == PLAYER_DRACULA) {
-        pathLookup = GetPathLookupTableFrom(gameView, map, player, PLACES[currentLocation], true, false, true, round, true,
-                                 true);
+        pathLookup = GetPathLookupTableFrom(gameView, map, player, PLACES[currentLocation], true,
+                false, true, round, true,true);
     } else {
-        pathLookup = GetPathLookupTableFrom(gameView, map, player, PLACES[currentLocation], true, true, true, round, true,
-                                            false);
+        pathLookup = GetPathLookupTableFrom(gameView, map, player, PLACES[currentLocation], true,
+                true, true, round, true,false);
     }
     if (pathLookup == NULL) return NULL;
 

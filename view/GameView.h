@@ -266,7 +266,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Eric | Lucas | Stephen | Debbie - (20T2)
 
 /**
- * Gets gameview map
+ * Gets GameView map
  * @param gameView
  * @return
  */

@@ -19,8 +19,8 @@
 #include "HunterView.h"
 #include "Map.h"
 #include "Places.h"
-#include "path_finding.h"
-#include "hash_table.h"
+#include "PathFinding.h"
+#include "HashTable.h"
 // add your own #includes here
 
 // TODO: ADD YOUR OWN STRUCTS HERE

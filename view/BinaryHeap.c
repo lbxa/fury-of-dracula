@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "binary_heap.h"
+#include "BinaryHeap.h"
 
 Heap HeapCreate(int initial_capacity) {
     Heap heap = malloc(sizeof(struct heap));
