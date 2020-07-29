@@ -21,14 +21,20 @@
 #include "PathFinding.h"
 
 
+
 struct draculaView {
     GameView gameView;
 };
 
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
+
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
+
 DraculaView DvNew(char *pastPlays, Message messages[]) {
+
     DraculaView new = malloc(sizeof(*new));
     if (new == NULL) {
         fprintf(stderr, "Couldn't allocate DraculaView\n");
@@ -41,6 +47,7 @@ DraculaView DvNew(char *pastPlays, Message messages[]) {
     return new;
 }
 
+// Frees all memory allocated for `dv`.
 void DvFree(DraculaView dv) {
     GvFree(dv->gameView);
     free(dv);
@@ -122,3 +129,6 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
     return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
                             road, rail, boat, round, numReturnedLocs, true, true);
 }
+
+
+////////////////////////////////////////////////////////////////////////

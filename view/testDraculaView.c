@@ -165,6 +165,6 @@ int main(void)
 		printf("Test passed!\n");
 		DvFree(dv);
 	}
-
 	return EXIT_SUCCESS;
 }
+
