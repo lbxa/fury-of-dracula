@@ -19,7 +19,7 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
-#include "path_finding.h"
+#include "PathFinding.h"
 
 struct gameView {
     Map map;

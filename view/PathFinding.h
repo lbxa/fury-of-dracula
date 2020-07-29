@@ -6,8 +6,8 @@
 #define FURY_OF_DRACULA_PATH_FINDING_H
 
 #include "Places.h"
-#include "hash_table.h"
-#include "binary_heap.h"
+#include "HashTable.h"
+#include "BinaryHeap.h"
 #include "Map.h"
 #include "GameView.h"
 
@@ -27,14 +27,6 @@ typedef struct path {
  */
 HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Place from, bool road, bool rail, bool boat,
                                  int round, bool resolveMoves, bool applyTrailRestrictions);
-
-/**
- * Gets a path lookup table which has distances and paths from any
- * place to any other place on the map
- * @param map
- * @return
- */
-HashTable* GetAllPathLookup(Map map);
 
 /**
  * Creates a dynamically allocated path node and returns it
@@ -72,7 +64,7 @@ Path* GetOrderedPathSequence(Path path);
 PlaceId* GetOrderedPlaceIds(Path path);
 
 /**
- * Gets reachable places in move given travel type restirctions from given PlaceId
+ * Gets reachable places in one move given travel type and restrictions from given PlaceId
  * @param map
  * @param round
  * @param currentId

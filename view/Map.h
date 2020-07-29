@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 #include "Places.h"
-#include "hash_table.h"
+#include "HashTable.h"
 
 #ifndef FOD__MAP_H_
 #define FOD__MAP_H_

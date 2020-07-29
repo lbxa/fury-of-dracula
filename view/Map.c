@@ -19,9 +19,9 @@
 
 #include "Map.h"
 #include "Places.h"
-#include "hash_table.h"
+#include "HashTable.h"
 #include "limits.h"
-#include "binary_heap.h"
+#include "BinaryHeap.h"
 #include "Game.h"
 #include <string.h>
 

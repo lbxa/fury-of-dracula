@@ -263,7 +263,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Your own interface functions
 
 /**
- * Gets gameview map
+ * Gets GameView map
  * @param gameView
  * @return
  */

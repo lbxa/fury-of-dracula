@@ -1,18 +1,17 @@
 //
-// Created by eric on 16/7/20.
+// Hash table implementation using seperate chaining to resolve collisions
 //
 
 #ifndef FURY_OF_DRACULA_HASH_TABLE_H
 #define FURY_OF_DRACULA_HASH_TABLE_H
 
 typedef struct hash_node {
-    // Since dynamic sized arrays not allowed in course
     char *key;
     void *value;
     struct hash_node *head;
 } *HashNode;
 
-typedef struct hash_table {
+typedef struct HashTable {
     HashNode *items;
     int table_size;
     int num_items;
