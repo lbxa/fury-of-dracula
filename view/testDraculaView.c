@@ -170,7 +170,7 @@ int main(void)
 
 
 {////////////////////////////////////////////////////////////////////////
-printf("Test Dracula cannot go back to a place that's already in his trail\n");
+printf("Test for Dracula cannot go back to a place that's already in his trail\n");
 char *trail = 
 			"GLO.... SLO.... HAM.... MLO.... DMR.... "
 			"GLO.... SLO.... HAM.... MLO.... DGE.... "
@@ -199,7 +199,7 @@ char *trail =
 
 {///////////////////////////////////////////////////////////////////////
 
-    printf("Test Dracula can't go to the Hospital\n");
+    printf("Test for Dracula can't go to the Hospital\n");
     char *trail =
 		
 		"GED.... SGE.... HZU.... MCA.... DZA.V.. "
