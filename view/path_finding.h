@@ -85,4 +85,14 @@ PlaceId *
 GetPossibleMoves(GameView gameView, Map map, Player player, PlaceId currentId, bool road, bool rail, bool boat,
                  int round, int *placesCount, bool resolveMoves, bool applyTrailRestrictions);
 
+/**
+ * Gets shortest path from player to destination
+ * @param gameView
+ * @param player
+ * @param dest
+ * @param pathLength
+ * @return
+ */
+PlaceId *GetShortestPathTo(GameView gameView, Player player, PlaceId dest, int *pathLength);
+
 #endif //FURY_OF_DRACULA_PATH_FINDING_H

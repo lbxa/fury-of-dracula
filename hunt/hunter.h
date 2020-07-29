@@ -17,6 +17,6 @@
  * For  a  given view of the game, decide what the best next move is for
  * the current hunter by calling `registerBestPlay`.
  */
-void decideHunterMove(HunterView state);
+void decideHunterMove(void* state);
 
 #endif // !defined(FOD__HUNTER_H_)
