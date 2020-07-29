@@ -22,289 +22,289 @@
 #include "path_finding.h"
 
 struct gameView {
-    Map map;
-    PlayerDetails players[NUM_PLAYERS];
-    int gameScore;
-    int turnNumber;
-    int numberTraps;
-    PlaceId trapLocations[TRAIL_SIZE];
-    PlaceId vampireLocation;
-    int roundVampirePlaced;
+  Map map;
+  PlayerDetails players[NUM_PLAYERS];
+  int gameScore;
+  int turnNumber;
+  int numberTraps;
+  PlaceId trapLocations[TRAIL_SIZE];
+  PlaceId vampireLocation;
+  int roundVampirePlaced;
 };
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
-
 GameView ConstructGameView() {
-    GameView new = malloc(sizeof(*new));
-    if (new == NULL) {
-        fprintf(stderr, "Couldn't allocate GameView!\n");
-        exit(EXIT_FAILURE);
-    }
+  GameView new = malloc(sizeof(*new));
+  if (new == NULL) {
+      fprintf(stderr, "Couldn't allocate GameView!\n");
+      exit(EXIT_FAILURE);
+  }
 
-    new->map = MapNew();
-    new->gameScore = GAME_START_SCORE;
-    new->turnNumber = 0;
-    new->numberTraps = 0;
-    new->roundVampirePlaced = -1;
-    new->vampireLocation = NOWHERE;
+  new->map = MapNew();
+  new->gameScore = GAME_START_SCORE;
+  new->turnNumber = 0;
+  new->numberTraps = 0;
+  new->roundVampirePlaced = -1;
+  new->vampireLocation = NOWHERE;
 
-    for (int i = 0; i < TRAIL_SIZE; ++i) {
-        new->trapLocations[i] = NOWHERE;
-    }
+  for (int i = 0; i < TRAIL_SIZE; ++i) {
+    new->trapLocations[i] = NOWHERE;
+  }
 
-    // Create hunters
-    for (int i = 0; i < NUM_PLAYERS - 1; ++i) {
-        new->players[i] = CreatePlayer(i, GAME_START_HUNTER_LIFE_POINTS);
-    }
-    // Create dracula
-    new->players[PLAYER_DRACULA] = CreatePlayer(PLAYER_DRACULA, GAME_START_BLOOD_POINTS);
+  // Create hunters
+  for (int i = 0; i < NUM_PLAYERS - 1; ++i) {
+    new->players[i] = CreatePlayer(i, GAME_START_HUNTER_LIFE_POINTS);
+  }
+  // Create dracula
+  new->players[PLAYER_DRACULA] = CreatePlayer(PLAYER_DRACULA, GAME_START_BLOOD_POINTS);
 
-    return new;
+  return new;
 }
 
 /**
  * Handle the process of clearing traps and mature vampires
- * @param gameView
+ * @param gameView 
  */
 void ProcessTraps(GameView gameView) {
-    int roundNumber = gameView->turnNumber / 5;
+  int roundNumber = gameView->turnNumber / 5;
 
-    // Remove trap
-    gameView->trapLocations[roundNumber % TRAIL_SIZE] = NOWHERE;
+  // Remove trap
+  gameView->trapLocations[roundNumber % TRAIL_SIZE] = NOWHERE;
 
-    // Handle maturing vampire
-    if (gameView->vampireLocation != NOWHERE) {
-        if (roundNumber - gameView->roundVampirePlaced == TRAIL_SIZE) {
-            gameView->gameScore -= SCORE_LOSS_VAMPIRE_MATURES;
-            gameView->vampireLocation = NOWHERE;
-            gameView->roundVampirePlaced = -1;
-        }
+  // Handle maturing vampire
+  if (gameView->vampireLocation != NOWHERE) {
+    if (roundNumber - gameView->roundVampirePlaced == TRAIL_SIZE) {
+      gameView->gameScore -= SCORE_LOSS_VAMPIRE_MATURES;
+      gameView->vampireLocation = NOWHERE;
+      gameView->roundVampirePlaced = -1;
     }
-
+  }
 }
 
 /**
- * Handle encounter events
- * @param gameView
- * @return was player killed in encounter
+ * Handle and process encounter events
+ * @param encounter - type of encounter encoded into a single char. 
+ * @return - was the player killed in encounter
  */
 bool ProcessEncounter(GameView gameView, Player player, char encounter) {
-    /**
-     * Clear traps/vampire
-     */
-    if (encounter == '.') return false;
-    if (encounter == TRAP_ENCOUNTER) {
-        gameView->players[player]->playerHealth -= LIFE_LOSS_TRAP_ENCOUNTER;
-        PlaceId currentPlayerLocation = gameView->players[player]->lastResolvedLocation;
-        for (int i = 0; i < TRAIL_SIZE; ++i) {
-            if (gameView->trapLocations[i] == currentPlayerLocation) {
-                gameView->trapLocations[i] = NOWHERE;
-                break;
-            }
-        }
-    } else if (encounter == VAMPIRE_ENCOUNTER) {
-        gameView->roundVampirePlaced = -1;
-        gameView->vampireLocation = NOWHERE;
-    } else { // Dracula
-        gameView->players[PLAYER_DRACULA]->playerHealth -= LIFE_LOSS_HUNTER_ENCOUNTER;
-        gameView->players[player]->playerHealth -= LIFE_LOSS_DRACULA_ENCOUNTER;
+  /**
+   * Clear traps/vampire
+   */
+  if (encounter == '.') return false;
+  if (encounter == TRAP_ENCOUNTER) {
+    gameView->players[player]->playerHealth -= LIFE_LOSS_TRAP_ENCOUNTER;
+    PlaceId currentPlayerLocation = gameView->players[player]->lastResolvedLocation;
+    for (int i = 0; i < TRAIL_SIZE; ++i) {
+      if (gameView->trapLocations[i] == currentPlayerLocation) {
+        gameView->trapLocations[i] = NOWHERE;
+        break;
+      }
     }
-    return gameView->players[player]->playerHealth <= 0;
+  } else if (encounter == VAMPIRE_ENCOUNTER) {
+    gameView->roundVampirePlaced = -1;
+    gameView->vampireLocation = NOWHERE;
+  } else { // Dracula
+    gameView->players[PLAYER_DRACULA]->playerHealth -= LIFE_LOSS_HUNTER_ENCOUNTER;
+    gameView->players[player]->playerHealth -= LIFE_LOSS_DRACULA_ENCOUNTER;
+  }
+  return gameView->players[player]->playerHealth <= 0;
 }
 
 PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation) {
-    if (player->player != PLAYER_DRACULA) return unresolvedLocation;
-    if (unresolvedLocation >= DOUBLE_BACK_1 && unresolvedLocation <= DOUBLE_BACK_5) {
-        int resolvedIndex = player->moveCount - 1 - (unresolvedLocation - DOUBLE_BACK_1);
-        return player->resolvedMoves[resolvedIndex];
-    } else if (unresolvedLocation == TELEPORT) {
-        return CASTLE_DRACULA;
-    } else if (unresolvedLocation == HIDE) {
-        return player->resolvedMoves[player->moveCount - 1];
-    }
-    return unresolvedLocation;
+  if (player->player != PLAYER_DRACULA) return unresolvedLocation;
+  if (unresolvedLocation >= DOUBLE_BACK_1 && unresolvedLocation <= DOUBLE_BACK_5) {
+    int resolvedIndex = player->moveCount - 1 - (unresolvedLocation - DOUBLE_BACK_1);
+    return player->resolvedMoves[resolvedIndex];
+  } else if (unresolvedLocation == TELEPORT) {
+    return CASTLE_DRACULA;
+  } else if (unresolvedLocation == HIDE) {
+    return player->resolvedMoves[player->moveCount - 1];
+  }
+  return unresolvedLocation;
 }
 
 int min(int a, int b) {
-    return (a < b) ? a : b;
+  return (a < b) ? a : b;
 }
 
 int max(int a, int b) {
-    return (a > b) ? a : b;
+  return (a > b) ? a : b;
 }
 
 /**
- * Handle location of move where a is first char b is second char
+ * Process the current location of the player
  * @param gameView
+ * @param placeAbbrev[3] - placeAbbrev[0] - first character of location
+ *                         placeAbbrev[1] - second character of location
+ *                         placeAbbrev[2] - null terminator
  */
 void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
-    PlaceId placeId = placeAbbrevToId(placeAbbrev);
+  PlaceId placeId = placeAbbrevToId(placeAbbrev);
 
-    PlayerDetails playerDetails = gameView->players[player];
-    int moveCount = playerDetails->moveCount;
+  PlayerDetails playerDetails = gameView->players[player];
+  int moveCount = playerDetails->moveCount;
 
-    // Resolve special cases to find actual location
-    PlaceId resolvedId = ResolveLocation(gameView, playerDetails, placeId);
+  // Resolve special cases to find actual location
+  PlaceId resolvedId = ResolveLocation(gameView, playerDetails, placeId);
 
-    int roundNumber = gameView->turnNumber / 5;
+  int roundNumber = gameView->turnNumber / 5;
 
-    /**
-     * Find player type; handle sea damage for dracula
-     * Handle castle dracula health gain +10
-     *
-     * Hunter rest -> gain +3 health
-     *
-     * Placement of traps (every city unknown) + vampires
-     */
+  /**
+   * Find player type; handle sea damage for dracula
+   * Handle castle dracula health gain +10
+   *
+   * Hunter rest -> gain +3 health
+   *
+   * Placement of traps (every city unknown) + vampires
+   */
 
-    if (player == PLAYER_DRACULA) {
-        if (placeIsSea(resolvedId)) {
-            playerDetails->playerHealth -= LIFE_LOSS_SEA;
-        } else {
-            // Else must be city
-
-            if (roundNumber % VAMPIRE_PLACE_ROUNDS == 0) {
-                // Place immature vampire
-                gameView->vampireLocation = resolvedId;
-                gameView->roundVampirePlaced = roundNumber;
-            } else {
-                // Place trap
-                gameView->trapLocations[roundNumber % TRAIL_SIZE] = resolvedId;
-            }
-
-            if (resolvedId == CASTLE_DRACULA) {
-                playerDetails->playerHealth += LIFE_GAIN_CASTLE_DRACULA;
-            }
-        }
+  if (player == PLAYER_DRACULA) {
+    if (placeIsSea(resolvedId)) {
+      playerDetails->playerHealth -= LIFE_LOSS_SEA;
     } else {
-        // Avoid branching by evaluation the conditional only
-        bool hasRested = playerDetails->lastResolvedLocation
-                         == playerDetails->resolvedMoves[playerDetails->moveCount - 2];
-        playerDetails->playerHealth = min(GAME_START_HUNTER_LIFE_POINTS,
-                                          playerDetails->playerHealth + LIFE_GAIN_REST * hasRested);
-    }
+      // Else must be city
+      if (roundNumber % VAMPIRE_PLACE_ROUNDS == 0) {
+        // Place immature vampire
+        gameView->vampireLocation = resolvedId;
+        gameView->roundVampirePlaced = roundNumber;
+      } else {
+        // Place trap
+        gameView->trapLocations[roundNumber % TRAIL_SIZE] = resolvedId;
+      }
 
-    //Update player histories
-    playerDetails->moves[moveCount] = placeId;
-    playerDetails->resolvedMoves[moveCount] = resolvedId;
-    playerDetails->lastResolvedLocation = resolvedId;
-    playerDetails->moveCount++;
+      if (resolvedId == CASTLE_DRACULA) {
+        playerDetails->playerHealth += LIFE_GAIN_CASTLE_DRACULA;
+      }
+    }
+  } else {
+    // Avoid branching by evaluation the conditional only
+    bool hasRested = playerDetails->lastResolvedLocation
+                      == playerDetails->resolvedMoves[playerDetails->moveCount - 2];
+    playerDetails->playerHealth = min(GAME_START_HUNTER_LIFE_POINTS,
+                                      playerDetails->playerHealth + LIFE_GAIN_REST * hasRested);
+  }
+
+  //Update player histories
+  playerDetails->moves[moveCount] = placeId;
+  playerDetails->resolvedMoves[moveCount] = resolvedId;
+  playerDetails->lastResolvedLocation = resolvedId;
+  playerDetails->moveCount++;
 }
 
 GameView GvNew(char *pastPlays, Message messages[]) {
-    //
-    GameView gameView = ConstructGameView();
-    char placeAbbrev[3] = {0};
-    char cur = pastPlays[0];
+  GameView gameView = ConstructGameView();
+  char placeAbbrev[3] = {0};
+  char cur = pastPlays[0];
 
-    while (cur != '\0') {
-        Player player = gameView->turnNumber % NUM_PLAYERS;
+  while (cur != '\0') {
+    Player player = gameView->turnNumber % NUM_PLAYERS;
 
-        if (player == PLAYER_DRACULA) {
-            // On Dracula's turn
-            ProcessTraps(gameView);
-        } else if (gameView->players[player]->isDead) {
-            gameView->players[player]->playerHealth = GAME_START_HUNTER_LIFE_POINTS;
-            gameView->players[player]->isDead = false;
-        }
-
-
-        int charIndex = gameView->turnNumber * (PLAY_STR_LENGTH + 1);
-
-        /** Offsets from charIndex are:
-            0 -> player
-            1-2 -> place
-            3-6 -> encounters
-        */
-        placeAbbrev[0] = pastPlays[charIndex + 1];
-        placeAbbrev[1] = pastPlays[charIndex + 2];
-        ProcessLocation(gameView, player, placeAbbrev);
-
-        // Process turn encounters -> might need to check in specific order if not ordered in play string
-        if (player != PLAYER_DRACULA) {
-            int encounterIndex = charIndex + 3;
-            while (encounterIndex < charIndex + PLAY_STR_LENGTH) {
-                if (ProcessEncounter(gameView, player, pastPlays[encounterIndex])) {
-                    // Hunter has died
-                    gameView->players[player]->playerHealth = 0;
-                    gameView->players[player]->isDead = true;
-                    gameView->players[player]->lastResolvedLocation = HOSPITAL_PLACE;
-                    gameView->gameScore -= SCORE_LOSS_HUNTER_HOSPITAL;
-                    break;
-                }
-                ++encounterIndex;
-            }
-        }
-
-        gameView->gameScore -= (player == PLAYER_DRACULA) * 1;
-
-        gameView->turnNumber++;
-        cur = pastPlays[gameView->turnNumber * 8 - 1];
+    if (player == PLAYER_DRACULA) {
+      // On Dracula's turn
+      ProcessTraps(gameView);
+    } else if (gameView->players[player]->isDead) {
+      gameView->players[player]->playerHealth = GAME_START_HUNTER_LIFE_POINTS;
+      gameView->players[player]->isDead = false;
     }
-    return gameView;
+
+    int charIndex = gameView->turnNumber * (PLAY_STR_LENGTH + 1);
+
+    /** Offsets from charIndex are:
+      0 -> player
+      1-2 -> place
+      3-6 -> encounters
+    */
+    placeAbbrev[0] = pastPlays[charIndex + 1];
+    placeAbbrev[1] = pastPlays[charIndex + 2];
+    ProcessLocation(gameView, player, placeAbbrev);
+
+    // Process turn encounters 
+    if (player != PLAYER_DRACULA) {
+      int encounterIndex = charIndex + 3;
+      while (encounterIndex < charIndex + PLAY_STR_LENGTH) {
+        if (ProcessEncounter(gameView, player, pastPlays[encounterIndex])) {
+          // Hunter has died
+          gameView->players[player]->playerHealth = 0;
+          gameView->players[player]->isDead = true;
+          gameView->players[player]->lastResolvedLocation = HOSPITAL_PLACE;
+          gameView->gameScore -= SCORE_LOSS_HUNTER_HOSPITAL;
+          break;
+        }
+        ++encounterIndex;
+      }
+    }
+
+    gameView->gameScore -= (player == PLAYER_DRACULA) * 1;
+
+    gameView->turnNumber++;
+    cur = pastPlays[gameView->turnNumber * 8 - 1];
+  }
+  return gameView;
 }
 
 void GvFree(GameView gameView) {
-    for (int i = 0; i < NUM_PLAYERS; ++i) {
-        FreePlayer(gameView->players[i]);
-    }
+  for (int i = 0; i < NUM_PLAYERS; ++i) {
+    FreePlayer(gameView->players[i]);
+  }
 
-    free(gameView);
+  free(gameView);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
 Round GvGetRound(GameView gv) {
-    assert (gv != NULL);
-    return gv->turnNumber / 5;
+  assert (gv != NULL);
+  return gv->turnNumber / 5;
 }
 
 Player GvGetPlayer(GameView gv) {
-    assert (gv != NULL);
-    return gv->turnNumber % NUM_PLAYERS;
+  assert (gv != NULL);
+  return gv->turnNumber % NUM_PLAYERS;
 }
 
 int GvGetScore(GameView gv) {
-    assert (gv != NULL);
-    assert (gv->gameScore <= 366);
-    return gv->gameScore;
+  assert (gv != NULL);
+  assert (gv->gameScore <= 366);
+  return gv->gameScore;
 }
 
 int GvGetHealth(GameView gv, Player player) {
-    assert (gv != NULL);
-    return gv->players[player]->playerHealth;
+  assert (gv != NULL);
+  return gv->players[player]->playerHealth;
 }
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player) {
-    return gv->players[player]->lastResolvedLocation;
+  return gv->players[player]->lastResolvedLocation;
 }
 
 PlaceId GvGetVampireLocation(GameView gv) {
-    return gv->vampireLocation;
+  return gv->vampireLocation;
 }
 
 //loop through gv traplocations and look for all the values in the array
 // without a value of NOWHERE
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
-
-    *numTraps = 0;
-    for (int i = 0; i < TRAIL_SIZE; i++) {
-        if (gv->trapLocations[i] != NOWHERE) {
-            (*numTraps)++;
-        }
-
+  *numTraps = 0;
+  for (int i = 0; i < TRAIL_SIZE; i++) {
+    if (gv->trapLocations[i] != NOWHERE) {
+      (*numTraps)++;
     }
-    int count = 0;
-    PlaceId *traps = malloc(sizeof(PlaceId) * (*numTraps));
-    for (int i = 0; i < TRAIL_SIZE; i++) {
-        if (gv->trapLocations[i] != NOWHERE) {
-            traps[count] = gv->trapLocations[i];
-            count++;
-        }
+  }
+  int count = 0;
+  PlaceId *traps = malloc(sizeof(PlaceId) * (*numTraps));
+  if (traps == NULL) {
+      fprintf(stderr, "Couldn't allocate space!\n");
+      exit(EXIT_FAILURE);
+  }
+  for (int i = 0; i < TRAIL_SIZE; i++) {
+    if (gv->trapLocations[i] != NOWHERE) {
+      traps[count] = gv->trapLocations[i];
+      count++;
     }
-    return traps;
+  }
+  return traps;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -313,69 +313,86 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree) {
     
-    PlayerDetails currPlayer = gv->players[player];
-    *numReturnedMoves = currPlayer->moveCount;
-    *canFree = true;        // should be true if using a copy of the original array. 
+  PlayerDetails currPlayer = gv->players[player];
+  *numReturnedMoves = currPlayer->moveCount;
+  *canFree = true;        // should be true if using a copy of the original array. 
 
-    PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
-    memcpy(moveHistory, currPlayer->moves, sizeof(PlaceId) * currPlayer->moveCount);
+  PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
+  if (moveHistory == NULL) {
+      fprintf(stderr, "Couldn't allocate space!\n");
+      exit(EXIT_FAILURE);
+  }
+  memcpy(moveHistory, currPlayer->moves, sizeof(PlaceId) * currPlayer->moveCount);
 
-    return moveHistory;
+  return moveHistory;
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree) {
 
-    PlayerDetails currPlayer = gv->players[player];
-    *numReturnedMoves = currPlayer->moveCount;
-    *canFree = false;
+  PlayerDetails currPlayer = gv->players[player];
+  *numReturnedMoves = currPlayer->moveCount;
+  *canFree = false;
 
-    if (numMoves > currPlayer->moveCount) {
-        numMoves = currPlayer->moveCount;
-    }
+  if (numMoves > currPlayer->moveCount) {
+    numMoves = currPlayer->moveCount;
+  }
 
-    PlaceId *nLastMoves = malloc(sizeof(PlaceId) * numMoves);
+  PlaceId *nLastMoves = malloc(sizeof(PlaceId) * numMoves);
+  if (nLastMoves == NULL) {
+      fprintf(stderr, "Couldn't allocate space!\n");
+      exit(EXIT_FAILURE);
+  }
 
-    for (int i = numMoves - 1; i >= 0; i--) {
-        int offset = (numMoves - 1);
-        nLastMoves[offset - i] = currPlayer->moves[i];
-    }
+  for (int i = numMoves - 1; i >= 0; i--) {
+    int offset = (numMoves - 1);
+    nLastMoves[offset - i] = currPlayer->moves[i];
+  }
 
-    return nLastMoves;
+  return nLastMoves;
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree) {
 
-    PlayerDetails currPlayer = gv->players[player];
-    *numReturnedLocs = currPlayer->moveCount;
-    *canFree = true;            // should be true if using a copy of the original array. 
+  PlayerDetails currPlayer = gv->players[player];
+  *numReturnedLocs = currPlayer->moveCount;
+  *canFree = true;            // should be true if using a copy of the original array. 
 
-    PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
-    memcpy(locationHistory, currPlayer->resolvedMoves, sizeof(PlaceId) * currPlayer->moveCount);
+  PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
+  if (locationHistory == NULL) {
+      fprintf(stderr, "Couldn't allocate space!\n");
+      exit(EXIT_FAILURE);
+  }
 
-    return locationHistory;
+  memcpy(locationHistory, currPlayer->resolvedMoves, sizeof(PlaceId) * currPlayer->moveCount);
+
+  return locationHistory;
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree) {
 
-    PlayerDetails currPlayer = gv->players[player];
-    *numReturnedLocs = currPlayer->moveCount;
-    *canFree = false;
+  PlayerDetails currPlayer = gv->players[player];
+  *numReturnedLocs = currPlayer->moveCount;
+  *canFree = false;
 
-    if (numLocs > currPlayer->moveCount) {
-        numLocs = currPlayer->moveCount;
-    }
+  if (numLocs > currPlayer->moveCount) {
+    numLocs = currPlayer->moveCount;
+  }
 
-    PlaceId *nLastLocations = malloc(sizeof(PlaceId *) * numLocs);
+  PlaceId *nLastLocations = malloc(sizeof(PlaceId *) * numLocs);
+  if (nLastLocations == NULL) {
+      fprintf(stderr, "Couldn't allocate space!\n");
+      exit(EXIT_FAILURE);
+  }
 
-     for (int i = numLocs - 1; i >= 0; i--) {
-         int offset = (numLocs - 1);
-         nLastLocations[offset - i] = currPlayer->resolvedMoves[i];
-     }
+  for (int i = numLocs - 1; i >= 0; i--) {
+    int offset = (numLocs - 1);
+    nLastLocations[offset - i] = currPlayer->resolvedMoves[i];
+  }
 
-    return nLastLocations;
+  return nLastLocations;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -383,18 +400,18 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    // Right now applies trail restriction which shouldn't be done
-    return GetPossibleMoves(gv, gv->map, player, from, true, true, true,
+  *numReturnedLocs = 0;
+  // Right now applies trail restriction which shouldn't be done
+  return GetPossibleMoves(gv, gv->map, player, from, true, true, true,
                             round, numReturnedLocs, 1, false);
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    // Right now applies trail restriction which shouldn't be done
-    return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat,
+  *numReturnedLocs = 0;
+  // Right now applies trail restriction which shouldn't be done
+  return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat,
                             round, numReturnedLocs, 1, false);
 }
 
@@ -402,15 +419,13 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Your own interface functions
 
 Map GetMap(GameView gameView) {
-    return gameView->map;
+  return gameView->map;
 }
 
 PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
-    return gameView->players;
+  return gameView->players;
 }
 
 int GvGetTurnNumber(GameView gameView) {
-    return gameView->turnNumber;
+  return gameView->turnNumber;
 }
-
-// TODO
