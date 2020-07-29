@@ -19,19 +19,20 @@
 #include "GameView.h"
 #include "Map.h"
 #include "path_finding.h"
-// add your own #includes here
-
-// TODO: ADD YOUR OWN STRUCTS HERE
 
 struct draculaView {
     GameView gameView;
 };
 
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
+
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
+
 DraculaView DvNew(char *pastPlays, Message messages[]) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+    
     DraculaView new = malloc(sizeof(*new));
     if (new == NULL) {
         fprintf(stderr, "Couldn't allocate DraculaView\n");
@@ -44,6 +45,7 @@ DraculaView DvNew(char *pastPlays, Message messages[]) {
     return new;
 }
 
+// Frees all memory allocated for `dv`.
 void DvFree(DraculaView dv) {
     GvFree(dv->gameView);
     free(dv);
@@ -73,7 +75,6 @@ PlaceId DvGetVampireLocation(DraculaView dv) {
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
     *numTraps = 0;
     return GvGetTrapLocations(dv->gameView, numTraps);
 }
@@ -128,6 +129,4 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
 
-// TODO
