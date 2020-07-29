@@ -2,12 +2,12 @@
 // Created by eric on 16/7/20.
 //
 
-#include "binary_heap.h"
-#include "hash_table.h"
+#include "BinaryHeap.h"
+#include "HashTable.h"
 #include "Map.h"
 #include <stdio.h>
 #include <time.h>
-#include "path_finding.h"
+#include "PathFinding.h"
 #include "GameView.h"
 
 void print_hash_node(HashNode node) {

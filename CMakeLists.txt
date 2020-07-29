@@ -11,7 +11,7 @@ add_executable(fury_of_dracula view/testGameView.c
         view/GameView.c
         view/HunterView.c
         view/Map.c
-        view/Places.c view/Players.h view/binary_heap.c view/binary_heap.h view/hash_table.c view/hash_table.h view/path_finding.c view/path_finding.h view/Queue.c view/Queue.h view/Players.c)
+        view/Places.c view/Players.h view/BinaryHeap.c view/BinaryHeap.h view/HashTable.c view/HashTable.h view/PathFinding.c view/PathFinding.h view/Queue.c view/Queue.h view/Players.c view/Utilities.c view/Utilities.h)
 
 
 
@@ -27,7 +27,7 @@ add_executable(fury_of_dracula_hunt hunt/Game.c
         view/GameView.c
         view/HunterView.c
         view/Map.c
-        view/Places.c view/Players.h view/binary_heap.c view/binary_heap.h view/hash_table.c view/hash_table.h view/path_finding.c view/path_finding.h view/Queue.c view/Queue.h view/Players.c hunt/minimax.c hunt/minimax.h)
+        view/Places.c view/Players.h view/BinaryHeap.c view/BinaryHeap.h view/HashTable.c view/HashTable.h view/PathFinding.c view/PathFinding.h view/Queue.c view/Queue.h view/Players.c hunt/minimax.c hunt/minimax.h)
 
 find_package(Threads REQUIRED)
 if(THREADS_HAVE_PTHREAD_ARG)

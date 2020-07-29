@@ -2,7 +2,7 @@
 // Created by eric on 16/7/20.
 //
 
-#include "hash_table.h"
+#include "HashTable.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -37,7 +37,7 @@ int equal(HashNode node, const char *key) {
 }
 
 HashTable HashTableCreate(int table_size) {
-    HashTable table = malloc(sizeof(struct hash_table));
+    HashTable table = malloc(sizeof(struct HashTable));
     assert(table != NULL);
     table->table_size = table_size;
     table->items = calloc(table_size, sizeof(struct hash_node));

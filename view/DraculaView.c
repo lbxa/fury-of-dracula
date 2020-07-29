@@ -18,7 +18,9 @@
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
-#include "path_finding.h"
+#include "PathFinding.h"
+
+
 
 struct draculaView {
     GameView gameView;
@@ -32,7 +34,7 @@ struct draculaView {
 
 
 DraculaView DvNew(char *pastPlays, Message messages[]) {
-    
+
     DraculaView new = malloc(sizeof(*new));
     if (new == NULL) {
         fprintf(stderr, "Couldn't allocate DraculaView\n");
@@ -128,5 +130,5 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
                             road, rail, boat, round, numReturnedLocs, true, true);
 }
 
-////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////
