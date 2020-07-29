@@ -22,7 +22,6 @@
 #include "Places.h"
 #include "Map.h"
 #include "Players.h"
-// add your own #includes here
 
 typedef struct gameView *GameView;
 
@@ -31,6 +30,9 @@ typedef struct gameView *GameView;
 #define DRACULA_ENCOUNTER 'D'
 #define PLAY_STR_LENGTH 7
 #define VAMPIRE_PLACE_ROUNDS 13
+
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -260,7 +262,8 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               bool boat, int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
+// OUR own interface functions
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
 /**
  * Gets gameview map
@@ -286,13 +289,10 @@ PlayerDetails *GetPlayerDetailsArray(GameView gameView);
 PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation);
 
 /**
- * Gets turn number
+ * Gets the current turn number
  * @param gameView
  * @return
  */
 int GvGetTurnNumber(GameView gameView);
-
-
-// TODO
 
 #endif // !defined (FOD__GAME_VIEW_H_)
