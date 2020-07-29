@@ -33,13 +33,13 @@ struct hunterView {
 // Constructor/Destructor
 
 HunterView HvNew(char *pastPlays, Message messages[]) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	// Allocate memory for hunterView
     HunterView new = malloc(sizeof(*new));
     if (new == NULL) {
         fprintf(stderr, "Couldn't allocate HunterView!\n");
         exit(EXIT_FAILURE);
     }
-
+    // Construct the gameView
     GameView gameView = GvNew(pastPlays, messages);
     new->gameView = gameView;
 
@@ -50,7 +50,7 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
 }
 
 void HvFree(HunterView hv) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	// Free the gameView and then the rest
     GvFree(hv->gameView);
     free(hv);
 }
@@ -86,9 +86,6 @@ PlaceId HvGetVampireLocation(HunterView hv) {
 // Utility Functions
 
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    // Dracula player struct, go backwards through his resolved location array
-    // check between MIN_REAL_PLACE AND MAX_REAL_PLACE
 
     int numReturnedMoves = 0;
     bool canModify = true;
