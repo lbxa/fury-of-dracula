@@ -32,13 +32,22 @@ struct gameView {
   int roundVampirePlaced;
 };
 
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
+
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
+
+/**
+ * Creates a GameView and sets all of the initial game parameters to 
+ * their according values.
+ * @return - a newly generated GameView struct
+ */
 GameView ConstructGameView() {
   GameView new = malloc(sizeof(*new));
   if (new == NULL) {
-      fprintf(stderr, "Couldn't allocate GameView!\n");
-      exit(EXIT_FAILURE);
+    fprintf(stderr, "Couldn't allocate GameView!\n");
+    exit(EXIT_FAILURE);
   }
 
   new->map = MapNew();
@@ -247,7 +256,6 @@ void GvFree(GameView gameView) {
   for (int i = 0; i < NUM_PLAYERS; ++i) {
     FreePlayer(gameView->players[i]);
   }
-
   free(gameView);
 }
 
@@ -283,7 +291,7 @@ PlaceId GvGetVampireLocation(GameView gv) {
   return gv->vampireLocation;
 }
 
-//loop through gv traplocations and look for all the values in the array
+// loop through gv traplocations and look for all the values in the array
 // without a value of NOWHERE
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
   *numTraps = 0;
@@ -295,8 +303,8 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
   int count = 0;
   PlaceId *traps = malloc(sizeof(PlaceId) * (*numTraps));
   if (traps == NULL) {
-      fprintf(stderr, "Couldn't allocate space!\n");
-      exit(EXIT_FAILURE);
+    fprintf(stderr, "Couldn't allocate space!\n");
+    exit(EXIT_FAILURE);
   }
   for (int i = 0; i < TRAIL_SIZE; i++) {
     if (gv->trapLocations[i] != NOWHERE) {
@@ -309,18 +317,18 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
 
 ////////////////////////////////////////////////////////////////////////
 // Game History
-
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree) {
     
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedMoves = currPlayer->moveCount;
-  *canFree = true;        // should be true if using a copy of the original array. 
+  // should be true if using a copy of the original array. 
+  *canFree = true;        
 
   PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
   if (moveHistory == NULL) {
-      fprintf(stderr, "Couldn't allocate space!\n");
-      exit(EXIT_FAILURE);
+    fprintf(stderr, "Couldn't allocate space!\n");
+    exit(EXIT_FAILURE);
   }
   memcpy(moveHistory, currPlayer->moves, sizeof(PlaceId) * currPlayer->moveCount);
 
@@ -340,8 +348,8 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 
   PlaceId *nLastMoves = malloc(sizeof(PlaceId) * numMoves);
   if (nLastMoves == NULL) {
-      fprintf(stderr, "Couldn't allocate space!\n");
-      exit(EXIT_FAILURE);
+    fprintf(stderr, "Couldn't allocate space!\n");
+    exit(EXIT_FAILURE);
   }
 
   for (int i = numMoves - 1; i >= 0; i--) {
@@ -357,12 +365,13 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
 
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedLocs = currPlayer->moveCount;
-  *canFree = true;            // should be true if using a copy of the original array. 
+  // should be true if using a copy of the original array. 
+  *canFree = true;           
 
   PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
   if (locationHistory == NULL) {
-      fprintf(stderr, "Couldn't allocate space!\n");
-      exit(EXIT_FAILURE);
+    fprintf(stderr, "Couldn't allocate space!\n");
+    exit(EXIT_FAILURE);
   }
 
   memcpy(locationHistory, currPlayer->resolvedMoves, sizeof(PlaceId) * currPlayer->moveCount);
@@ -383,8 +392,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 
   PlaceId *nLastLocations = malloc(sizeof(PlaceId *) * numLocs);
   if (nLastLocations == NULL) {
-      fprintf(stderr, "Couldn't allocate space!\n");
-      exit(EXIT_FAILURE);
+    fprintf(stderr, "Couldn't allocate space!\n");
+    exit(EXIT_FAILURE);
   }
 
   for (int i = numLocs - 1; i >= 0; i--) {
@@ -397,26 +406,24 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 
 ////////////////////////////////////////////////////////////////////////
 // Making a Move
-
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  // Right now applies trail restriction which shouldn't be done
   return GetPossibleMoves(gv, gv->map, player, from, true, true, true,
-                            round, numReturnedLocs, 1, false);
+                            round, numReturnedLocs, true, false);
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  // Right now applies trail restriction which shouldn't be done
   return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat,
-                            round, numReturnedLocs, 1, false);
+                            round, numReturnedLocs, true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
+// OUR own interface functions
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
 Map GetMap(GameView gameView) {
   return gameView->map;
