@@ -22,13 +22,17 @@
 #include "Map.h"
 #include "PathFinding.h"
 #include "Places.h"
-// add your own #includes here
 
-// TODO: ADD YOUR OWN STRUCTS HERE
-
+/**
+ * Dracula view struct only contains GameView as everything required is
+ * there
+ */
 struct hunterView {
   GameView gameView;
 };
+
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -40,17 +44,18 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
     fprintf(stderr, "Couldn't allocate HunterView!\n");
     exit(EXIT_FAILURE);
   }
-  // Construct the gameView
+  // Creates new GameView and puts it in hunterView struct
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
-
-  // TODO: Add helper function to copy messages into messageList
 
   return new;
 }
 
+/**
+ * Frees all memory allocated for `dv`.
+ * @param hv
+ */
 void HvFree(HunterView hv) {
-  // Free the gameView and then the rest
   GvFree(hv->gameView);
   free(hv);
 }
@@ -207,4 +212,4 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
+
