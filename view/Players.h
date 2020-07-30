@@ -6,6 +6,7 @@
 #define FURY_OF_DRACULA_PLAYERS_H
 
 #include <stdio.h>
+
 #include "Game.h"
 #include "Places.h"
 
@@ -14,17 +15,18 @@
  * a players state in the game
  */
 typedef struct playerDetails {
-    Player player;
-    int moveCount;
-    bool isDead;
-    PlaceId moves[GAME_START_SCORE];
-    PlaceId resolvedMoves[GAME_START_SCORE];
-    PlaceId lastResolvedLocation;
-    int playerHealth;
-} *PlayerDetails;
+  Player player;
+  int moveCount;
+  bool isDead;
+  PlaceId moves[GAME_START_SCORE];
+  PlaceId resolvedMoves[GAME_START_SCORE];
+  PlaceId lastResolvedLocation;
+  int playerHealth;
+} * PlayerDetails;
 
 /**
- * Creates a PlayerDetails struct for the given player enum with the given starting health
+ * Creates a PlayerDetails struct for the given player enum with the given
+ * starting health
  * @param player
  * @param initialHealth
  * @return
@@ -43,5 +45,4 @@ void FreePlayer(PlayerDetails player);
  */
 void PrintPlayer(PlayerDetails player);
 
-
-#endif //FURY_OF_DRACULA_PLAYERS_H
+#endif  // FURY_OF_DRACULA_PLAYERS_H

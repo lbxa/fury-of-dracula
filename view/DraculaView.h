@@ -5,7 +5,7 @@
 // You may augment this with as many of your own functions as you like,
 // but do NOT remove or modify any of the existing function signatures,
 // otherwise, your code will not be able to compile with our tests.
-// 
+//
 // 2014-07-01	v1.0	Team Dracula <cs2521@cse.unsw.edu.au>
 // 2017-11-30	v1.1	Team Dracula <cs2521@cse.unsw.edu.au>
 // 2018-12-31	v2.0	Team Dracula <cs2521@cse.unsw.edu.au>
@@ -150,7 +150,7 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
  * next move (for Dracula that is this turn).
  *
  * This  function  should return the locations in a dynamically alloated
- * array, and set *numReturnedLocs to the number of locations  returned. 
+ * array, and set *numReturnedLocs to the number of locations  returned.
  * The  array can be in any order but must contain unique entries.
  *
  * If  the given player is a hunter, the function must take into account
@@ -163,21 +163,19 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
  * If the given player hasn't made a move yet, set *numReturnedLocs to 0
  * and return NULL.
  */
-PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
-                          int *numReturnedLocs);
+PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs);
 
 /**
  * Similar to DvWhereCanTheyGo but the caller can restrict the transport
  * types  to  be considered. For example, if road and rail are true, but
  * boat is false, boat connections will be ignored.
  */
-PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs);
+PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
+                                bool rail, bool boat, int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
 // TODO
 
-#endif // !defined(FOD__DRACULA_VIEW_H_)
+#endif  // !defined(FOD__DRACULA_VIEW_H_)

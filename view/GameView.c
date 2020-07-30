@@ -9,6 +9,8 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+#include "GameView.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,10 +18,9 @@
 #include <string.h>
 
 #include "Game.h"
-#include "GameView.h"
 #include "Map.h"
-#include "Places.h"
 #include "PathFinding.h"
+#include "Places.h"
 
 struct gameView {
   Map map;
@@ -39,7 +40,7 @@ struct gameView {
 // Constructor/Destructor
 
 /**
- * Creates a GameView and sets all of the initial game parameters to 
+ * Creates a GameView and sets all of the initial game parameters to
  * their according values.
  * @return - a newly generated GameView struct
  */
@@ -66,14 +67,15 @@ GameView ConstructGameView() {
     new->players[i] = CreatePlayer(i, GAME_START_HUNTER_LIFE_POINTS);
   }
   // Create dracula
-  new->players[PLAYER_DRACULA] = CreatePlayer(PLAYER_DRACULA, GAME_START_BLOOD_POINTS);
+  new->players[PLAYER_DRACULA] =
+      CreatePlayer(PLAYER_DRACULA, GAME_START_BLOOD_POINTS);
 
   return new;
 }
 
 /**
  * Handle the process of clearing traps and mature vampires
- * @param gameView 
+ * @param gameView
  */
 void ProcessTraps(GameView gameView) {
   int roundNumber = gameView->turnNumber / 5;
@@ -93,7 +95,7 @@ void ProcessTraps(GameView gameView) {
 
 /**
  * Handle and process encounter events
- * @param encounter - type of encounter encoded into a single char. 
+ * @param encounter - type of encounter encoded into a single char.
  * @return - was the player killed in encounter
  */
 bool ProcessEncounter(GameView gameView, Player player, char encounter) {
@@ -103,7 +105,8 @@ bool ProcessEncounter(GameView gameView, Player player, char encounter) {
   if (encounter == '.') return false;
   if (encounter == TRAP_ENCOUNTER) {
     gameView->players[player]->playerHealth -= LIFE_LOSS_TRAP_ENCOUNTER;
-    PlaceId currentPlayerLocation = gameView->players[player]->lastResolvedLocation;
+    PlaceId currentPlayerLocation =
+        gameView->players[player]->lastResolvedLocation;
     for (int i = 0; i < TRAIL_SIZE; ++i) {
       if (gameView->trapLocations[i] == currentPlayerLocation) {
         gameView->trapLocations[i] = NOWHERE;
@@ -113,17 +116,21 @@ bool ProcessEncounter(GameView gameView, Player player, char encounter) {
   } else if (encounter == VAMPIRE_ENCOUNTER) {
     gameView->roundVampirePlaced = -1;
     gameView->vampireLocation = NOWHERE;
-  } else { // Dracula
-    gameView->players[PLAYER_DRACULA]->playerHealth -= LIFE_LOSS_HUNTER_ENCOUNTER;
+  } else {  // Dracula
+    gameView->players[PLAYER_DRACULA]->playerHealth -=
+        LIFE_LOSS_HUNTER_ENCOUNTER;
     gameView->players[player]->playerHealth -= LIFE_LOSS_DRACULA_ENCOUNTER;
   }
   return gameView->players[player]->playerHealth <= 0;
 }
 
-PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresolvedLocation) {
+PlaceId ResolveLocation(GameView gameView, PlayerDetails player,
+                        PlaceId unresolvedLocation) {
   if (player->player != PLAYER_DRACULA) return unresolvedLocation;
-  if (unresolvedLocation >= DOUBLE_BACK_1 && unresolvedLocation <= DOUBLE_BACK_5) {
-    int resolvedIndex = player->moveCount - 1 - (unresolvedLocation - DOUBLE_BACK_1);
+  if (unresolvedLocation >= DOUBLE_BACK_1 &&
+      unresolvedLocation <= DOUBLE_BACK_5) {
+    int resolvedIndex =
+        player->moveCount - 1 - (unresolvedLocation - DOUBLE_BACK_1);
     return player->resolvedMoves[resolvedIndex];
   } else if (unresolvedLocation == TELEPORT) {
     return CASTLE_DRACULA;
@@ -133,13 +140,9 @@ PlaceId ResolveLocation(GameView gameView, PlayerDetails player, PlaceId unresol
   return unresolvedLocation;
 }
 
-int min(int a, int b) {
-  return (a < b) ? a : b;
-}
+int min(int a, int b) { return (a < b) ? a : b; }
 
-int max(int a, int b) {
-  return (a > b) ? a : b;
-}
+int max(int a, int b) { return (a > b) ? a : b; }
 
 /**
  * Process the current location of the player
@@ -188,13 +191,14 @@ void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
     }
   } else {
     // Avoid branching by evaluation the conditional only
-    bool hasRested = playerDetails->lastResolvedLocation
-                      == playerDetails->resolvedMoves[playerDetails->moveCount - 2];
-    playerDetails->playerHealth = min(GAME_START_HUNTER_LIFE_POINTS,
-                                      playerDetails->playerHealth + LIFE_GAIN_REST * hasRested);
+    bool hasRested = playerDetails->lastResolvedLocation ==
+                     playerDetails->resolvedMoves[playerDetails->moveCount - 2];
+    playerDetails->playerHealth =
+        min(GAME_START_HUNTER_LIFE_POINTS,
+            playerDetails->playerHealth + LIFE_GAIN_REST * hasRested);
   }
 
-  //Update player histories
+  // Update player histories
   playerDetails->moves[moveCount] = placeId;
   playerDetails->resolvedMoves[moveCount] = resolvedId;
   playerDetails->lastResolvedLocation = resolvedId;
@@ -228,7 +232,7 @@ GameView GvNew(char *pastPlays, Message messages[]) {
     placeAbbrev[1] = pastPlays[charIndex + 2];
     ProcessLocation(gameView, player, placeAbbrev);
 
-    // Process turn encounters 
+    // Process turn encounters
     if (player != PLAYER_DRACULA) {
       int encounterIndex = charIndex + 3;
       while (encounterIndex < charIndex + PLAY_STR_LENGTH) {
@@ -263,23 +267,23 @@ void GvFree(GameView gameView) {
 // Game State Information
 
 Round GvGetRound(GameView gv) {
-  assert (gv != NULL);
+  assert(gv != NULL);
   return gv->turnNumber / 5;
 }
 
 Player GvGetPlayer(GameView gv) {
-  assert (gv != NULL);
+  assert(gv != NULL);
   return gv->turnNumber % NUM_PLAYERS;
 }
 
 int GvGetScore(GameView gv) {
-  assert (gv != NULL);
-  assert (gv->gameScore <= 366);
+  assert(gv != NULL);
+  assert(gv->gameScore <= 366);
   return gv->gameScore;
 }
 
 int GvGetHealth(GameView gv, Player player) {
-  assert (gv != NULL);
+  assert(gv != NULL);
   return gv->players[player]->playerHealth;
 }
 
@@ -287,9 +291,7 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player) {
   return gv->players[player]->lastResolvedLocation;
 }
 
-PlaceId GvGetVampireLocation(GameView gv) {
-  return gv->vampireLocation;
-}
+PlaceId GvGetVampireLocation(GameView gv) { return gv->vampireLocation; }
 
 // loop through gv traplocations and look for all the values in the array
 // without a value of NOWHERE
@@ -317,27 +319,26 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
 
 ////////////////////////////////////////////////////////////////////////
 // Game History
-PlaceId *GvGetMoveHistory(GameView gv, Player player,
-                          int *numReturnedMoves, bool *canFree) {
-    
+PlaceId *GvGetMoveHistory(GameView gv, Player player, int *numReturnedMoves,
+                          bool *canFree) {
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedMoves = currPlayer->moveCount;
-  // should be true if using a copy of the original array. 
-  *canFree = true;        
+  // should be true if using a copy of the original array.
+  *canFree = true;
 
   PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
   if (moveHistory == NULL) {
     fprintf(stderr, "Couldn't allocate space!\n");
     exit(EXIT_FAILURE);
   }
-  memcpy(moveHistory, currPlayer->moves, sizeof(PlaceId) * currPlayer->moveCount);
+  memcpy(moveHistory, currPlayer->moves,
+         sizeof(PlaceId) * currPlayer->moveCount);
 
   return moveHistory;
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree) {
-
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedMoves = currPlayer->moveCount;
   *canFree = false;
@@ -360,13 +361,12 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
   return nLastMoves;
 }
 
-PlaceId *GvGetLocationHistory(GameView gv, Player player,
-                              int *numReturnedLocs, bool *canFree) {
-
+PlaceId *GvGetLocationHistory(GameView gv, Player player, int *numReturnedLocs,
+                              bool *canFree) {
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedLocs = currPlayer->moveCount;
-  // should be true if using a copy of the original array. 
-  *canFree = true;           
+  // should be true if using a copy of the original array.
+  *canFree = true;
 
   PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
   if (locationHistory == NULL) {
@@ -374,14 +374,14 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
     exit(EXIT_FAILURE);
   }
 
-  memcpy(locationHistory, currPlayer->resolvedMoves, sizeof(PlaceId) * currPlayer->moveCount);
+  memcpy(locationHistory, currPlayer->resolvedMoves,
+         sizeof(PlaceId) * currPlayer->moveCount);
 
   return locationHistory;
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree) {
-
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedLocs = currPlayer->moveCount;
   *canFree = false;
@@ -406,33 +406,29 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 
 ////////////////////////////////////////////////////////////////////////
 // Making a Move
-PlaceId *GvGetReachable(GameView gv, Player player, Round round,
-                        PlaceId from, int *numReturnedLocs) {
+PlaceId *GvGetReachable(GameView gv, Player player, Round round, PlaceId from,
+                        int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  return GetPossibleMoves(gv, gv->map, player, from, true, true, true,
-                            round, numReturnedLocs, true, false);
+  return GetPossibleMoves(gv, gv->map, player, from, true, true, true, round,
+                          numReturnedLocs, true, false);
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
-                              PlaceId from, bool road, bool rail,
-                              bool boat, int *numReturnedLocs) {
+                              PlaceId from, bool road, bool rail, bool boat,
+                              int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat,
-                            round, numReturnedLocs, true, false);
+  return GetPossibleMoves(gv, gv->map, player, from, road, rail, boat, round,
+                          numReturnedLocs, true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // OUR own interface functions
 // Eric | Lucas | Stephen | Debbie - (20T2)
 
-Map GetMap(GameView gameView) {
-  return gameView->map;
-}
+Map GetMap(GameView gameView) { return gameView->map; }
 
 PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
   return gameView->players;
 }
 
-int GvGetTurnNumber(GameView gameView) {
-  return gameView->turnNumber;
-}
+int GvGetTurnNumber(GameView gameView) { return gameView->turnNumber; }
