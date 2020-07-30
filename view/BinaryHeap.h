@@ -24,10 +24,10 @@ typedef struct heap_item {
 
 /**
  * Creates a new minimum heap
- * @param initial_capacity
+ * @param initialCapacity
  * @return
  */
-Heap HeapCreate(int initial_capacity);
+Heap HeapCreate(int initialCapacity);
 
 /**
  * Pushes a new element into the heap
@@ -83,5 +83,11 @@ int HeapIsEmpty(Heap heap);
  * @return
  */
 HeapItem HeapItemCreate(int value, void *data);
+
+/**
+ * Frees all associated memory for a given HeapItem
+ * @param item
+ */
+void FreeHeapItem(HeapItem item);
 
 #endif  // FURY_OF_DRACULA_BINARY_HEAP_H

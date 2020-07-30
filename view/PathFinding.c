@@ -200,7 +200,13 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
         places[(*placesCount)++] = place;
       }
     }
+    free(resolvedLocations);
   }
+
+  // Free memory
+  free(trailMoves);
+  free(locationHistory);
+
 
   // Reallocate to needed size
   if (*placesCount < NUM_REAL_PLACES) {
@@ -276,9 +282,13 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
         HeapPush(pq, HeapItemCreate(distance, new));
       }
     }
+    // Free memory
+    free(reachable);
+    free(currentItem);
   }
-  // Free the priority queue
+  // Free memory
   HeapDestroy(pq);
+
   return distances;
 }
 
@@ -293,8 +303,8 @@ Path CreatePath(char* place, int distance, Path predecessor) {
   return path;
 }
 
-void FreePathNode(Path path) {
-  free(path->place);
+void FreePathNode(void* path) {
+  free(((Path) path)->place);
   free(path);
 }
 

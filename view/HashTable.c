@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Utilities.h"
+
 /**
  * djb2 hashing algorithm implementation
  * @param str
@@ -37,17 +39,17 @@ int equal(HashNode node, const char *key) {
   return strcmp(node->key, key) == 0;
 }
 
-HashTable HashTableCreate(int table_size) {
+HashTable HashTableCreate(int tableSize) {
   HashTable table = malloc(sizeof(struct HashTable));
   assert(table != NULL);
-  table->table_size = table_size;
-  table->items = calloc(table_size, sizeof(struct hash_node));
+  table->tableSize = tableSize;
+  table->items = calloc(tableSize, sizeof(struct hash_node));
   assert(table->items != NULL);
   return table;
 }
 
 HashNode HashGet(HashTable table, const char *key) {
-  int hashVal = hash(key, table->table_size);
+  int hashVal = hash(key, table->tableSize);
 
   if (table->items[hashVal] == NULL) {
     return NULL;
@@ -65,7 +67,7 @@ HashNode HashGet(HashTable table, const char *key) {
 }
 
 void HashInsert(HashTable table, const char *key, void *value) {
-  int hashVal = hash(key, table->table_size);
+  int hashVal = hash(key, table->tableSize);
   HashNode newNode = malloc(sizeof(struct hash_node));
   newNode->head = NULL;
   newNode->value = value;
@@ -85,12 +87,12 @@ void HashInsert(HashTable table, const char *key, void *value) {
     } else {
       cur->value = value;
     }
-    table->num_items++;
+    table->numItems++;
   }
 }
 
 void HashDelete(HashTable table, const char *key) {
-  int hashVal = hash(key, table->table_size);
+  int hashVal = hash(key, table->tableSize);
 
   if (table->items[hashVal] == NULL) {
     return;
@@ -110,36 +112,43 @@ void HashDelete(HashTable table, const char *key) {
         last->head = cur->head;
       }
       free(cur);
-      table->num_items--;
+      table->numItems--;
     }
   }
 }
 
-void free_node(HashNode node) {
+/**
+ * Frees given hash node using free node function passed by function pointer
+ * @param node
+ * @param nodeFreeFunction
+ */
+void FreeNode(HashNode node, void (*nodeFreeFunction)(void*)) {
   free(node->key);
+  nodeFreeFunction(node->value);
   free(node);
 }
 
-void HashTableDestroy(HashTable table) {
-  for (int i = 0; i < table->table_size; i++) {
+void HashTableDestroy(HashTable table, void (*nodeFreeFunction)(void*)) {
+  for (int i = 0; i < table->tableSize; i++) {
     if (table->items[i] != NULL) {
       HashNode cur = table->items[i];
       while (cur) {
         HashNode next = cur->head;
-        free_node(cur);
+        FreeNode(cur, nodeFreeFunction);
         cur = next;
       }
     }
   }
+  free(table->items);
   free(table);
 }
 
-void HashTableDisplay(HashTable table, void (*print_node)(HashNode)) {
-  for (int i = 0; i < table->table_size; i++) {
+void HashTableDisplay(HashTable table, void (*printNode)(HashNode)) {
+  for (int i = 0; i < table->tableSize; i++) {
     if (table->items[i] != NULL) {
       HashNode cur = table->items[i];
       while (cur) {
-        print_node(cur);
+        printNode(cur);
         cur = cur->head;
       }
     }

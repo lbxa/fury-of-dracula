@@ -21,6 +21,7 @@
 #include "Map.h"
 #include "PathFinding.h"
 #include "Places.h"
+#include "Utilities.h"
 
 struct gameView {
   Map map;
@@ -260,6 +261,7 @@ void GvFree(GameView gameView) {
   for (int i = 0; i < NUM_PLAYERS; ++i) {
     FreePlayer(gameView->players[i]);
   }
+  MapFree(gameView->map);
   free(gameView);
 }
 
@@ -327,10 +329,8 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player, int *numReturnedMoves,
   *canFree = true;
 
   PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
-  if (moveHistory == NULL) {
-    fprintf(stderr, "Couldn't allocate space!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(moveHistory,
+                     "Couldn't allocate space for move history!\n");
   memcpy(moveHistory, currPlayer->moves,
          sizeof(PlaceId) * currPlayer->moveCount);
 
@@ -369,10 +369,8 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player, int *numReturnedLocs,
   *canFree = true;
 
   PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
-  if (locationHistory == NULL) {
-    fprintf(stderr, "Couldn't allocate space!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(locationHistory,
+                     "Couldn't allocate for location history!\n");
 
   memcpy(locationHistory, currPlayer->resolvedMoves,
          sizeof(PlaceId) * currPlayer->moveCount);
