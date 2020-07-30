@@ -2,7 +2,7 @@
 
 blacklist=(Game.h Places.c Places.h Map.c Map.h)
 
-files=(MakeFile)
+files=(Makefile)
 
 for file in *.c
 do
@@ -27,5 +27,3 @@ done
 #files=($(sort <<<"${files[*]}");
 IFS=' ';echo "${files[*]// /|}";IFS=$' \t'
 echo "$IFS"
-
-give cs2521 ass2view "$IFS"

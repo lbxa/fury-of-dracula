@@ -23,8 +23,11 @@
 #include "PathFinding.h"
 #include "Places.h"
 #include "Utilities.h"
-// add your own #includes here
 
+/**
+ * Dracula view struct only contains GameView as everything required is
+ * there
+ */
 struct hunterView {
   GameView gameView;
 };
@@ -43,9 +46,15 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
 
+  // TODO: Add helper function to copy messages into messageList
+
   return new;
 }
 
+/**
+ * Frees all memory allocated for `dv`.
+ * @param hv
+ */
 void HvFree(HunterView hv) {
   // Free the gameView and then the rest
   GvFree(hv->gameView);
@@ -112,6 +121,7 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
   // Allocate memory for place
   Place *from = malloc(sizeof(struct place));
   CheckMallocSuccess(from, "Couldn't allocate Place!\n");
+
   int round = GvGetRound(hv->gameView);
 
   // Create a lookup table for all paths from current location
