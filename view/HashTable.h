@@ -13,8 +13,8 @@ typedef struct hash_node {
 
 typedef struct HashTable {
   HashNode *items;
-  int table_size;
-  int num_items;
+  int tableSize;
+  int numItems;
 } * HashTable;
 
 /**
@@ -22,7 +22,7 @@ typedef struct HashTable {
  * @param initial_capacity
  * @return
  */
-HashTable HashTableCreate(int table_size);
+HashTable HashTableCreate(int tableSize);
 
 /**
  * Gets the HashNode for the given key in the table
@@ -49,13 +49,13 @@ void HashDelete(HashTable table, const char *key);
  * Frees all associated memory for a given hash table
  * @param table
  */
-void HashTableDestroy(HashTable table);
+void HashTableDestroy(HashTable table, void (*nodeFreeFunction)(void*));
 
 /**
  * Prints a given hash table to stdout
  * @param table
- * @param print_node
+ * @param printNode
  */
-void HashTableDisplay(HashTable table, void (*print_node)(HashNode));
+void HashTableDisplay(HashTable table, void (*printNode)(HashNode));
 
 #endif  // FURY_OF_DRACULA_HASH_TABLE_H

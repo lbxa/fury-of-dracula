@@ -22,6 +22,7 @@
 #include "Map.h"
 #include "PathFinding.h"
 #include "Places.h"
+#include "Utilities.h"
 
 /**
  * Dracula view struct only contains GameView as everything required is
@@ -30,9 +31,6 @@
 struct hunterView {
   GameView gameView;
 };
-
-// Code written by:
-// Eric | Lucas | Stephen | Debbie - (20T2)
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -44,9 +42,11 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
     fprintf(stderr, "Couldn't allocate HunterView!\n");
     exit(EXIT_FAILURE);
   }
-  // Creates new GameView and puts it in hunterView struct
+  // Construct the gameView
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
+
+  // TODO: Add helper function to copy messages into messageList
 
   return new;
 }
@@ -56,6 +56,7 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
  * @param hv
  */
 void HvFree(HunterView hv) {
+  // Free the gameView and then the rest
   GvFree(hv->gameView);
   free(hv);
 }
@@ -97,9 +98,12 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
     PlaceId currentMove = draculaHistory[i];
     if (currentMove >= MIN_REAL_PLACE && currentMove <= MAX_REAL_PLACE) {
       *round = i;
-      return draculaHistory[i];
+      PlaceId location = draculaHistory[i];
+      free(draculaHistory);
+      return location;
     }
   }
+  free(draculaHistory);
   // Return if no real moves discovered from his history
   *round = 0;
   return NOWHERE;
@@ -116,10 +120,7 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
   if (currentLocation == dest) return NULL;
   // Allocate memory for place
   Place *from = malloc(sizeof(struct place));
-  if (from == NULL) {
-    fprintf(stderr, "Couldn't allocate Place!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(from, "Couldn't allocate Place!\n");
 
   int round = GvGetRound(hv->gameView);
 
@@ -137,7 +138,13 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
   // the path and return the full array
 
   *pathLength = path->distance;
-  return GetOrderedPlaceIds(path);
+  PlaceId *orderedPath = GetOrderedPlaceIds(path);
+
+  // Free memory
+  free(from);
+  HashTableDestroy(pathLookup, FreePathNode);
+
+  return orderedPath;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -204,7 +211,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
   if (history[currentRound] == currentLocation) {
     currentRound += 1;
   }
-
+  free(history);
   // Finds legal moves from a given place, see PathFinding.c
   return GetPossibleMoves(hv->gameView, map, player, currentLocation, road,
                           rail, boat, currentRound, numReturnedLocs, true,
@@ -212,4 +219,4 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
 }
 
 ////////////////////////////////////////////////////////////////////////
-
+// Your own interface functions

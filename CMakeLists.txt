@@ -5,7 +5,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm")
 project(fury_of_dracula C)
 project(fury_of_dracula_hunt)
 
-add_executable(fury_of_dracula view/testGameView.c
+add_executable(fury_of_dracula view/testHunterView.c
         view/testUtils.c
         view/DraculaView.c
         view/GameView.c

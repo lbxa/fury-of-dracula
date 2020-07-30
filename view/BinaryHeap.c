@@ -9,11 +9,11 @@
 
 #include "Utilities.h"
 
-Heap HeapCreate(int initial_capacity) {
+Heap HeapCreate(int initialCapacity) {
   // Initialise heap struct and allocate space for the given initial capacity
   Heap heap = malloc(sizeof(struct heap));
   CheckMallocSuccess(heap, "Unable to allocate heap struct!\n");
-  heap->capacity = initial_capacity;
+  heap->capacity = initialCapacity;
   heap->size = 0;
   heap->arr = malloc(sizeof(HeapItem) * heap->capacity);
   assert(heap->arr != NULL);
@@ -100,15 +100,21 @@ HeapItem HeapPop(Heap heap) {
 }
 
 HeapItem HeapItemCreate(int value, void *data) {
-  HeapItem heap_item = malloc(sizeof(struct heap_item));
-  heap_item->value = value;
-  heap_item->data = data;
-  return heap_item;
+  HeapItem heapItem = malloc(sizeof(struct heap_item));
+  CheckMallocSuccess(heapItem, "Couldn't allocate heap item!\n");
+  heapItem->value = value;
+  heapItem->data = data;
+  return heapItem;
+}
+
+void FreeHeapItem(HeapItem item) {
+  free(item->data);
+  free(item);
 }
 
 void HeapDestroy(Heap heap) {
-  for (int i = 1; i < heap->size; i++) {
-    free(heap->arr[i]);
+  for (int i = 1; i <= heap->size; i++) {
+    FreeHeapItem(heap->arr[i]);
   }
   free(heap->arr);
   free(heap);
