@@ -6,15 +6,15 @@
 #define FURY_OF_DRACULA_BINARY_HEAP_H
 
 typedef struct heap {
-    int capacity;
-    int size;
-    struct heap_item  **arr;
-} *Heap;
+  int capacity;
+  int size;
+  struct heap_item **arr;
+} * Heap;
 
 typedef struct heap_item {
-    int value;
-    void *data;
-} *HeapItem;
+  int value;
+  void *data;
+} * HeapItem;
 
 /**
  * Creates a new minimum heap
@@ -70,7 +70,6 @@ int HeapIsFull(Heap heap);
  */
 int HeapIsEmpty(Heap heap);
 
-
 /**
  * Creates a Heap item from the given value and data
  * @param value
@@ -79,5 +78,4 @@ int HeapIsEmpty(Heap heap);
  */
 HeapItem HeapItemCreate(int value, void *data);
 
-
-#endif //FURY_OF_DRACULA_BINARY_HEAP_H
+#endif  // FURY_OF_DRACULA_BINARY_HEAP_H

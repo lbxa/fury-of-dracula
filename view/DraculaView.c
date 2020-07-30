@@ -9,21 +9,20 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+#include "DraculaView.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DraculaView.h"
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
 #include "PathFinding.h"
 
-
-
 struct draculaView {
-    GameView gameView;
+  GameView gameView;
 };
 
 // Code written by:
@@ -32,103 +31,94 @@ struct draculaView {
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
-
 DraculaView DvNew(char *pastPlays, Message messages[]) {
+  DraculaView new = malloc(sizeof(*new));
+  if (new == NULL) {
+    fprintf(stderr, "Couldn't allocate DraculaView\n");
+    exit(EXIT_FAILURE);
+  }
 
-    DraculaView new = malloc(sizeof(*new));
-    if (new == NULL) {
-        fprintf(stderr, "Couldn't allocate DraculaView\n");
-        exit(EXIT_FAILURE);
-    }
+  GameView gameView = GvNew(pastPlays, messages);
+  new->gameView = gameView;
 
-    GameView gameView = GvNew(pastPlays, messages);
-    new->gameView = gameView;
-
-    return new;
+  return new;
 }
 
 // Frees all memory allocated for `dv`.
 void DvFree(DraculaView dv) {
-    GvFree(dv->gameView);
-    free(dv);
+  GvFree(dv->gameView);
+  free(dv);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
-Round DvGetRound(DraculaView dv) {
-    return GvGetRound(dv->gameView);
-}
+Round DvGetRound(DraculaView dv) { return GvGetRound(dv->gameView); }
 
-int DvGetScore(DraculaView dv) {
-    return GvGetScore(dv->gameView);
-}
+int DvGetScore(DraculaView dv) { return GvGetScore(dv->gameView); }
 
 int DvGetHealth(DraculaView dv, Player player) {
-    return GvGetHealth(dv->gameView, player);
+  return GvGetHealth(dv->gameView, player);
 }
 
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player) {
-    return GvGetPlayerLocation(dv->gameView, player);
+  return GvGetPlayerLocation(dv->gameView, player);
 }
 
 PlaceId DvGetVampireLocation(DraculaView dv) {
-    return GvGetVampireLocation(dv->gameView);
+  return GvGetVampireLocation(dv->gameView);
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps) {
-    *numTraps = 0;
-    return GvGetTrapLocations(dv->gameView, numTraps);
+  *numTraps = 0;
+  return GvGetTrapLocations(dv->gameView, numTraps);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Making a Move
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves) {
-    *numReturnedMoves = 0;
-    Map map = GetMap(dv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
-    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-            true, false, true, 0, numReturnedMoves, false, true);
+  *numReturnedMoves = 0;
+  Map map = GetMap(dv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+  return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                          true, false, true, 0, numReturnedMoves, false, true);
 }
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(dv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
-    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-                            true, false, true, 0, numReturnedLocs, false, true);
+  *numReturnedLocs = 0;
+  Map map = GetMap(dv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+  return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                          true, false, true, 0, numReturnedLocs, false, true);
 }
 
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
                              int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(dv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
-    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-                            road, false, boat, 0, numReturnedLocs, true, true);
+  *numReturnedLocs = 0;
+  Map map = GetMap(dv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+  return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                          road, false, boat, 0, numReturnedLocs, true, true);
 }
 
-PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
-                          int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(dv->gameView);
-    int round = GvGetRound(dv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
-    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-                            true, true, true, round, numReturnedLocs, true, true);
+PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs) {
+  *numReturnedLocs = 0;
+  Map map = GetMap(dv->gameView);
+  int round = GvGetRound(dv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
+  return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                          true, true, true, round, numReturnedLocs, true, true);
 }
 
-PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(dv->gameView);
-    int round = GvGetRound(dv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
-    return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-                            road, rail, boat, round, numReturnedLocs, true, true);
+PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
+                                bool rail, bool boat, int *numReturnedLocs) {
+  *numReturnedLocs = 0;
+  Map map = GetMap(dv->gameView);
+  int round = GvGetRound(dv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
+  return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
+                          road, rail, boat, round, numReturnedLocs, true, true);
 }
-
 
 ////////////////////////////////////////////////////////////////////////

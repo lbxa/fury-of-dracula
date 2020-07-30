@@ -21,4 +21,4 @@
  */
 void sortPlaces(PlaceId *places, int numPlaces);
 
-#endif // !defined (FOD__TEST_UTILS_H_)
+#endif  // !defined (FOD__TEST_UTILS_H_)
