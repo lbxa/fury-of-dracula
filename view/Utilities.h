@@ -13,4 +13,20 @@
  */
 void CheckMallocSuccess(void *mem, char *errorMessage);
 
-#endif //FURY_OF_DRACULA_HUNT_UTILITIES_H
+/**
+ * Returns the minimum of a and b
+ * @param a
+ * @param b
+ * @return
+ */
+int min(int a, int b);
+
+/**
+ * Returns the maximum of a and b
+ * @param a
+ * @param b
+ * @return
+ */
+int max(int a, int b);
+
+#endif  // FURY_OF_DRACULA_HUNT_UTILITIES_H

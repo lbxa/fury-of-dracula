@@ -141,10 +141,6 @@ PlaceId ResolveLocation(GameView gameView, PlayerDetails player,
   return unresolvedLocation;
 }
 
-int min(int a, int b) { return (a < b) ? a : b; }
-
-int max(int a, int b) { return (a > b) ? a : b; }
-
 /**
  * Process the current location of the player
  * @param gameView
