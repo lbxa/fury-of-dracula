@@ -137,6 +137,59 @@ int main(void)
 		printf("Test passed!\n");
 		DvFree(dv);
 	}
+	{////////////////////////////////////////////////////////////////////////
+printf("Test Dracula cannot go back to a place that's already in his trail\n");
+char *trail = 
+			"GLO.... SLO.... HAM.... MLO.... DMR.... "
+			"GLO.... SLO.... HAM.... MLO.... DGE.... "
+			"GLO.... SLO.... HAM.... MLO.... DST.... "
+			"GLO.... SLO.... HAM.... MLO.... DMU.... "
+			"GLO.... SLO.... HAM.... MLO.... DMI.... "
+			"GLO.... SLO.... HAM.... MLO.... DZU....";
+
+		Message messages[30] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *locs = DvWhereCanIGo(dv, &numLocs);
+		assert(numLocs == 6);
+		sortPlaces(locs, numLocs);
+		assert(locs[0] != MARSEILLES);
+		assert(locs[1] != GENEVA);
+		assert(locs[2] != STRASBOURG);
+		assert(locs[3] != MUNICH);
+		assert(locs[4] != MILAN);
+		free(locs);
+
+		printf("Test passed!\n");
+		DvFree(dv);
+}
+
+{///////////////////////////////////////////////////////////////////////
+
+    printf("Test Dracula can't go to the Hospital\n");
+    char *trail =
+
+		"GED.... SGE.... HZU.... MCA.... DZA.V.. "
+		"GED.... SGE.... HZU.... MCA.... DSJT... "
+		"GED.... SGE.... HZU.... MCA....";
+
+		Message messages[14] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *locs = DvWhereCanIGo(dv, &numLocs);
+		assert(numLocs == 6);
+		sortPlaces(locs, numLocs);
+		assert(locs[0] == BELGRADE);
+        assert(locs[1] == SOFIA);
+		assert(locs[2] == VALONA);
+		free(locs);
+
+		printf("Test passed!\n");
+		DvFree(dv);
+	}
+
 	
 	{///////////////////////////////////////////////////////////////////
 	
