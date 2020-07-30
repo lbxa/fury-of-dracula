@@ -28,4 +28,4 @@ done
 IFS=' ';echo "${files[*]// /|}";IFS=$' \t'
 echo "$IFS"
 
-give cs2521 ass2view IFS
+give cs2521 ass2view "$IFS"
