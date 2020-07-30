@@ -7,8 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "Utilities.h"
+
 Heap HeapCreate(int initial_capacity) {
+  // Initialise heap struct and allocate space for the given initial capacity
   Heap heap = malloc(sizeof(struct heap));
+  CheckMallocSuccess(heap, "Unable to allocate heap struct!\n");
   heap->capacity = initial_capacity;
   heap->size = 0;
   heap->arr = malloc(sizeof(HeapItem) * heap->capacity);
@@ -80,6 +84,7 @@ void HeapPush(Heap heap, HeapItem value) {
   if (HeapIsFull(heap)) {
     heap->capacity *= 2;
     heap->arr = realloc(heap->arr, sizeof(struct heap_item) * heap->capacity);
+    CheckMallocSuccess(heap->arr, "Unable to reallocate heap!\n");
     assert(heap->arr != NULL);
   }
   heap->arr[++heap->size] = value;
