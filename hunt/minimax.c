@@ -5,7 +5,7 @@
 #include <view/GameView.h>
 #include "minimax.h"
 #include <limits.h>
-#include <view/path_finding.h>
+#include <view/PathFinding.h>
 #include <string.h>
 #include <math.h>
 

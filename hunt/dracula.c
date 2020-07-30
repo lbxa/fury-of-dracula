@@ -15,13 +15,12 @@
 #include "DraculaView.h"
 #include "Game.h"
 
-void decideDraculaMove(void* dv)
-{
+void decideDraculaMove(void *dv) {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	DraculaView view = (DraculaView) dv;
+    DraculaView view = (DraculaView) dv;
 
-	// Loop through possible moves and pick best one
+    // Loop through possible moves and pick best one
 
 //	registerBestPlay("LS", "Mwahahahaha");
 }

@@ -5,17 +5,17 @@
 #ifndef FURY_OF_DRACULA_PATH_FINDING_H
 #define FURY_OF_DRACULA_PATH_FINDING_H
 
-#include "Places.h"
-#include "hash_table.h"
-#include "binary_heap.h"
-#include "Map.h"
+#include "BinaryHeap.h"
 #include "GameView.h"
+#include "HashTable.h"
+#include "Map.h"
+#include "Places.h"
 
 typedef struct path {
-    int distance;
-    char *place;
-    struct path *predecessor;
-} *Path;
+  int distance;
+  char* place;
+  struct path* predecessor;
+} * Path;
 
 /**
  * Gets a path lookup table which has distances and paths from the given place
@@ -25,16 +25,10 @@ typedef struct path {
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player, Place from, bool road, bool rail, bool boat,
-                                 int round, bool resolveMoves, bool applyTrailRestrictions);
-
-/**
- * Gets a path lookup table which has distances and paths from any
- * place to any other place on the map
- * @param map
- * @return
- */
-HashTable* GetAllPathLookup(Map map);
+HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
+                                 Place from, bool road, bool rail, bool boat,
+                                 int round, bool resolveMoves,
+                                 bool applyTrailRestrictions);
 
 /**
  * Creates a dynamically allocated path node and returns it
@@ -43,7 +37,7 @@ HashTable* GetAllPathLookup(Map map);
  * @param predecessor
  * @return
  */
-Path CreatePath(char *place, int distance, Path predecessor);
+Path CreatePath(char* place, int distance, Path predecessor);
 
 /**
  * Frees all memory allocated to a given path
@@ -72,7 +66,8 @@ Path* GetOrderedPathSequence(Path path);
 PlaceId* GetOrderedPlaceIds(Path path);
 
 /**
- * Gets reachable places in move given travel type restirctions from given PlaceId
+ * Gets reachable places in one move given travel type and restrictions from
+ * given PlaceId
  * @param map
  * @param round
  * @param currentId
@@ -81,9 +76,10 @@ PlaceId* GetOrderedPlaceIds(Path path);
  * @param boat
  * @return array of PlaceId for reachable locations
  */
-PlaceId *
-GetPossibleMoves(GameView gameView, Map map, Player player, PlaceId currentId, bool road, bool rail, bool boat,
-                 int round, int *placesCount, bool resolveMoves, bool applyTrailRestrictions);
+PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
+                          PlaceId currentId, bool road, bool rail, bool boat,
+                          int round, int* placesCount, bool resolveMoves,
+                          bool applyTrailRestrictions);
 
 /**
  * Gets shortest path from player to destination
@@ -93,6 +89,7 @@ GetPossibleMoves(GameView gameView, Map map, Player player, PlaceId currentId, b
  * @param pathLength
  * @return
  */
-PlaceId *GetShortestPathTo(GameView gameView, Player player, PlaceId dest, int *pathLength);
+PlaceId* GetShortestPathTo(GameView gameView, Player player, PlaceId dest,
+                           int* pathLength);
 
-#endif //FURY_OF_DRACULA_PATH_FINDING_H
+#endif  // FURY_OF_DRACULA_PATH_FINDING_H

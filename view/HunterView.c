@@ -9,6 +9,8 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+#include "HunterView.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,182 +18,198 @@
 
 #include "Game.h"
 #include "GameView.h"
-#include "HunterView.h"
+#include "HashTable.h"
 #include "Map.h"
+#include "PathFinding.h"
 #include "Places.h"
-#include "path_finding.h"
-#include "hash_table.h"
 // add your own #includes here
 
 // TODO: ADD YOUR OWN STRUCTS HERE
 
 struct hunterView {
-    GameView gameView;
+  GameView gameView;
 };
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
 HunterView HvNew(char *pastPlays, Message messages[]) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    HunterView new = malloc(sizeof(*new));
-    if (new == NULL) {
-        fprintf(stderr, "Couldn't allocate HunterView!\n");
-        exit(EXIT_FAILURE);
-    }
+  // Allocate memory for hunterView
+  HunterView new = malloc(sizeof(*new));
+  if (new == NULL) {
+    fprintf(stderr, "Couldn't allocate HunterView!\n");
+    exit(EXIT_FAILURE);
+  }
+  // Construct the gameView
+  GameView gameView = GvNew(pastPlays, messages);
+  new->gameView = gameView;
 
-    GameView gameView = GvNew(pastPlays, messages);
-    new->gameView = gameView;
+  // TODO: Add helper function to copy messages into messageList
 
-
-    // TODO: Add helper function to copy messages into messageList
-
-    return new;
+  return new;
 }
 
 void HvFree(HunterView hv) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    GvFree(hv->gameView);
-    free(hv);
+  // Free the gameView and then the rest
+  GvFree(hv->gameView);
+  free(hv);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
-Round HvGetRound(HunterView hv) {
-    return GvGetRound(hv->gameView);
-}
+Round HvGetRound(HunterView hv) { return GvGetRound(hv->gameView); }
 
-Player HvGetPlayer(HunterView hv) {
-    return GvGetPlayer(hv->gameView);
-}
+Player HvGetPlayer(HunterView hv) { return GvGetPlayer(hv->gameView); }
 
-int HvGetScore(HunterView hv) {
-    return GvGetScore(hv->gameView);
-}
+int HvGetScore(HunterView hv) { return GvGetScore(hv->gameView); }
 
 int HvGetHealth(HunterView hv, Player player) {
-    return GvGetHealth(hv->gameView, player);
+  return GvGetHealth(hv->gameView, player);
 }
 
 PlaceId HvGetPlayerLocation(HunterView hv, Player player) {
-    return GvGetPlayerLocation(hv->gameView, player);
+  return GvGetPlayerLocation(hv->gameView, player);
 }
 
 PlaceId HvGetVampireLocation(HunterView hv) {
-    return GvGetVampireLocation(hv->gameView);
+  return GvGetVampireLocation(hv->gameView);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Utility Functions
 
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
-    // TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-    // Dracula player struct, go backwards through his resolved location array
-    // check between MIN_REAL_PLACE AND MAX_REAL_PLACE
-
-    int numReturnedMoves = 0;
-    bool canModify = true;
-    PlaceId *draculaHistory = GvGetMoveHistory(hv->gameView, PLAYER_DRACULA, &numReturnedMoves, &canModify);
-
-
-    for (int i = numReturnedMoves - 1; i >= 0; i--) {
-        PlaceId currentMove = draculaHistory[i];
-        if (currentMove >= MIN_REAL_PLACE && currentMove <= MAX_REAL_PLACE) {
-            *round = i;
-            return draculaHistory[i];
-        }
+  // Initialise variable
+  int numReturnedMoves = 0;
+  bool canModify = true;
+  // Get Dracula's full move history
+  PlaceId *draculaHistory = GvGetMoveHistory(hv->gameView, PLAYER_DRACULA,
+                                             &numReturnedMoves, &canModify);
+  // Loop through his moves, starting at most recent
+  // Return any that is a real location
+  for (int i = numReturnedMoves - 1; i >= 0; i--) {
+    PlaceId currentMove = draculaHistory[i];
+    if (currentMove >= MIN_REAL_PLACE && currentMove <= MAX_REAL_PLACE) {
+      *round = i;
+      return draculaHistory[i];
     }
-    *round = 0;
-    return NOWHERE;
+  }
+  // Return if no real moves discovered from his history
+  *round = 0;
+  return NOWHERE;
 }
 
-
 void print_hash_node(HashNode node) {
-    Path p = (Path) node->value;
-    printf("[%s -> %d]\n", p->place, p->distance);
+  Path p = (Path)node->value;
+  printf("[%s -> %d]\n", p->place, p->distance);
 }
 
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength) {
-    // HashTable pathLookup = GetPathLookupTableFrom();
-    // HashNode path = HashGet(pathLookup, "KL"); -> KL is dest
+  // Getting map
+  Map map = GetMap(hv->gameView);
+  // Getting data for Place
+  *pathLength = 0;
+  PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, hunter);
+  // Return nothing for start == dest
+  if (currentLocation == dest) return NULL;
+  // Allocate memory for place
+  Place *from = malloc(sizeof(struct place));
+  if (from == NULL) {
+    fprintf(stderr, "Couldn't allocate Place!\n");
+    exit(EXIT_FAILURE);
+  }
 
-    // Getting map
-    Map map = GetMap(hv->gameView);
-    // Getting data for Place
-    *pathLength = 0;
-    PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, hunter);
-    if (currentLocation == dest) return NULL;
+  int round = GvGetRound(hv->gameView);
 
-    Place *from = malloc(sizeof(struct place));
-    if (from == NULL) {
-        fprintf(stderr, "Couldn't allocate Place!\n");
-        exit(EXIT_FAILURE);
-    }
+  // Create a lookup table for all paths from current location
+  HashTable pathLookup =
+      GetPathLookupTableFrom(hv->gameView, map, hunter, PLACES[currentLocation],
+                             true, true, true, round, true, false);
 
-    int round = GvGetRound(hv->gameView);
-    HashTable pathLookup = GetPathLookupTableFrom(hv->gameView, map, hunter, PLACES[currentLocation], true, true, true, round, true,
-                                                  false);
+  // Get the path to the destionation
+  Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(dest))->value;
 
-    Path path = (Path) HashGet(pathLookup, placeIdToAbbrev(dest))->value;
+  // Allocate memory for the PlaceId *array that will be returned
+  // Loop through the HashNode to get the path and use charAbbrevToId to convert
+  // char *key into PlaceId Update length of the array with each node added to
+  // the path and return the full array
 
-    // Allocate memory for the PlaceId *array that will be returned
-    // Loop through the HashNode to get the path and use charAbbrevToId to convert char *key into PlaceId
-    // Update length of the array with each node added to the path and return the full array
-
-    *pathLength = path->distance;
-    return GetOrderedPlaceIds(path);
+  *pathLength = path->distance;
+  return GetOrderedPlaceIds(path);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Making a Move
 
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(hv->gameView);
-    Player currentPlayer = GvGetPlayer(hv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
-    int currentRound = GvGetRound(hv->gameView);
+  // Initialise variables to call get possible moves
+  *numReturnedLocs = 0;
+  Map map = GetMap(hv->gameView);
+  Player currentPlayer = GvGetPlayer(hv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
+  int currentRound = GvGetRound(hv->gameView);
 
-    return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation, true, true, true, currentRound,
-                            numReturnedLocs, true, false);
+  // Finds legal moves from a given place, see pathfinding.c
+  return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation,
+                          true, true, true, currentRound, numReturnedLocs, true,
+                          false);
 }
 
-PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
-                             bool boat, int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(hv->gameView);
-    Player currentPlayer = GvGetPlayer(hv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
-    int currentRound = GvGetRound(hv->gameView);
+PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail, bool boat,
+                             int *numReturnedLocs) {
+  // Initialise variables to call get possible moves
+  *numReturnedLocs = 0;
+  Map map = GetMap(hv->gameView);
+  Player currentPlayer = GvGetPlayer(hv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
+  int currentRound = GvGetRound(hv->gameView);
 
-    return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation, road, rail, boat, currentRound,
-                            numReturnedLocs, true, false);
+  // Finds legal moves from a given place, see pathfinding.c
+  return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation,
+                          road, rail, boat, currentRound, numReturnedLocs, true,
+                          false);
 }
 
-PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
-                          int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(hv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
-    int currentRound = GvGetRound(hv->gameView);
-    return GetPossibleMoves(hv->gameView, map, player, currentLocation, true, true, true, currentRound, numReturnedLocs,
-                            true, false);
+PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs) {
+  // Initialise variables to call get possible moves
+  *numReturnedLocs = 0;
+  Map map = GetMap(hv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
+  int currentRound = GvGetRound(hv->gameView);
+
+  // Finds legal moves from a given place, see pathfinding.c
+  return GetPossibleMoves(hv->gameView, map, player, currentLocation, true,
+                          true, true, currentRound, numReturnedLocs, true,
+                          false);
 }
 
-PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs) {
-    *numReturnedLocs = 0;
-    Map map = GetMap(hv->gameView);
-    PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
-    int currentRound = GvGetRound(hv->gameView) + 1; //TODO: Verify this
-    return GetPossibleMoves(hv->gameView, map, player, currentLocation, road, rail, boat, currentRound, numReturnedLocs,
-                            true, false);
+PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
+                                bool rail, bool boat, int *numReturnedLocs) {
+  // Initialise varialbes to call get possible moves
+  *numReturnedLocs = 0;
+  bool canFree = true;
+  int numReturnedMoves;
+  Map map = GetMap(hv->gameView);
+  PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
+
+  // Current round is more conplicated -> must check if the player has already
+  // made a move this round
+  int currentRound = GvGetRound(hv->gameView);
+  PlaceId *history =
+      GvGetMoveHistory(hv->gameView, player, &numReturnedMoves, &canFree);
+  // If player has made a move this turn, check using next turns round number
+  // Important for rail moves
+  if (history[currentRound] == currentLocation) {
+    currentRound += 1;
+  }
+
+  // Finds legal moves from a given place, see pathfinding.c
+  return GetPossibleMoves(hv->gameView, map, player, currentLocation, road,
+                          rail, boat, currentRound, numReturnedLocs, true,
+                          false);
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
-
-// TODO
