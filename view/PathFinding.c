@@ -207,7 +207,6 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   free(trailMoves);
   free(locationHistory);
 
-
   // Reallocate to needed size
   if (*placesCount < NUM_REAL_PLACES) {
     places = realloc(places, sizeof(PlaceId) * (*placesCount));
@@ -293,6 +292,7 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
 }
 
 Path CreatePath(char* place, int distance, Path predecessor) {
+  // Create and allocate for path struct and intitialise all struct fields
   Path path = malloc(sizeof(*path));
   CheckMallocSuccess(path, "Couldn't allocate for path!\n");
   path->distance = distance;
@@ -304,7 +304,7 @@ Path CreatePath(char* place, int distance, Path predecessor) {
 }
 
 void FreePathNode(void* path) {
-  free(((Path) path)->place);
+  free(((Path)path)->place);
   free(path);
 }
 
@@ -313,6 +313,8 @@ Path* GetOrderedPathSequence(Path path) {
   CheckMallocSuccess(pathArr, "Couldn't allocate path array!\n");
   int i = path->distance;
   Path cur = path;
+  // Step through predecessors and reorder so that they are in ascending order
+  // instead of reverse
   while (cur) {
     pathArr[i] = cur;
     cur = cur->predecessor;
@@ -342,6 +344,7 @@ void PrintPathSequence(Path path) {
   CheckMallocSuccess(sequenceStr, "Couldn't allocate sequence string!\n");
   sequenceStr[length - 1] = '\0';
   Path* pathArr = GetOrderedPathSequence(path);
+  // Loop through path array and place the elements in a sequence string
   for (int j = 0; j < path->distance + 1; ++j) {
     strcpy(&sequenceStr[j * 4], pathArr[j]->place);
     if (j == path->distance) break;

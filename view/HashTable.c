@@ -122,13 +122,14 @@ void HashDelete(HashTable table, const char *key) {
  * @param node
  * @param nodeFreeFunction
  */
-void FreeNode(HashNode node, void (*nodeFreeFunction)(void*)) {
+void FreeNode(HashNode node, void (*nodeFreeFunction)(void *)) {
   free(node->key);
   nodeFreeFunction(node->value);
   free(node);
 }
 
-void HashTableDestroy(HashTable table, void (*nodeFreeFunction)(void*)) {
+void HashTableDestroy(HashTable table, void (*nodeFreeFunction)(void *)) {
+  // Loop through and free all hash items using given free function
   for (int i = 0; i < table->tableSize; i++) {
     if (table->items[i] != NULL) {
       HashNode cur = table->items[i];

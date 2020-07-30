@@ -25,8 +25,6 @@
 #include "Utilities.h"
 // add your own #includes here
 
-// TODO: ADD YOUR OWN STRUCTS HERE
-
 struct hunterView {
   GameView gameView;
 };
@@ -44,8 +42,6 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
   // Construct the gameView
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
-
-  // TODO: Add helper function to copy messages into messageList
 
   return new;
 }
