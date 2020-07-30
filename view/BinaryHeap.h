@@ -5,12 +5,18 @@
 #ifndef FURY_OF_DRACULA_BINARY_HEAP_H
 #define FURY_OF_DRACULA_BINARY_HEAP_H
 
+/**
+ * Struct for Heap Representation
+ */
 typedef struct heap {
   int capacity;
   int size;
   struct heap_item **arr;
 } * Heap;
 
+/**
+ * Struct for a heap item stored in the heap
+ */
 typedef struct heap_item {
   int value;
   void *data;

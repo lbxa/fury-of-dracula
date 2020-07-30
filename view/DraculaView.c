@@ -20,7 +20,12 @@
 #include "GameView.h"
 #include "Map.h"
 #include "PathFinding.h"
+#include "Utilities.h"
 
+/**
+ * Dracula view struct only contains GameView as everything required is
+ * there
+ */
 struct draculaView {
   GameView gameView;
 };
@@ -33,18 +38,19 @@ struct draculaView {
 
 DraculaView DvNew(char *pastPlays, Message messages[]) {
   DraculaView new = malloc(sizeof(*new));
-  if (new == NULL) {
-    fprintf(stderr, "Couldn't allocate DraculaView\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(new, "Couldn't allocate DraculaView\n");
 
+  // Creates new GameView and puts it in DraculaView struct
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
 
   return new;
 }
 
-// Frees all memory allocated for `dv`.
+/**
+ * Frees all memory allocated for `dv`.
+ * @param dv
+ */
 void DvFree(DraculaView dv) {
   GvFree(dv->gameView);
   free(dv);
@@ -81,6 +87,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves) {
   *numReturnedMoves = 0;
   Map map = GetMap(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+  // Gets valid moves for dracula applying his movement restrictions
   return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
                           true, false, true, 0, numReturnedMoves, false, true);
 }
@@ -89,8 +96,10 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs) {
   *numReturnedLocs = 0;
   Map map = GetMap(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+  // Resolves valid moves for dracula into locations and applying his movement
+  // restrictions
   return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
-                          true, false, true, 0, numReturnedLocs, false, true);
+                          true, false, true, 0, numReturnedLocs, true, true);
 }
 
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
@@ -98,6 +107,8 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
   *numReturnedLocs = 0;
   Map map = GetMap(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
+  // Resolves valid moves for dracula into locations and applying his movement
+  // restrictions as well as doing type restrictions
   return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
                           road, false, boat, 0, numReturnedLocs, true, true);
 }
@@ -107,6 +118,8 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs) {
   Map map = GetMap(dv->gameView);
   int round = GvGetRound(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
+  // Resolves valid moves for given players into locations and applying relevant
+  // movement restrictions
   return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
                           true, true, true, round, numReturnedLocs, true, true);
 }
@@ -117,6 +130,8 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
   Map map = GetMap(dv->gameView);
   int round = GvGetRound(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
+  // Resolves valid moves for given players into locations and applying relevant
+  // movement restrictions as well as doing type restrictions
   return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
                           road, rail, boat, round, numReturnedLocs, true, true);
 }

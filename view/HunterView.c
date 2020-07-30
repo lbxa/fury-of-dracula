@@ -100,11 +100,6 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
   return NOWHERE;
 }
 
-void print_hash_node(HashNode node) {
-  Path p = (Path)node->value;
-  printf("[%s -> %d]\n", p->place, p->distance);
-}
-
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength) {
   // Getting map
@@ -128,7 +123,7 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
       GetPathLookupTableFrom(hv->gameView, map, hunter, PLACES[currentLocation],
                              true, true, true, round, true, false);
 
-  // Get the path to the destionation
+  // Get the path to the destination
   Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(dest))->value;
 
   // Allocate memory for the PlaceId *array that will be returned
@@ -151,7 +146,7 @@ PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs) {
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
   int currentRound = GvGetRound(hv->gameView);
 
-  // Finds legal moves from a given place, see pathfinding.c
+  // Finds legal moves from a given place, see PathFinding.c
   return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation,
                           true, true, true, currentRound, numReturnedLocs, true,
                           false);
@@ -166,7 +161,7 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail, bool boat,
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
   int currentRound = GvGetRound(hv->gameView);
 
-  // Finds legal moves from a given place, see pathfinding.c
+  // Finds legal moves from a given place, see PathFinding.c
   return GetPossibleMoves(hv->gameView, map, currentPlayer, currentLocation,
                           road, rail, boat, currentRound, numReturnedLocs, true,
                           false);
@@ -179,7 +174,7 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs) {
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
   int currentRound = GvGetRound(hv->gameView);
 
-  // Finds legal moves from a given place, see pathfinding.c
+  // Finds legal moves from a given place, see PathFinding.c
   return GetPossibleMoves(hv->gameView, map, player, currentLocation, true,
                           true, true, currentRound, numReturnedLocs, true,
                           false);
@@ -187,14 +182,14 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs) {
 
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
                                 bool rail, bool boat, int *numReturnedLocs) {
-  // Initialise varialbes to call get possible moves
+  // Initialise variables to call get possible moves
   *numReturnedLocs = 0;
   bool canFree = true;
   int numReturnedMoves;
   Map map = GetMap(hv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
 
-  // Current round is more conplicated -> must check if the player has already
+  // Current round is more complicated -> must check if the player has already
   // made a move this round
   int currentRound = GvGetRound(hv->gameView);
   PlaceId *history =
@@ -205,7 +200,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
     currentRound += 1;
   }
 
-  // Finds legal moves from a given place, see pathfinding.c
+  // Finds legal moves from a given place, see PathFinding.c
   return GetPossibleMoves(hv->gameView, map, player, currentLocation, road,
                           rail, boat, currentRound, numReturnedLocs, true,
                           false);
