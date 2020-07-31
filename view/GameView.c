@@ -114,7 +114,7 @@ bool ProcessEncounter(GameView gameView, Player player, char encounter) {
   } else if (encounter == VAMPIRE_ENCOUNTER) {
     gameView->roundVampirePlaced = -1;
     gameView->vampireLocation = NOWHERE;
-  } else {  // Dracula
+  } else {  // Dracula Encounter
     gameView->players[PLAYER_DRACULA]->playerHealth -=
         LIFE_LOSS_HUNTER_ENCOUNTER;
     gameView->players[player]->playerHealth -= LIFE_LOSS_DRACULA_ENCOUNTER;
@@ -227,7 +227,7 @@ GameView GvNew(char *pastPlays, Message messages[]) {
     ProcessLocation(gameView, player, placeAbbrev);
 
     // Process turn encounters
-    if (player != PLAYER_DRACULA) {
+    if (player != PLAYER_DRACULA && placeIsLand(placeAbbrevToId(placeAbbrev))) {
       int encounterIndex = charIndex + 3;
       while (encounterIndex < charIndex + PLAY_STR_LENGTH) {
         if (ProcessEncounter(gameView, player, pastPlays[encounterIndex])) {
