@@ -43,7 +43,7 @@ Path CreatePath(char* place, int distance, Path predecessor);
  * Frees all memory allocated to a given path
  * @param path
  */
-void FreePathNode(void *path);
+void FreePathNode(void* path);
 
 /**
  * Prints the path sequence of the given path to stdout

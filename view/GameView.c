@@ -290,10 +290,9 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player) {
   return gv->players[player]->lastResolvedLocation;
 }
 
-PlaceId GvGetVampireLocation(GameView gv) { 
+PlaceId GvGetVampireLocation(GameView gv) {
   assert(gv != NULL);
-  return gv->vampireLocation; 
-
+  return gv->vampireLocation;
 }
 
 // loop through gv trap locations and look for all the values in the array
@@ -346,8 +345,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
   }
 
   PlaceId *nLastMoves = malloc(sizeof(PlaceId) * numMoves);
-  CheckMallocSuccess(nLastMoves, 
-            "Couldn't allocate space for move history!\n");
+  CheckMallocSuccess(nLastMoves, "Couldn't allocate space for move history!\n");
 
   for (int i = numMoves - 1; i >= 0; i--) {
     int offset = (numMoves - 1);
@@ -385,8 +383,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
   }
 
   PlaceId *nLastLocations = malloc(sizeof(PlaceId *) * numLocs);
-  CheckMallocSuccess(nLastLocations, 
-          "Couldn't allocate space for last locations!\n");
+  CheckMallocSuccess(nLastLocations,
+                     "Couldn't allocate space for last locations!\n");
 
   for (int i = numLocs - 1; i >= 0; i--) {
     int offset = (numLocs - 1);
@@ -417,9 +415,9 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // OUR own interface functions
 // Eric | Lucas | Stephen | Debbie - (20T2)
 
-Map GetMap(GameView gameView) { 
+Map GetMap(GameView gameView) {
   assert(gameView != NULL);
-  return gameView->map; 
+  return gameView->map;
 }
 
 PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
@@ -427,7 +425,7 @@ PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
   return gameView->players;
 }
 
-int GvGetTurnNumber(GameView gameView) { 
+int GvGetTurnNumber(GameView gameView) {
   assert(gameView != NULL);
-  return gameView->turnNumber; 
+  return gameView->turnNumber;
 }

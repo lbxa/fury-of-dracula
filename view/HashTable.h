@@ -49,7 +49,7 @@ void HashDelete(HashTable table, const char *key);
  * Frees all associated memory for a given hash table
  * @param table
  */
-void HashTableDestroy(HashTable table, void (*nodeFreeFunction)(void*));
+void HashTableDestroy(HashTable table, void (*nodeFreeFunction)(void *));
 
 /**
  * Prints a given hash table to stdout

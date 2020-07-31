@@ -284,7 +284,7 @@ PlayerDetails *GetPlayerDetailsArray(GameView gameView);
  * @param gameView
  * @param player
  * @param unresolvedLocation
- * @return - move will be returned purely as a location (Place ID). 
+ * @return - move will be returned purely as a location (Place ID).
  */
 PlaceId ResolveLocation(GameView gameView, PlayerDetails player,
                         PlaceId unresolvedLocation);
