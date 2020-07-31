@@ -47,8 +47,6 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
 
-  // TODO: Add helper function to copy messages into messageList
-
   return new;
 }
 
