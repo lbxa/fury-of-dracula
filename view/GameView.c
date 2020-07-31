@@ -47,10 +47,7 @@ struct gameView {
  */
 GameView ConstructGameView() {
   GameView new = malloc(sizeof(*new));
-  if (new == NULL) {
-    fprintf(stderr, "Couldn't allocate GameView!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(new, "Couldn't allocate space for GameView!\n");
 
   new->map = MapNew();
   new->gameScore = GAME_START_SCORE;
@@ -97,7 +94,7 @@ void ProcessTraps(GameView gameView) {
 /**
  * Handle and process encounter events
  * @param encounter - type of encounter encoded into a single char.
- * @return - was the player killed in encounter
+ * @return - value represents if the player killed in encounter
  */
 bool ProcessEncounter(GameView gameView, Player player, char encounter) {
   /**
@@ -263,6 +260,9 @@ void GvFree(GameView gameView) {
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
+//
+// The code for hese functions is quite straight-forward. They only
+// act as 'getters'.
 
 Round GvGetRound(GameView gv) {
   assert(gv != NULL);
@@ -276,7 +276,7 @@ Player GvGetPlayer(GameView gv) {
 
 int GvGetScore(GameView gv) {
   assert(gv != NULL);
-  assert(gv->gameScore <= 366);
+  assert(gv->gameScore <= GAME_START_SCORE);
   return gv->gameScore;
 }
 
@@ -286,12 +286,17 @@ int GvGetHealth(GameView gv, Player player) {
 }
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player) {
+  assert(gv != NULL);
   return gv->players[player]->lastResolvedLocation;
 }
 
-PlaceId GvGetVampireLocation(GameView gv) { return gv->vampireLocation; }
+PlaceId GvGetVampireLocation(GameView gv) { 
+  assert(gv != NULL);
+  return gv->vampireLocation; 
 
-// loop through gv traplocations and look for all the values in the array
+}
+
+// loop through gv trap locations and look for all the values in the array
 // without a value of NOWHERE
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
   *numTraps = 0;
@@ -302,10 +307,7 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps) {
   }
   int count = 0;
   PlaceId *traps = malloc(sizeof(PlaceId) * (*numTraps));
-  if (traps == NULL) {
-    fprintf(stderr, "Couldn't allocate space!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(traps, "Couldn't allocate space for traps!\n");
   for (int i = 0; i < TRAIL_SIZE; i++) {
     if (gv->trapLocations[i] != NOWHERE) {
       traps[count] = gv->trapLocations[i];
@@ -321,7 +323,7 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player, int *numReturnedMoves,
                           bool *canFree) {
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedMoves = currPlayer->moveCount;
-  // should be true if using a copy of the original array.
+  // should be set to true if using a copy of the original array.
   *canFree = true;
 
   PlaceId *moveHistory = malloc(sizeof(PlaceId) * currPlayer->moveCount);
@@ -344,10 +346,8 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
   }
 
   PlaceId *nLastMoves = malloc(sizeof(PlaceId) * numMoves);
-  if (nLastMoves == NULL) {
-    fprintf(stderr, "Couldn't allocate space!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(nLastMoves, 
+            "Couldn't allocate space for move history!\n");
 
   for (int i = numMoves - 1; i >= 0; i--) {
     int offset = (numMoves - 1);
@@ -361,7 +361,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player, int *numReturnedLocs,
                               bool *canFree) {
   PlayerDetails currPlayer = gv->players[player];
   *numReturnedLocs = currPlayer->moveCount;
-  // should be true if using a copy of the original array.
+  // should be set to true if using a copy of the original array.
   *canFree = true;
 
   PlaceId *locationHistory = malloc(sizeof(PlaceId *) * currPlayer->moveCount);
@@ -385,10 +385,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
   }
 
   PlaceId *nLastLocations = malloc(sizeof(PlaceId *) * numLocs);
-  if (nLastLocations == NULL) {
-    fprintf(stderr, "Couldn't allocate space!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(nLastLocations, 
+          "Couldn't allocate space for last locations!\n");
 
   for (int i = numLocs - 1; i >= 0; i--) {
     int offset = (numLocs - 1);
@@ -419,10 +417,17 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // OUR own interface functions
 // Eric | Lucas | Stephen | Debbie - (20T2)
 
-Map GetMap(GameView gameView) { return gameView->map; }
+Map GetMap(GameView gameView) { 
+  assert(gameView != NULL);
+  return gameView->map; 
+}
 
 PlayerDetails *GetPlayerDetailsArray(GameView gameView) {
+  assert(gameView != NULL);
   return gameView->players;
 }
 
-int GvGetTurnNumber(GameView gameView) { return gameView->turnNumber; }
+int GvGetTurnNumber(GameView gameView) { 
+  assert(gameView != NULL);
+  return gameView->turnNumber; 
+}

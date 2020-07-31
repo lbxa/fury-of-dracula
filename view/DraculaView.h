@@ -21,6 +21,9 @@
 #include "Game.h"
 #include "Places.h"
 
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
+
 typedef struct draculaView *DraculaView;
 
 ////////////////////////////////////////////////////////////////////////
@@ -172,10 +175,5 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs);
  */
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
                                 bool rail, bool boat, int *numReturnedLocs);
-
-////////////////////////////////////////////////////////////////////////
-// Your own interface functions
-
-// TODO
 
 #endif  // !defined(FOD__DRACULA_VIEW_H_)

@@ -22,9 +22,13 @@
 #include "PathFinding.h"
 #include "Utilities.h"
 
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
+
 /**
  * Dracula view struct only contains GameView as everything required is
- * there
+ * there. This singular approach reduced the amount of code that needed
+ * to be copied between HunterView and DraculaView.
  */
 struct draculaView {
   GameView gameView;
@@ -59,23 +63,33 @@ void DvFree(DraculaView dv) {
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
-Round DvGetRound(DraculaView dv) { return GvGetRound(dv->gameView); }
+Round DvGetRound(DraculaView dv) {
+  assert(dv != NULL); 
+  return GvGetRound(dv->gameView); 
+}
 
-int DvGetScore(DraculaView dv) { return GvGetScore(dv->gameView); }
+int DvGetScore(DraculaView dv) { 
+  assert(dv != NULL);
+  return GvGetScore(dv->gameView); 
+}
 
 int DvGetHealth(DraculaView dv, Player player) {
+  assert(dv != NULL);
   return GvGetHealth(dv->gameView, player);
 }
 
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player) {
+  assert(dv != NULL);
   return GvGetPlayerLocation(dv->gameView, player);
 }
 
 PlaceId DvGetVampireLocation(DraculaView dv) {
+  assert(dv != NULL);
   return GvGetVampireLocation(dv->gameView);
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps) {
+  assert(dv != NULL);
   *numTraps = 0;
   return GvGetTrapLocations(dv->gameView, numTraps);
 }

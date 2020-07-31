@@ -6,11 +6,12 @@
 #define FURY_OF_DRACULA_HUNT_UTILITIES_H
 
 /**
- * Checks if malloc failed to allocate and if it has
- * it exits the program and prints error message
- * @param mem
- * @param errorMessage
- */
+ * Wrapper for checking malloced memory. This helps us avoid re-writing 
+ * this block code over and over again. 
+ * @param mem - the pointer to whatever is being malloced.
+ * @param errorMessage - Msg to appear when error in evoked.
+ * 
+*/
 void CheckMallocSuccess(void *mem, char *errorMessage);
 
 /**
