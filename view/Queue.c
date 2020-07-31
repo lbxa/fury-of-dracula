@@ -1,5 +1,5 @@
 //
-// Queue ADT heavily based on the one provide in lab code
+// Queue ADT heavily based on the one provided in lab code
 //
 
 #include "Queue.h"

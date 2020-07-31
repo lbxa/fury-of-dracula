@@ -273,7 +273,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 Map GetMap(GameView gameView);
 
 /**
- * Gets array of player detail structs
+ * Gets array of player detail structs. Another simple 'getter' function
  * @param gameView
  * @return
  */
@@ -284,7 +284,7 @@ PlayerDetails *GetPlayerDetailsArray(GameView gameView);
  * @param gameView
  * @param player
  * @param unresolvedLocation
- * @return
+ * @return - move will be returned purely as a location (Place ID). 
  */
 PlaceId ResolveLocation(GameView gameView, PlayerDetails player,
                         PlaceId unresolvedLocation);

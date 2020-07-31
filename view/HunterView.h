@@ -20,7 +20,9 @@
 
 #include "Game.h"
 #include "Places.h"
-// add your own #includes here
+
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
 typedef struct hunterView *HunterView;
 
@@ -209,10 +211,5 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs);
  */
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
                                 bool rail, bool boat, int *numReturnedLocs);
-
-////////////////////////////////////////////////////////////////////////
-// Your own interface functions
-
-// TODO
-
+                                
 #endif  // !defined (FOD__HUNTER_VIEW_H_)

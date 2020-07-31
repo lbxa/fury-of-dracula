@@ -24,9 +24,13 @@
 #include "Places.h"
 #include "Utilities.h"
 
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
+
 /**
  * Dracula view struct only contains GameView as everything required is
- * there
+ * there. This singular approach reduced the amount of code that needed
+ * to be copied between HunterView and DraculaView.
  */
 struct hunterView {
   GameView gameView;
@@ -36,17 +40,12 @@ struct hunterView {
 // Constructor/Destructor
 
 HunterView HvNew(char *pastPlays, Message messages[]) {
-  // Allocate memory for hunterView
   HunterView new = malloc(sizeof(*new));
-  if (new == NULL) {
-    fprintf(stderr, "Couldn't allocate HunterView!\n");
-    exit(EXIT_FAILURE);
-  }
+  CheckMallocSuccess(new, "Couldn't allocate HunterView!\n");
+ 
   // Construct the gameView
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
-
-  // TODO: Add helper function to copy messages into messageList
 
   return new;
 }
@@ -56,6 +55,7 @@ HunterView HvNew(char *pastPlays, Message messages[]) {
  * @param hv
  */
 void HvFree(HunterView hv) {
+  assert(hv != NULL);
   // Free the gameView and then the rest
   GvFree(hv->gameView);
   free(hv);
@@ -64,21 +64,33 @@ void HvFree(HunterView hv) {
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
-Round HvGetRound(HunterView hv) { return GvGetRound(hv->gameView); }
+Round HvGetRound(HunterView hv) { 
+  assert(hv != NULL);
+  return GvGetRound(hv->gameView); 
+}
 
-Player HvGetPlayer(HunterView hv) { return GvGetPlayer(hv->gameView); }
+Player HvGetPlayer(HunterView hv) { 
+   assert(hv != NULL);
+  return GvGetPlayer(hv->gameView); 
+}
 
-int HvGetScore(HunterView hv) { return GvGetScore(hv->gameView); }
+int HvGetScore(HunterView hv) { 
+  assert(hv != NULL);
+  return GvGetScore(hv->gameView); 
+}
 
 int HvGetHealth(HunterView hv, Player player) {
+  assert(hv != NULL);
   return GvGetHealth(hv->gameView, player);
 }
 
 PlaceId HvGetPlayerLocation(HunterView hv, Player player) {
+  assert(hv != NULL);
   return GvGetPlayerLocation(hv->gameView, player);
 }
 
 PlaceId HvGetVampireLocation(HunterView hv) {
+  assert(hv != NULL);
   return GvGetVampireLocation(hv->gameView);
 }
 
@@ -86,7 +98,6 @@ PlaceId HvGetVampireLocation(HunterView hv) {
 // Utility Functions
 
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
-  // Initialise variable
   int numReturnedMoves = 0;
   bool canModify = true;
   // Get Dracula's full move history
@@ -111,7 +122,6 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
 
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength) {
-  // Getting map
   Map map = GetMap(hv->gameView);
   // Getting data for Place
   *pathLength = 0;
@@ -136,11 +146,9 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
   // Loop through the HashNode to get the path and use charAbbrevToId to convert
   // char *key into PlaceId Update length of the array with each node added to
   // the path and return the full array
-
   *pathLength = path->distance;
   PlaceId *orderedPath = GetOrderedPlaceIds(path);
 
-  // Free memory
   free(from);
   HashTableDestroy(pathLookup, FreePathNode);
 
@@ -206,6 +214,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
   int currentRound = GvGetRound(hv->gameView);
   PlaceId *history =
       GvGetMoveHistory(hv->gameView, player, &numReturnedMoves, &canFree);
+  
   // If player has made a move this turn, check using next turns round number
   // Important for rail moves
   if (history[currentRound] == currentLocation) {
@@ -217,6 +226,3 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
                           rail, boat, currentRound, numReturnedLocs, true,
                           false);
 }
-
-////////////////////////////////////////////////////////////////////////
-// Your own interface functions
