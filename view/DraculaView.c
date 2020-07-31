@@ -64,13 +64,13 @@ void DvFree(DraculaView dv) {
 // Game State Information
 
 Round DvGetRound(DraculaView dv) {
-  assert(dv != NULL); 
-  return GvGetRound(dv->gameView); 
+  assert(dv != NULL);
+  return GvGetRound(dv->gameView);
 }
 
-int DvGetScore(DraculaView dv) { 
+int DvGetScore(DraculaView dv) {
   assert(dv != NULL);
-  return GvGetScore(dv->gameView); 
+  return GvGetScore(dv->gameView);
 }
 
 int DvGetHealth(DraculaView dv, Player player) {

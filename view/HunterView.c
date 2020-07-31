@@ -42,7 +42,7 @@ struct hunterView {
 HunterView HvNew(char *pastPlays, Message messages[]) {
   HunterView new = malloc(sizeof(*new));
   CheckMallocSuccess(new, "Couldn't allocate HunterView!\n");
- 
+
   // Construct the gameView
   GameView gameView = GvNew(pastPlays, messages);
   new->gameView = gameView;
@@ -64,19 +64,19 @@ void HvFree(HunterView hv) {
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
-Round HvGetRound(HunterView hv) { 
+Round HvGetRound(HunterView hv) {
   assert(hv != NULL);
-  return GvGetRound(hv->gameView); 
+  return GvGetRound(hv->gameView);
 }
 
-Player HvGetPlayer(HunterView hv) { 
-   assert(hv != NULL);
-  return GvGetPlayer(hv->gameView); 
+Player HvGetPlayer(HunterView hv) {
+  assert(hv != NULL);
+  return GvGetPlayer(hv->gameView);
 }
 
-int HvGetScore(HunterView hv) { 
+int HvGetScore(HunterView hv) {
   assert(hv != NULL);
-  return GvGetScore(hv->gameView); 
+  return GvGetScore(hv->gameView);
 }
 
 int HvGetHealth(HunterView hv, Player player) {
@@ -214,7 +214,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
   int currentRound = GvGetRound(hv->gameView);
   PlaceId *history =
       GvGetMoveHistory(hv->gameView, player, &numReturnedMoves, &canFree);
-  
+
   // If player has made a move this turn, check using next turns round number
   // Important for rail moves
   if (history[currentRound] == currentLocation) {
