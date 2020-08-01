@@ -26,7 +26,7 @@ char getPlayerChar(Player player) {
   } else if (player == PLAYER_DR_SEWARD) {
     return 'S';
   } else if (player == PLAYER_VAN_HELSING) {
-    return 'H';
+    return 'V';
   } else if (player == PLAYER_MINA_HARKER) {
     return 'M';
   }
