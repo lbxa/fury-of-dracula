@@ -9,18 +9,52 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
-#include <time.h>
-#include <pthread.h>
 #include "dracula.h"
+
+#include <pthread.h>
+#include <time.h>
+#include <stdio.h>
+
 #include "DraculaView.h"
 #include "Game.h"
 
-void decideDraculaMove(void *dv) {
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-    DraculaView view = (DraculaView) dv;
+void DvMakeFirstMove(DraculaView hv) {
+  int place = rand() % 23;
+  printf("First: %s\n", placeIdToName(place));
+  registerBestPlay((char*)PLACES[place].abbrev,
+                   "Have we nothing Toulouse?");
+}
 
-    // Loop through possible moves and pick best one
+void DvMakeRandomMove(DraculaView hv) {
+  int numMoves = 0;
+  PlaceId* possibleMoves = DvGetValidMoves(hv, &numMoves);
+  if (numMoves == 0) {
+    FILE *draculaLog = fopen("dracula.log", "a");
+    fprintf(draculaLog, "Move: %s\n", placeIdToName(TELEPORT));
+    fclose(draculaLog);
+    registerBestPlay((char*)placeIdToAbbrev(TELEPORT), "");
+  } else {
+    int moveIndex = rand() % numMoves;
+    int placeId = possibleMoves[moveIndex];
+    FILE *draculaLog = fopen("dracula.log", "a");
+    fprintf(draculaLog, "Move: %s\n", placeIdToName(placeId));
+    fclose(draculaLog);
 
-//	registerBestPlay("LS", "Mwahahahaha");
+    registerBestPlay((char*)placeIdToAbbrev(placeId),
+                     "Have we nothing Toulouse?");
+  };
+}
+
+void decideDraculaMove(void* dv) {
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+  DraculaView view = (DraculaView)dv;
+  srand ( time(NULL) );
+
+
+  if (DvGetRound(view) == 0) {
+    DvMakeFirstMove(view);
+  } else {
+    if (view) DvMakeRandomMove(view);
+  }
 }

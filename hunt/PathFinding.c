@@ -117,7 +117,10 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
                                 &trailNumMoves, &canFree);
     locationHistory = GvGetLastLocations(gameView, PLAYER_DRACULA, TRAIL_SIZE,
                                          &trailNumMoves, &canFree);
+    FILE* draculaLog = fopen("dracula.log", "a");
     for (int i = 0; i < trailNumMoves; ++i) {
+      fprintf(draculaLog, "Trail (%d): %s\n", i,
+              placeIdToName(locationHistory[i]));
       onTrailLookup[locationHistory[i]] = true;
       if (trailMoves[i] == HIDE) {
         canHide = false;
@@ -126,6 +129,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
         canDoubleBack = false;
       }
     }
+    fclose(draculaLog);
   }
 
   *placesCount = 0;
@@ -134,6 +138,8 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
 
   // Use as lookup to stop placing duplicates moves/locations in output
   bool placesAdded[NUM_REAL_PLACES] = {false};
+  bool placesAdjacent[NUM_REAL_PLACES] = {false};
+  placesAdjacent[currentId] = true;
 
   // Handle checking whether current place can be added as possible location
   // as dracula can only move to current location as HIDE if not HIDE not
@@ -164,6 +170,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   while (cur) {
     // Apply restriction that dracula can't go to HOSPITAL_PLACE
     if (!(player == PLAYER_DRACULA && cur->p == HOSPITAL_PLACE)) {
+      placesAdjacent[cur->p] = true;
       // Applies movement restriction if dracula
       if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
         if (cur->type == ROAD && road) {
@@ -189,9 +196,13 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
     for (int i = 0; i < trailNumMoves; i++) {
       // Need to perform resolve location of moves
       PlaceId place;
+      PlaceId resolved =
+          ResolveTrailLocation(gameView, resolvedLocations, trailMoves[i],
+                               locationCount - (trailNumMoves - 1 - i));
+      printf("%d %s\n", i, placeIdToName(resolved));
+      if (!placesAdjacent[resolved]) continue;  // Can only double back to adjacent places
       if (resolveMoves) {
-        place = ResolveTrailLocation(gameView, resolvedLocations, trailMoves[i],
-                                     locationCount - (trailNumMoves - 1 - i));
+        place = resolved;
       } else {
         place = DOUBLE_BACK_1 + (trailNumMoves - 1 - i);
       }

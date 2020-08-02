@@ -9,21 +9,38 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+#include "hunter.h"
+
+#include <pthread.h>
 #include <stdio.h>
 #include <time.h>
-#include <pthread.h>
+
 #include "Game.h"
-#include "hunter.h"
+#include "GameView.h"
 #include "HunterView.h"
 
-void decideHunterMove(void* hv)
-{
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	HunterView view = (HunterView) hv;
-	registerBestPlay("TO", "Have we nothing Toulouse?");
-    time_t start = clock();
-    while ((((double) (clock() - start)) / CLOCKS_PER_SEC) < ((double) 2)) {}
-    printf("Run\n\n");
-    registerBestPlay("SO", "Have we nothing Toulouse?");
+#define PLAY_RANDOM
+
+void makeFirstMove(HunterView hv) {
+  registerBestPlay((char*)PLACES[rand() % NUM_REAL_PLACES].abbrev,
+                   "Have we nothing Toulouse?");
+}
+
+void makeRandomMove(HunterView hv) {
+  int numMoves = 0;
+  PlaceId* possibleMoves = HvWhereCanIGo(hv, &numMoves);
+  registerBestPlay((char*)placeIdToAbbrev(possibleMoves[rand() % numMoves]),
+                   "Have we nothing Toulouse?");
+}
+
+void decideHunterMove(void* hv) {
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+//  srand ( GvGetPlayer(1) );
+  HunterView view = (HunterView)hv;
+  if (HvGetRound(view) == 0) {
+    makeFirstMove(view);
+  } else {
+    if (view) makeRandomMove(view);
+  }
 }
