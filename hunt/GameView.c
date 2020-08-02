@@ -436,5 +436,10 @@ PlaceId GvGetExpiringTrap(GameView gameView) {
 }
 
 bool GvIsVampireMaturing(GameView gameView) {
-  return (gameView->roundVampirePlaced - (gameView->turnNumber / NUM_PLAYERS) == TRAIL_SIZE);
+  FILE *draculaLog = fopen("dracula.log", "a");
+  fprintf(draculaLog, "Round Placed (%d)\n", gameView->roundVampirePlaced);
+  fprintf(draculaLog, "GvIsVampireMaturing (%d)\n", (gameView->turnNumber / NUM_PLAYERS) - gameView->roundVampirePlaced);
+  fclose(draculaLog);
+  if (gameView->roundVampirePlaced == -1) return false;
+  return ((gameView->turnNumber / NUM_PLAYERS) - gameView->roundVampirePlaced == TRAIL_SIZE);
 }

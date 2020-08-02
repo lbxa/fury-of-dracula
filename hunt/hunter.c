@@ -38,6 +38,11 @@ void decideHunterMove(void* hv) {
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 //  srand ( GvGetPlayer(1) );
   HunterView view = (HunterView)hv;
+
+  FILE *turnLog = fopen("turns.log", "a");
+  fprintf(turnLog, "\nHunter Move (%d)\n", HvGetRound(view));
+  fclose(turnLog);
+
   if (HvGetRound(view) == 0) {
     makeFirstMove(view);
   } else {

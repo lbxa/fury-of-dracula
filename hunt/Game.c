@@ -87,7 +87,7 @@ void DraculaEncounterString(PlaceId playerLoc, char *playStr) {
   if (GvIsVampireMaturing(state)) {
     playStr[5] = 'V';
   } else if (GvGetExpiringTrap(state) != NOWHERE) {
-    playStr[5] = 'T';
+    playStr[5] = 'M';
   } else {
     playStr[5] = '.';
   }
@@ -161,7 +161,7 @@ int main(void) {
     }
     time_t start = clock();
     while ((((double)(clock() - start)) / CLOCKS_PER_SEC) <
-           ((double)TURN_LIMIT_MSECS / 1000000)) {
+           ((double)TURN_LIMIT_MSECS / 100000)) {
     }
     pthread_cancel(threadId);
 
@@ -174,7 +174,7 @@ int main(void) {
   printf("Score: %d\n", GvGetScore(state));
   printf("Dracula Health: %d\n", GvGetHealth(state, PLAYER_DRACULA));
 
-  if (GvGetScore(state) == 0) {
+  if (GvGetScore(state) <= 0) {
     printf("Dracula won\n");
   } else {
     printf("Hunters won\n");

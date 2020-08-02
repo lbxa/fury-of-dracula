@@ -30,14 +30,14 @@ void DvMakeRandomMove(DraculaView hv) {
   PlaceId* possibleMoves = DvGetValidMoves(hv, &numMoves);
   if (numMoves == 0) {
     FILE *draculaLog = fopen("dracula.log", "a");
-    fprintf(draculaLog, "Move: %s\n", placeIdToName(TELEPORT));
+    fprintf(draculaLog, "Move (TELEPORT) (%d): %s\n", DvGetRound(hv), placeIdToName(TELEPORT));
     fclose(draculaLog);
     registerBestPlay((char*)placeIdToAbbrev(TELEPORT), "");
   } else {
     int moveIndex = rand() % numMoves;
     int placeId = possibleMoves[moveIndex];
     FILE *draculaLog = fopen("dracula.log", "a");
-    fprintf(draculaLog, "Move: %s\n", placeIdToName(placeId));
+    fprintf(draculaLog, "Move (%d): %s\n", DvGetRound(hv), placeIdToName(placeId));
     fclose(draculaLog);
 
     registerBestPlay((char*)placeIdToAbbrev(placeId),
@@ -49,6 +49,14 @@ void decideDraculaMove(void* dv) {
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
   DraculaView view = (DraculaView)dv;
+  FILE *draculaLog = fopen("dracula.log", "a");
+  fprintf(draculaLog, "\nDracula Move (%d)\n", DvGetRound(dv));
+  fclose(draculaLog);
+
+  FILE *turnLog = fopen("turns.log", "a");
+  fprintf(turnLog, "\nDracula Move (%d)\n", DvGetRound(dv));
+  fclose(turnLog);
+
   srand ( time(NULL) );
 
 

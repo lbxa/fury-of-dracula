@@ -106,7 +106,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   bool canFree = false;
   PlaceId* trailMoves = NULL;
   PlaceId* locationHistory = NULL;
-  bool canHide = true;
+  bool canHide = placeIsLand(currentId);
   bool canDoubleBack = true;
   bool onTrailLookup[NUM_REAL_PLACES] = {false};
 
@@ -119,8 +119,8 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
                                          &trailNumMoves, &canFree);
     FILE* draculaLog = fopen("dracula.log", "a");
     for (int i = 0; i < trailNumMoves; ++i) {
-      fprintf(draculaLog, "Trail (%d): %s\n", i,
-              placeIdToName(locationHistory[i]));
+      fprintf(draculaLog, "Trail (%d): %s -> %s\n", i,
+              placeIdToName(trailMoves[i]), placeIdToName(locationHistory[i]));
       onTrailLookup[locationHistory[i]] = true;
       if (trailMoves[i] == HIDE) {
         canHide = false;
@@ -170,17 +170,18 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   while (cur) {
     // Apply restriction that dracula can't go to HOSPITAL_PLACE
     if (!(player == PLAYER_DRACULA && cur->p == HOSPITAL_PLACE)) {
-      placesAdjacent[cur->p] = true;
       // Applies movement restriction if dracula
       if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
         if (cur->type == ROAD && road) {
           // If can use road connections then add it
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
+          placesAdjacent[cur->p] = true;
         } else if (cur->type == BOAT && boat) {
           // If can use boat connections then add it
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
+          placesAdjacent[cur->p] = true;
         }
       }
     }
@@ -193,19 +194,32 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
     PlaceId* resolvedLocations =
         GvGetLocationHistory(gameView, player, &locationCount, &canFree);
 
-    for (int i = 0; i < trailNumMoves; i++) {
+    for (int i = 0; i < (trailNumMoves > 5 ? trailNumMoves - 1 : trailNumMoves); i++) {
       // Need to perform resolve location of moves
       PlaceId place;
       PlaceId resolved =
           ResolveTrailLocation(gameView, resolvedLocations, trailMoves[i],
-                               locationCount - (trailNumMoves - 1 - i));
+                               locationCount - (trailNumMoves - i));
       printf("%d %s\n", i, placeIdToName(resolved));
       if (!placesAdjacent[resolved]) continue;  // Can only double back to adjacent places
+      FILE *draculaLog = fopen("dracula.log", "a");
+      fprintf(draculaLog, "Adjacent\n");
+      for (int j = 0; j < NUM_REAL_PLACES; ++j) {
+        if (placesAdjacent[j] == true) {
+          fprintf(draculaLog, "\t -> %s\n", placeIdToName(j));
+        }
+      }
+
+      fclose(draculaLog);
+
       if (resolveMoves) {
         place = resolved;
       } else {
-        place = DOUBLE_BACK_1 + (trailNumMoves - 1 - i);
+        place = DOUBLE_BACK_1 + i;
       }
+      draculaLog = fopen("dracula.log", "a");
+      fprintf(draculaLog, "%s -> %s\n", placeIdToName(resolved), placeIdToName(DOUBLE_BACK_1 + i));
+      fclose(draculaLog);
       if (!placesAdded[place]) {
         placesAdded[place] = true;
         places[(*placesCount)++] = place;
