@@ -22,7 +22,7 @@
 #include "GameView.h"
 #include "PathFinding.h"
 #include "Utilities.h"
-#include "minimax.h"
+// #include "minimax.h"
 
 void DvMakeFirstMove(DraculaView hv) {
   int place = rand() % 23;
@@ -52,31 +52,31 @@ void DvMakeRandomMove(DraculaView hv) {
   };
 }
 
-void MakeMinimaxMove(DraculaView dv) {
-  GameView state = DvGetGameView(dv);
-  Map map = GetMap(state);
-  PlaceId currentLocation = DvGetPlayerLocation(dv, PLAYER_DRACULA);
-  int numReturnedMoves = 0;
-  int depth = 1;
-  PlaceId *possibleMoves = GetPossibleMoves(
-      state, map, PLAYER_DRACULA, currentLocation, true, false, true,
-      GvGetRound(state), &numReturnedMoves, false, true);
-  PlaceId bestMove = 0;
-  int bestEval = INT_MIN;
-  for (int i = 0; i < numReturnedMoves; ++i) {
-    printf("Evaluating -> %s\n", placeIdToName(possibleMoves[i]));
-    GameView newState = GvClone(state);
-    char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
-                                          PLAYER_DRACULA, GvGetTurnNumber(state));
-    GvProcessMoves(newState, play, NULL);
-    int eval = minimax(newState, depth, INT_MIN, INT_MAX);
-    if (eval > bestEval) {
-      bestEval = eval;
-      bestMove = possibleMoves[i];
-      registerBestPlay((char *)placeIdToAbbrev(bestMove), NULL);
-    }
-  }
-}
+// void MakeMinimaxMove(DraculaView dv) {
+//   GameView state = DvGetGameView(dv);
+//   Map map = GetMap(state);
+//   PlaceId currentLocation = DvGetPlayerLocation(dv, PLAYER_DRACULA);
+//   int numReturnedMoves = 0;
+//   int depth = 1;
+//   PlaceId *possibleMoves = GetPossibleMoves(
+//       state, map, PLAYER_DRACULA, currentLocation, true, false, true,
+//       GvGetRound(state), &numReturnedMoves, false, true);
+//   PlaceId bestMove = 0;
+//   int bestEval = INT_MIN;
+//   for (int i = 0; i < numReturnedMoves; ++i) {
+//     printf("Evaluating -> %s\n", placeIdToName(possibleMoves[i]));
+//     GameView newState = GvClone(state);
+//     char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
+//                                           PLAYER_DRACULA, GvGetTurnNumber(state));
+//     GvProcessMoves(newState, play, NULL);
+//     int eval = minimax(newState, depth, INT_MIN, INT_MAX);
+//     if (eval > bestEval) {
+//       bestEval = eval;
+//       bestMove = possibleMoves[i];
+//       registerBestPlay((char *)placeIdToAbbrev(bestMove), NULL);
+//     }
+//   }
+// }
 
 void decideDraculaMove(void *dv) {
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
@@ -95,7 +95,8 @@ void decideDraculaMove(void *dv) {
   if (DvGetRound(view) == 0) {
     DvMakeFirstMove(view);
   } else {
+    DvMakeRandomMove(view);
     //    if (view) DvMakeRandomMove(view);
-    MakeMinimaxMove(view);
+    //MakeMinimaxMove(view);
   }
 }

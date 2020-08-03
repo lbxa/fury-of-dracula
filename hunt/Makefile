@@ -14,7 +14,7 @@ BINS = dracula hunter
 # add any other *.o files that your solution requires
 # (and add their dependencies below after DraculaView.o)
 # if you're not using Map.o or Places.o, you can remove them
-OBJS = GameView.o Map.o Places.o
+OBJS = GameView.o Map.o Places.o PathFinding.o Queue.o BinaryHeap.o HashTable.o Utilities.o Players.o
 
 # add whatever system libraries you need here (e.g. -lm)
 LIBS =
@@ -24,20 +24,29 @@ all: $(BINS)
 dracula: playerDracula.o dracula.o DraculaView.o $(OBJS) $(LIBS)
 hunter: playerHunter.o hunter.o HunterView.o $(OBJS) $(LIBS)
 
-playerDracula.o: player.c dracula.h Game.h DraculaView.h GameView.h Places.h
+playerDracula.o: player.c dracula.h Game.h DraculaView.h GameView.h Places.h 
 	$(CC) $(CFLAGS) -DI_AM_DRACULA -c $< -o $@
-playerHunter.o: player.c hunter.h Game.h HunterView.h GameView.h Places.h
+playerHunter.o: player.c hunter.h Game.h HunterView.h GameView.h Places.h 
 	$(CC) $(CFLAGS) -c $< -o $@
 
-dracula.o: dracula.c dracula.h DraculaView.h GameView.h Places.h Game.h
-hunter.o: hunter.c hunter.h HunterView.h GameView.h Places.h Game.h
-GameView.o:	GameView.c GameView.h Places.h Game.h
-DraculaView.o: DraculaView.c DraculaView.h GameView.h Places.h Game.h
-HunterView.o: HunterView.c GameView.h Places.h HunterView.h Game.h
-Map.o: Map.c Map.h Places.h
-Places.o: Places.c Places.h
+dracula.o: dracula.c dracula.h DraculaView.h GameView.h Places.h Game.h minimax.h
+hunter.o: hunter.c hunter.h HunterView.h GameView.h Places.h Game.h minimax.h
+Places.o: Places.c Places.h Game.h
+Map.o: Map.c Map.h Places.h Game.h BinaryHeap.h
+GameView.o:	GameView.c GameView.h Game.h PathFinding.h Players.h
+HunterView.o: HunterView.c HunterView.h Game.h
+DraculaView.o: DraculaView.c DraculaView.h Game.h
+Players.o: Players.c Players.h
+
+# Our own files
+PathFinding.o: PathFinding.c PathFinding.h BinaryHeap.h HashTable.h Queue.h Utilities.h
+testUtils.o: testUtils.c Places.h Game.h
+Utilities.o: Utilities.c Utilities.h
 
 # if you use other ADTs, add dependencies for them here
+BinaryHeap.o: BinaryHeap.c BinaryHeap.h
+HashTable.o: HashTable.c HashTable.h
+Queue.o: Queue.c Queue.h
 
 .PHONY: clean
 clean:

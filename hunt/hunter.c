@@ -18,29 +18,80 @@
 #include "Game.h"
 #include "GameView.h"
 #include "HunterView.h"
+#include "PathFinding.h"
+#include "Utilities.h"
+// #include "minimax.h"
 
-//Function to find if dracula is near from hunter's current location
-static PlaceId draculaLocation (PlaceId *nearby, int numLoc, PlaceId drac);
+void HvMakeFirstMove(HunterView hv) {
+  int place = rand() % 23;
+  printf("First: %s\n", placeIdToName(place));
+  registerBestPlay((char *)PLACES[place].abbrev, "Have we nothing Toulouse?");
+} 
 
-static PlaceId draculaLocation (PlaceId nearby[], int numLoc, PlaceId drac) {
+void HvMakeRandomMove(HunterView hv) {
+  int numMoves = 0;
+  PlaceId *possibleMoves = HvWhereCanIGo(hv, &numMoves);
+  if (numMoves == 0) {
+    FILE *hunterLog = fopen("dracula.log", "a");
+    fprintf(hunterLog, "Move (TELEPORT) (%d): %s\n", HvGetRound(hv),
+            placeIdToName(TELEPORT));
+    fclose(hunterLog);
+    registerBestPlay((char *)placeIdToAbbrev(TELEPORT), "");
+  } else {
+    int moveIndex = rand() % numMoves;
+    int placeId = possibleMoves[moveIndex];
+    FILE *hunterLog = fopen("dracula.log", "a");
+    fprintf(hunterLog, "Move (%d): %s\n", HvGetRound(hv),
+            placeIdToName(placeId));
+    fclose(hunterLog);
 
-  int x = 0;
-  while (x < numLoc) {
-    if (nearby[x] == drac) {
-      return 0;
-    }
-    x++;
-  }
-  return 1;
+    registerBestPlay((char *)placeIdToAbbrev(placeId),
+                     "Have we nothing Toulouse?");
+  };
 }
 
+void decideHunterMove(void *hv) {
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+  HunterView view = (HunterView)hv;
+  FILE *draculaLog = fopen("dracula.log", "a");
+  fprintf(draculaLog, "\nDracula Move (%d)\n", HvGetRound(hv));
+  fclose(draculaLog);
 
-void decideHunterMove(HunterView view) {
+  FILE *turnLog = fopen("turns.log", "a");
+  fprintf(turnLog, "\nDracula Move (%d)\n", HvGetRound(hv));
+  fclose(turnLog);
+
+  srand(time(NULL));
+
+  if (HvGetRound(view) == 0) {
+    HvMakeFirstMove(view);
+  } else {
+    HvMakeRandomMove(view);
+    //    if (view) DvMakeRandomMove(view);
+    //MakeMinimaxMove(view);
+  }
+}
+
+//Function to find if dracula is near from hunter's current location
+// static PlaceId draculaLocation (PlaceId nearby[], int numLoc, PlaceId drac) {
+
+//   int x = 0;
+//   while (x < numLoc) {
+//     if (nearby[x] == drac) {
+//       return 0;
+//     }
+//     x++;
+//   }
+//   return 1;
+// }
+/*
+void decideHunterMove(void *hv) {
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 //  srand ( GvGetPlayer(1) );
   
-
+  HunterView view = (HunterView)hv;
   FILE *turnLog = fopen("turns.log", "a");
   fprintf(turnLog, "\nHunter Move (%d)\n", HvGetRound(view));
   fclose(turnLog);
@@ -694,4 +745,4 @@ void decideHunterMove(HunterView view) {
   }
 
 }
-
+*/
