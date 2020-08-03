@@ -10,17 +10,18 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "hunter.h"
-
 #include <pthread.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 #include "Game.h"
 #include "GameView.h"
 #include "HunterView.h"
 
 //Function to find if dracula is near from hunter's current location
-static PlaceId draculaLocation (PlaceId *nearby, int numLoc, PlaceId drac)
+static PlaceId draculaLocation (PlaceId *nearby, int numLoc, PlaceId drac);
+
 static PlaceId draculaLocation (PlaceId nearby[], int numLoc, PlaceId drac) {
 
   int x = 0;
@@ -34,16 +35,17 @@ static PlaceId draculaLocation (PlaceId nearby[], int numLoc, PlaceId drac) {
 }
 
 
-void decideHunterMove(void* hv) {
+void decideHunterMove(HunterView view) {
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 //  srand ( GvGetPlayer(1) );
-  HunterView view = (HunterView)hv;
+  
 
   FILE *turnLog = fopen("turns.log", "a");
   fprintf(turnLog, "\nHunter Move (%d)\n", HvGetRound(view));
   fclose(turnLog);
 
+  Message array;
   int numLoc = 0;
   char *forward = "";
   char *backward = "abcde";
@@ -72,13 +74,13 @@ void decideHunterMove(void* hv) {
   //In this case if dracula is in same location as Hunter, Hunter will stay in that location.
   } else if (HvGetPlayerLocation(view, PLAYER_DRACULA) == HvGetPlayerLocation(view, HvGetPlayer(view))) {
 
-      registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_DRACULA)), (char *)array);
+      registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_DRACULA)), (char *)array);
   
   //In this case, if dracula is lost, Hunter goes back to his/her path
   } else if (strcmp((char *)array, forward) != 0 && strcmp((char *)array, backward) != 0) {
 
-      if (draculaLocation(HvWhereCanIGoByType(view, true, true, false, &numLoc), numLoc, abbrevToID((char *)array)) == 1) {        
-          registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, HvGetPlayer(view))), (char *)array);
+      if (draculaLocation(HvWhereCanIGoByType(view, true, true, false, &numLoc), numLoc, placeAbbrevToId((char *)array)) == 1) {        
+          registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, HvGetPlayer(view))), (char *)array);
       } else {
           registerBestPlay((char *)array, forward);
       }
@@ -89,7 +91,7 @@ void decideHunterMove(void* hv) {
       //get message for Lord Godalming - implement
 
       //player taken to hospital
-      if (HvGetPlayerLocation(view, PLAYER_LORD_GODALMING) == ST_JOSEPH_AND_ST_MARYS){ 
+      if (HvGetPlayerLocation(view, PLAYER_LORD_GODALMING) == ST_JOSEPH_AND_ST_MARY){ 
           registerBestPlay("SZ", forward);
       //player's way returning from hospital
       } else if (HvGetPlayerLocation(view, PLAYER_LORD_GODALMING) == SZEGED) {
@@ -106,7 +108,7 @@ void decideHunterMove(void* hv) {
 
       //get message for Dr Seward - implement
 
-      if (HvGetPlayerLocation(view, PLAYER_DR_SEWARD) == ST_JOSEPH_AND_ST_MARYS){
+      if (HvGetPlayerLocation(view, PLAYER_DR_SEWARD) == ST_JOSEPH_AND_ST_MARY){
 
           if (strcmp((char *)array, backward) == 0) {
               registerBestPlay("SJ", backward);
@@ -117,9 +119,9 @@ void decideHunterMove(void* hv) {
       } else if (HvGetHealth(view, PLAYER_DR_SEWARD) < 3) {
 
           if (strcmp((char *)array, backward) == 0) {
-              registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_DR_SEWARD)), backward);
+              registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_DR_SEWARD)), backward);
           } else {
-              registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_DR_SEWARD)), forward);
+              registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_DR_SEWARD)), forward);
           }
 
       } else {
@@ -316,7 +318,7 @@ void decideHunterMove(void* hv) {
 
               default:
 
-                  registerBestPlay(idToAbbrev( HvWhereCanIGoByType(view, true, true, false, &numLoc)[rand() % numLoc]), (char *)array); break;
+                  registerBestPlay(placeIdToAbbrev( HvWhereCanIGoByType(view, true, true, false, &numLoc)[rand() % numLoc]), (char *)array); break;
           }
       }
 
@@ -324,7 +326,7 @@ void decideHunterMove(void* hv) {
 
       //get message for Van Helsing - implement
 
-      if (HvGetPlayerLocation(view, PLAYER_VAN_HELSING) == ST_JOSEPH_AND_ST_MARYS){
+      if (HvGetPlayerLocation(view, PLAYER_VAN_HELSING) == ST_JOSEPH_AND_ST_MARY){
 
           if (strcmp((char *)array, backward) == 0) {
               registerBestPlay("SJ", backward);
@@ -335,9 +337,9 @@ void decideHunterMove(void* hv) {
       } else if (HvGetHealth(view, PLAYER_VAN_HELSING) < 3) {
 
           if (strcmp((char *)array, backward) == 0) {
-              registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_VAN_HELSING)), backward);
+              registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_VAN_HELSING)), backward);
           } else {
-              registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_VAN_HELSING)), forward);
+              registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_VAN_HELSING)), forward);
           }
 
       } else {
@@ -485,7 +487,7 @@ void decideHunterMove(void* hv) {
 
               default:
 
-                  registerBestPlay(idToAbbrev(HvWhereCanIGoByType(view, true, true, false, &numLoc)[rand() % numLoc]), (char *)array); break;
+                  registerBestPlay(placeIdToAbbrev(HvWhereCanIGoByType(view, true, true, false, &numLoc)[rand() % numLoc]), (char *)array); break;
           }
       }
 
@@ -493,7 +495,7 @@ void decideHunterMove(void* hv) {
 
       //get message for Mina Harker - implement
 
-      if (HvGetPlayerLocation(view, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARYS){
+      if (HvGetPlayerLocation(view, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARY){
 
           if (strcmp((char *)array, backward) == 0) {
               registerBestPlay("SZ", backward);
@@ -504,9 +506,9 @@ void decideHunterMove(void* hv) {
       } else if (HvGetHealth(view, PLAYER_MINA_HARKER) < 3) {
 
           if (strcmp((char *)array, backward) == 0) {
-              registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_MINA_HARKER)), backward);
+              registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_MINA_HARKER)), backward);
           } else {
-              registerBestPlay(idToAbbrev(HvGetPlayerLocation(view, PLAYER_MINA_HARKER)), forward);
+              registerBestPlay(placeIdToAbbrev(HvGetPlayerLocation(view, PLAYER_MINA_HARKER)), forward);
           }
 
       } else {
@@ -686,11 +688,9 @@ void decideHunterMove(void* hv) {
 
               default:
 
-                  registerBestPlay(idToAbbrev(HvWhereCanIGoByType(view, true, true, false, &numLoc)[rand() % numLoc]), (char *)array); break;
+                  registerBestPlay(placeIdToAbbrev(HvWhereCanIGoByType(view, true, true, false, &numLoc)[rand() % numLoc]), (char *)array); break;
           }
       }
   }
-
-}
 
 }
