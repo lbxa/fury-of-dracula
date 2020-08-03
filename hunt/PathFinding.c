@@ -113,9 +113,9 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   // Determine whether can hide and double back based on if those moves are in
   // trail
   if (player == PLAYER_DRACULA && applyTrailRestrictions) {
-    trailMoves = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE,
+    trailMoves = GvGetLastMoves(gameView, PLAYER_DRACULA, TRAIL_SIZE - 1,
                                 &trailNumMoves, &canFree);
-    locationHistory = GvGetLastLocations(gameView, PLAYER_DRACULA, TRAIL_SIZE,
+    locationHistory = GvGetLastLocations(gameView, PLAYER_DRACULA, TRAIL_SIZE - 1,
                                          &trailNumMoves, &canFree);
     FILE* draculaLog = fopen("dracula.log", "a");
     for (int i = 0; i < trailNumMoves; ++i) {
@@ -177,11 +177,17 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
           placesAdjacent[cur->p] = true;
+          FILE *draculaLog = fopen("dracula.log", "a");
+          fprintf(draculaLog, "Added %s as adjacent\n", placeIdToName(cur->p));
+          fclose(draculaLog);
         } else if (cur->type == BOAT && boat) {
           // If can use boat connections then add it
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
           placesAdjacent[cur->p] = true;
+          FILE *draculaLog = fopen("dracula.log", "a");
+          fprintf(draculaLog, "Added %s as adjacent\n", placeIdToName(cur->p));
+          fclose(draculaLog);
         }
       }
     }
@@ -197,9 +203,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
     for (int i = 0; i < (trailNumMoves > 5 ? trailNumMoves - 1 : trailNumMoves); i++) {
       // Need to perform resolve location of moves
       PlaceId place;
-      PlaceId resolved =
-          ResolveTrailLocation(gameView, resolvedLocations, trailMoves[i],
-                               locationCount - (trailNumMoves - i));
+      PlaceId resolved = resolvedLocations[locationCount - 1 - i];
       printf("%d %s\n", i, placeIdToName(resolved));
       if (!placesAdjacent[resolved]) continue;  // Can only double back to adjacent places
       FILE *draculaLog = fopen("dracula.log", "a");
