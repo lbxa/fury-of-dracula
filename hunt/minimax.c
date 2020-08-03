@@ -7,10 +7,14 @@
 #include <limits.h>
 #include <math.h>
 #include <string.h>
-#include <view/GameView.h>
-#include <view/PathFinding.h>
 
-#include "view/Utilities.h"
+#include "GameView.h"
+#include "PathFinding.h"
+#include "Utilities.h"
+
+#define LIFE_FACTOR 10
+#define SCORE_FACTOR 2
+#define DISTANCE_FACTOR 4
 
 int distanceScore(int numberMoves) {
   return (int)log(numberMoves == 0 ? 0.00001f : (float)numberMoves);
@@ -18,6 +22,7 @@ int distanceScore(int numberMoves) {
 
 int lifePointScore(int hunterLife, int draculaLife) {
   if (draculaLife <= LIFE_LOSS_HUNTER_ENCOUNTER) return -1;
+  if (hunterLife == 0) return 1;
   return draculaLife / hunterLife;
 }
 
@@ -32,12 +37,12 @@ int evaluateGameState(GameView state) {
     if (placeIsReal(draculaLocation)) {
       int distanceApart = 0;
       GetShortestPathTo(state, player, draculaLocation, &distanceApart);
-      eval += distanceScore(distanceApart);
+      eval += distanceScore(distanceApart) * DISTANCE_FACTOR;
     }
     eval += lifePointScore(GvGetHealth(state, player),
-                           GvGetHealth(state, PLAYER_DRACULA));
+                           GvGetHealth(state, PLAYER_DRACULA)) * LIFE_FACTOR;
   }
-  eval += scoreFactor(GvGetScore(state));
+  eval += scoreFactor(GvGetScore(state)) * SCORE_FACTOR;
   return eval;
 }
 
@@ -46,11 +51,7 @@ bool isGameOver(GameView gameView) {
          GvGetHealth(gameView, PLAYER_DRACULA) <= 0;
 }
 
-int m_max(int a, int b) { return (a > b) ? a : b; }
-
-int m_min(int a, int b) { return (a < b) ? a : b; }
-
-int minimax(GameView state, char *pastPlays, int depth, int alpha, int beta) {
+int minimax(GameView state, int depth, int alpha, int beta) {
   if (depth == 0 || isGameOver(state)) return evaluateGameState(state);
   int turnNumber = GvGetTurnNumber(state);
   Player player = turnNumber % NUM_PLAYERS;
@@ -64,15 +65,14 @@ int minimax(GameView state, char *pastPlays, int depth, int alpha, int beta) {
         GetPossibleMoves(state, map, PLAYER_DRACULA, currentLocation, true,
                          false, true, 0, &numReturnedMoves, false, true);
     for (int i = 0; i < numReturnedMoves; ++i) {
-      char *newPlayString = malloc(sizeof(strlen(pastPlays)));
-      strcpy(newPlayString, pastPlays);
-      addMoveToPastPlays(state, newPlayString,
-                         (char *)placeIdToAbbrev(possibleMoves[i]), player,
-                         turnNumber);
-      GameView newState = GvNew(newPlayString, NULL);
-      int eval = minimax(newState, newPlayString, depth - 1, alpha, beta);
-      maxEval = m_max(maxEval, eval);
-      alpha = m_max(alpha, eval);
+      GameView newState = GvClone(state);
+      printf("Evaluating -> %s\n", placeIdToName(possibleMoves[i]));
+      char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
+                               player, turnNumber);
+      GvProcessMoves(newState, play, NULL);
+      int eval = minimax(newState, depth - 1, alpha, beta);
+      maxEval = max(maxEval, eval);
+      alpha = max(alpha, eval);
       if (beta <= alpha) break;
     }
     return maxEval;
@@ -85,15 +85,13 @@ int minimax(GameView state, char *pastPlays, int depth, int alpha, int beta) {
         GetPossibleMoves(state, map, player, currentLocation, true, true, true,
                          GvGetRound(state), &numReturnedMoves, false, false);
     for (int i = 0; i < numReturnedMoves; ++i) {
-      char *newPlayString = malloc(sizeof(strlen(pastPlays)));
-      strcpy(newPlayString, pastPlays);
-      addMoveToPastPlays(state, newPlayString,
-                         (char *)placeIdToAbbrev(possibleMoves[i]), player,
-                         turnNumber);
-      GameView newState = GvNew(newPlayString, NULL);
-      int eval = minimax(newState, newPlayString, depth - 1, alpha, beta);
-      minEval = m_min(minEval, eval);
-      alpha = m_min(beta, eval);
+      GameView newState = GvClone(state);
+      char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
+                                            player, turnNumber);
+      GvProcessMoves(newState, play, NULL);
+      int eval = minimax(newState,depth - 1, alpha, beta);
+      minEval = min(minEval, eval);
+      alpha = min(beta, eval);
       if (beta <= alpha) break;
     }
     return minEval;

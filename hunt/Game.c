@@ -4,6 +4,7 @@
 
 #include "Game.h"
 
+#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -138,55 +139,67 @@ void addBestMoveToPastPlays() {
 }
 
 int main(void) {
-  FILE *draculaLog = fopen("dracula.log", "w");
-  fclose(draculaLog);
 
-  pastPlays = malloc(1);
-  pastPlays[0] = '\0';
-  state = GvNew(pastPlays, messages);
-  while (GvGetScore(state) > 0 && GvGetHealth(state, PLAYER_DRACULA) > 0) {
-    printf("Turn: %d\n", turnNumber);
-    printf("Plays: %s\n", pastPlays);
-    currentPlayer = turnNumber % NUM_PLAYERS;
-    char *move = NULL;
-    pthread_t threadId;
-    if (currentPlayer == PLAYER_DRACULA) {
-      DraculaView dv = DvNew(pastPlays, messages);
-      pthread_create(&threadId, NULL, (void *(*)(void *))decideDraculaMove,
-                     (void *)dv);
-    } else {
-      HunterView hv = HvNew(pastPlays, messages);
-      pthread_create(&threadId, NULL, (void *(*)(void *))decideHunterMove,
-                     (void *)hv);
-    }
-    time_t start = clock();
-    while ((((double)(clock() - start)) / CLOCKS_PER_SEC) <
-           ((double)TURN_LIMIT_MSECS / 100000)) {
-    }
-    pthread_cancel(threadId);
-
-    addBestMoveToPastPlays();
-    turnNumber++;
+  for (int i = 0; i < 10; i++) {
+    pastPlays = NULL;
+    messages = NULL;
+    bestPlay = NULL;
+    state = NULL;
+    currentPlayer = 0;
+    turnNumber = 0;
+    pastPlays = malloc(1);
+    pastPlays[0] = '\0';
     state = GvNew(pastPlays, messages);
-  }
+    while (GvGetScore(state) > 0 && GvGetHealth(state, PLAYER_DRACULA) > 0) {
+      printf("Turn: %d\n", turnNumber);
+      printf("Plays: %s\n", pastPlays);
+      currentPlayer = turnNumber % NUM_PLAYERS;
+      char *move = NULL;
+      pthread_t threadId;
+      if (currentPlayer == PLAYER_DRACULA) {
+        DraculaView dv = DvNew(pastPlays, messages);
+        pthread_create(&threadId, NULL, (void *(*)(void *))decideDraculaMove,
+                       (void *)dv);
+      } else {
+        HunterView hv = HvNew(pastPlays, messages);
+        pthread_create(&threadId, NULL, (void *(*)(void *))decideHunterMove,
+                       (void *)hv);
+      }
+      time_t start = clock();
+      while ((((double)(clock() - start)) / CLOCKS_PER_SEC) <
+             ((double)TURN_LIMIT_MSECS / (currentPlayer == PLAYER_DRACULA ? 1000 : 100000))) {
+      }
+      pthread_cancel(threadId);
 
-  printf("Plays: %s\n", pastPlays);
-  printf("Score: %d\n", GvGetScore(state));
-  printf("Dracula Health: %d\n", GvGetHealth(state, PLAYER_DRACULA));
+      addBestMoveToPastPlays();
+      turnNumber++;
+      state = GvNew(pastPlays, messages);
+    }
 
-  if (GvGetScore(state) <= 0) {
-    printf("Dracula won\n");
-  } else {
-    printf("Hunters won\n");
-  }
+    printf("Plays: %s\n", pastPlays);
+    printf("Score: %d\n", GvGetScore(state));
+    printf("Dracula Health: %d\n", GvGetHealth(state, PLAYER_DRACULA));
 
-  FILE *f = fopen("result.log", "w");
-  if (f == NULL) {
-    perror("Failed to save result to log: ");
-    exit(EXIT_FAILURE);
+    FILE *outcomes = fopen("outcomes.txt", "a");
+    fprintf(outcomes,"Score: %d\n", GvGetScore(state));
+    fprintf(outcomes,"Dracula Health: %d\n\n", GvGetHealth(state, PLAYER_DRACULA));
+    fclose(outcomes);
+
+    if (GvGetScore(state) <= 0) {
+      printf("Dracula won\n");
+    } else {
+      printf("Hunters won\n");
+    }
+
+    FILE *f = fopen("result.log", "a");
+    if (f == NULL) {
+      perror("Failed to save result to log: ");
+      exit(EXIT_FAILURE);
+    }
+    fprintf(f, "%s\n\n", pastPlays);
+    fclose(f);
+    GvFree(state);
   }
-  fprintf(f, "%s\n", pastPlays);
-  fclose(f);
 
   return 0;
 }

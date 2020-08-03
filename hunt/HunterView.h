@@ -19,6 +19,7 @@
 #include <stdbool.h>
 
 #include "Game.h"
+#include "GameView.h"
 #include "Places.h"
 
 // Code written by:
@@ -211,5 +212,12 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs);
  */
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
                                 bool rail, bool boat, int *numReturnedLocs);
+
+/**
+ * Gets gameview from within hunterview struct
+ * @param view
+ * @return
+ */
+GameView HvGetGameView(HunterView view);
 
 #endif  // !defined (FOD__HUNTER_VIEW_H_)

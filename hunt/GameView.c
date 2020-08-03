@@ -199,10 +199,11 @@ void ProcessLocation(GameView gameView, Player player, char placeAbbrev[3]) {
   playerDetails->moveCount++;
 }
 
-GameView GvNew(char *pastPlays, Message messages[]) {
-  GameView gameView = ConstructGameView();
+GameView GvProcessMoves(GameView gameView, char *pastPlays, Message messages[]) {
   char placeAbbrev[3] = {0};
   char cur = pastPlays[0];
+
+  int playStringTurnNumber = 0;
 
   while (cur != '\0') {
     Player player = gameView->turnNumber % NUM_PLAYERS;
@@ -215,7 +216,7 @@ GameView GvNew(char *pastPlays, Message messages[]) {
       gameView->players[player]->isDead = false;
     }
 
-    int charIndex = gameView->turnNumber * (PLAY_STR_LENGTH + 1);
+    int charIndex = playStringTurnNumber * (PLAY_STR_LENGTH + 1);
 
     /** Offsets from charIndex are:
       0 -> player
@@ -243,10 +244,16 @@ GameView GvNew(char *pastPlays, Message messages[]) {
     }
 
     gameView->gameScore -= (player == PLAYER_DRACULA) * 1;
-
+    playStringTurnNumber++;
     gameView->turnNumber++;
-    cur = pastPlays[gameView->turnNumber * 8 - 1];
+    cur = pastPlays[playStringTurnNumber * 8 - 1];
   }
+  return gameView;
+}
+
+GameView GvNew(char *pastPlays, Message messages[]) {
+  GameView gameView = ConstructGameView();
+  GvProcessMoves(gameView, pastPlays, messages);
   return gameView;
 }
 
@@ -442,4 +449,27 @@ bool GvIsVampireMaturing(GameView gameView) {
   fclose(draculaLog);
   if (gameView->roundVampirePlaced == -1) return false;
   return ((gameView->turnNumber / NUM_PLAYERS) - gameView->roundVampirePlaced == TRAIL_SIZE);
+}
+
+GameView GvClone(GameView state) {
+  GameView clone = ConstructGameView();
+  clone->gameScore = state->gameScore;
+  clone->roundVampirePlaced = state->roundVampirePlaced;
+  clone->vampireLocation = state->vampireLocation;
+  clone->turnNumber = state->turnNumber;
+  clone->map = state->map;
+  memcpy(clone->trapLocations, state->trapLocations, 6);
+
+  for (int i = 0; i < NUM_PLAYERS; i++) {
+    // Clone player
+    PlayerDetails player = state->players[i];
+    PlayerDetails playerClone = CreatePlayer(i, player->playerHealth);
+    playerClone->lastResolvedLocation = player->lastResolvedLocation;
+    playerClone->moveCount = player->moveCount;
+    playerClone->isDead = player->isDead;
+    memcpy(playerClone->resolvedMoves, player->resolvedMoves, GAME_START_SCORE);
+    memcpy(playerClone->moves, player->moves, GAME_START_SCORE);
+    clone->players[i] = playerClone;
+  }
+  return clone;
 }

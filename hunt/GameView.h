@@ -310,4 +310,18 @@ PlaceId GvGetExpiringTrap(GameView gameView);
  */
 bool GvIsVampireMaturing(GameView gameView);
 
+/**
+ * Clones GameView struct
+ */
+GameView GvClone(GameView state);
+
+/**
+ * Processes given moves updating game view
+ * @param gameView
+ * @param pastPlays
+ * @param messages
+ * @return
+ */
+GameView GvProcessMoves(GameView gameView, char *pastPlays, Message messages[]);
+
 #endif  // !defined (FOD__GAME_VIEW_H_)

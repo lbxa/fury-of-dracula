@@ -226,3 +226,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
                           rail, boat, currentRound, numReturnedLocs, true,
                           false);
 }
+
+GameView HvGetGameView(HunterView view) {
+  return view->gameView;
+}

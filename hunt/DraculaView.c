@@ -151,3 +151,7 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+GameView DvGetGameView(DraculaView view) {
+  return view->gameView;
+}

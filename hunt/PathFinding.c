@@ -177,17 +177,17 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
           placesAdjacent[cur->p] = true;
-          FILE *draculaLog = fopen("dracula.log", "a");
-          fprintf(draculaLog, "Added %s as adjacent\n", placeIdToName(cur->p));
-          fclose(draculaLog);
+//          FILE *draculaLog = fopen("dracula.log", "a");
+//          fprintf(draculaLog, "Added %s as adjacent\n", placeIdToName(cur->p));
+//          fclose(draculaLog);
         } else if (cur->type == BOAT && boat) {
           // If can use boat connections then add it
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
           placesAdjacent[cur->p] = true;
-          FILE *draculaLog = fopen("dracula.log", "a");
-          fprintf(draculaLog, "Added %s as adjacent\n", placeIdToName(cur->p));
-          fclose(draculaLog);
+//          FILE *draculaLog = fopen("dracula.log", "a");
+//          fprintf(draculaLog, "Added %s as adjacent\n", placeIdToName(cur->p));
+//          fclose(draculaLog);
         }
       }
     }

@@ -19,6 +19,7 @@
 #include <stdbool.h>
 
 #include "Game.h"
+#include "GameView.h"
 #include "Places.h"
 
 // Code written by:
@@ -175,5 +176,8 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs);
  */
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
                                 bool rail, bool boat, int *numReturnedLocs);
+
+
+GameView DvGetGameView(DraculaView view);
 
 #endif  // !defined(FOD__DRACULA_VIEW_H_)
