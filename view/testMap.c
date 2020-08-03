@@ -16,28 +16,27 @@
 
 #define MAX_LINE 1024
 
-int main(void)
-{
-	Map m = MapNew();
-	// MapShow(m);
-	
-	char buffer[MAX_LINE];
-	
-	printf("\nType a location name to see its connections: ");
-	while (fgets(buffer, MAX_LINE, stdin) != NULL) {
-		buffer[strlen(buffer) - 1] = '\0'; // remove newline character
-		
-		PlaceId place = placeNameToId(buffer);
-		if (place == NOWHERE) {
-			printf("Unknown location '%s'\n", buffer);
-		} else {
-			for (ConnList c = MapGetConnections(m, place); c != NULL; c = c->next) {
-				const char *dest = placeIdToName(c->p);
-				const char *transportType = transportTypeToString(c->type);
-				printf("%s connects to %s by %s\n", buffer, dest, transportType);
-			}
-		}
-		
-		printf("\nType a location name to see its connections: ");
-	}
+int main(void) {
+  Map m = MapNew();
+  // MapShow(m);
+
+  char buffer[MAX_LINE];
+
+  printf("\nType a location name to see its connections: ");
+  while (fgets(buffer, MAX_LINE, stdin) != NULL) {
+    buffer[strlen(buffer) - 1] = '\0';  // remove newline character
+
+    PlaceId place = placeNameToId(buffer);
+    if (place == NOWHERE) {
+      printf("Unknown location '%s'\n", buffer);
+    } else {
+      for (ConnList c = MapGetConnections(m, place); c != NULL; c = c->next) {
+        const char *dest = placeIdToName(c->p);
+        const char *transportType = transportTypeToString(c->type);
+        printf("%s connects to %s by %s\n", buffer, dest, transportType);
+      }
+    }
+
+    printf("\nType a location name to see its connections: ");
+  }
 }

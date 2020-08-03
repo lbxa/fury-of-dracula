@@ -17,6 +17,6 @@
  * For  a  given view of the game, decide what the best next move is for
  * Dracula by calling `registerBestPlay`.
  */
-void decideDraculaMove(DraculaView state);
+void decideDraculaMove(void* state);
 
 #endif // !defined(FOD__DRACULA_H_)

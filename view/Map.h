@@ -6,17 +6,17 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "HashTable.h"
 #include "Places.h"
-#include "hash_table.h"
 
 #ifndef FOD__MAP_H_
 #define FOD__MAP_H_
 
 typedef struct connNode *ConnList;
 struct connNode {
-    PlaceId p; // ALICANTE, etc.
-    TransportType type; // ROAD, RAIL, BOAT
-    ConnList next; // link to next node
+  PlaceId p;           // ALICANTE, etc.
+  TransportType type;  // ROAD, RAIL, BOAT
+  ConnList next;       // link to next node
 };
 
 // Map representation is hidden
@@ -43,5 +43,4 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
-
-#endif // !defined(FOD__MAP_H_)
+#endif  // !defined(FOD__MAP_H_)
