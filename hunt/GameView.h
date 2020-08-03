@@ -19,10 +19,20 @@
 #include <stdbool.h>
 
 #include "Game.h"
+#include "Map.h"
 #include "Places.h"
-// add your own #includes here
+#include "Players.h"
 
 typedef struct gameView *GameView;
+
+#define TRAP_ENCOUNTER 'T'
+#define VAMPIRE_ENCOUNTER 'V'
+#define DRACULA_ENCOUNTER 'D'
+#define PLAY_STR_LENGTH 7
+#define VAMPIRE_PLACE_ROUNDS 13
+
+// Code written by:
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -47,10 +57,10 @@ typedef struct gameView *GameView;
 GameView GvNew(char *pastPlays, Message messages[]);
 
 /**
- * Frees all memory allocated for `gv`.
- * After this has been called, `gv` should not be accessed.
+ * Frees all memory allocated for `gameView`.
+ * After this has been called, `gameView` should not be accessed.
  */
-void GvFree(GameView gv);
+void GvFree(GameView gameView);
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
@@ -94,7 +104,7 @@ int GvGetHealth(GameView gv, Player player);
  *   Dracula.
  * - Otherwise, CITY_UNKNOWN if Dracula is in a city, and SEA_UNKNOWN if
  *   Dracula is at sea.
- * 
+ *
  * This  function should never return HIDE or DOUBLE_BACK - if Dracula's
  * latest move was a HIDE or DOUBLE_BACK, it should still be able to  be
  * resolved to a city or sea.
@@ -147,8 +157,8 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps);
  * returned array can be modified/freed, set *canFree to true  to  avoid
  * memory leaks. Otherwise, set it to false.
  */
-PlaceId *GvGetMoveHistory(GameView gv, Player player,
-                          int *numReturnedMoves, bool *canFree);
+PlaceId *GvGetMoveHistory(GameView gv, Player player, int *numReturnedMoves,
+                          bool *canFree);
 
 /**
  * Gets  the given player's last `numMoves` moves in chronological order
@@ -191,8 +201,8 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
  * returned array can be modified/freed, set *canFree to true  to  avoid
  * memory leaks. Otherwise, set it to false.
  */
-PlaceId *GvGetLocationHistory(GameView gv, Player player,
-                              int *numReturnedLocs, bool *canFree);
+PlaceId *GvGetLocationHistory(GameView gv, Player player, int *numReturnedLocs,
+                              bool *canFree);
 
 /**
  * Gets  the  given   player's last `numLocs` locations in chronological
@@ -239,8 +249,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
  * This  function  can  assume that the given player has already made at
  * least one move.
  */
-PlaceId *GvGetReachable(GameView gv, Player player, Round round,
-                        PlaceId from, int *numReturnedLocs);
+PlaceId *GvGetReachable(GameView gv, Player player, Round round, PlaceId from,
+                        int *numReturnedLocs);
 
 /**
  * Similar  to GvGetReachable, but the caller can restrict the transport
@@ -248,12 +258,70 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
  * boat is false, boat connections will be ignored.
  */
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
-                              PlaceId from, bool road, bool rail,
-                              bool boat, int *numReturnedLocs);
+                              PlaceId from, bool road, bool rail, bool boat,
+                              int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
+// OUR own interface functions
+// Eric | Lucas | Stephen | Debbie - (20T2)
 
-// TODO
+/**
+ * Gets GameView map
+ * @param gameView
+ * @return
+ */
+Map GetMap(GameView gameView);
 
-#endif // !defined (FOD__GAME_VIEW_H_)
+/**
+ * Gets array of player detail structs. Another simple 'getter' function
+ * @param gameView
+ * @return
+ */
+PlayerDetails *GetPlayerDetailsArray(GameView gameView);
+
+/**
+ * Resolves the given location for player
+ * @param gameView
+ * @param player
+ * @param unresolvedLocation
+ * @return - move will be returned purely as a location (Place ID).
+ */
+PlaceId ResolveLocation(GameView gameView, PlayerDetails player,
+                        PlaceId unresolvedLocation);
+
+/**
+ * Gets the current turn number
+ * @param gameView
+ * @return
+ */
+int GvGetTurnNumber(GameView gameView);
+
+/**
+ * Gets location of trap expiring this turn NOWHERE if no trap
+ * @param gameView
+ * @return
+ */
+PlaceId GvGetExpiringTrap(GameView gameView);
+
+/**
+ * Gets whether a vampire is maturing this round
+ * @param gameView
+ * @return
+ */
+bool GvIsVampireMaturing(GameView gameView);
+
+/**
+ * Clones GameView struct
+ */
+GameView GvClone(GameView state);
+
+/**
+ * Processes given moves updating game view
+ * @param gameView
+ * @param pastPlays
+ * @param messages
+ * @return
+ */
+GameView GvProcessMoves(GameView gameView, char *pastPlays, Message messages[]);
+
+#endif  // !defined (FOD__GAME_VIEW_H_)
