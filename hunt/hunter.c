@@ -21,12 +21,12 @@
 
 #define PLAY_RANDOM
 
-void makeFirstMove(HunterView hv) {
+void HvMakeFirstMove(HunterView hv) {
   registerBestPlay((char*)PLACES[rand() % NUM_REAL_PLACES].abbrev,
                    "Have we nothing Toulouse?");
 }
 
-void makeRandomMove(HunterView hv) {
+void HvMakeRandomMove(HunterView hv) {
   int numMoves = 0;
   PlaceId* possibleMoves = HvWhereCanIGo(hv, &numMoves);
   registerBestPlay((char*)placeIdToAbbrev(possibleMoves[rand() % numMoves]),
@@ -44,8 +44,8 @@ void decideHunterMove(void* hv) {
   fclose(turnLog);
 
   if (HvGetRound(view) == 0) {
-    makeFirstMove(view);
+    HvMakeFirstMove(view);
   } else {
-    if (view) makeRandomMove(view);
+    if (view) HvMakeRandomMove(view);
   }
 }
