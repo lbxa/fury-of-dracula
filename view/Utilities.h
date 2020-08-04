@@ -39,7 +39,7 @@ int max(int a, int b);
  * @param currentPlayer
  * @param turnNumber
  */
-void addMoveToPastPlays(GameView state, char *pastPlays, char *newPlay,
-                        Player currentPlayer, int turnNumber);
+char *GetPastPlayStringForMove(GameView state, char *newPlay,
+                              Player currentPlayer, int turnNumber);
 
 #endif  // FURY_OF_DRACULA_HUNT_UTILITIES_H
