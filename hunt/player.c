@@ -33,6 +33,10 @@
 #include <string.h>
 
 #include "Game.h"
+
+//#define I_AM_DRACULA Used for clion builds with cmake
+
+
 #ifdef I_AM_DRACULA
 # include "dracula.h"
 # include "DraculaView.h"
@@ -60,8 +64,8 @@ typedef DraculaView View;
 # define decideMove decideDraculaMove
 # define ViewFree DvFree
 
-# define xPastPlays "GZA.... SED.... HZU.... MZU...."
-# define xMsgs { "", "", "", "" }
+# define xPastPlays "GLS.... SAM.... HSA.... MPA.... DCG.V.. GMA.... SNS.... HBE.... MGE...."
+# define xMsgs { "", "", "", "", "", "", "", "", "" }
 
 #else
 

@@ -11,38 +11,59 @@
 
 #include "hunter.h"
 
-#include <pthread.h>
-#include <stdio.h>
 #include <time.h>
 
 #include "Game.h"
-#include "GameView.h"
 #include "HunterView.h"
 
-#define PLAY_RANDOM
-
-void makeFirstMove(HunterView hv) {
-  registerBestPlay((char*)PLACES[rand() % NUM_REAL_PLACES].abbrev,
-                   "Have we nothing Toulouse?");
+void HMakeRandomMove(HunterView view) {
+  int numMoves = 0;
+  PlaceId* possibleMoves = HvWhereCanIGo(view, &numMoves);
+  PlaceId move = possibleMoves[rand() % numMoves];
+  registerBestPlay((char*)placeIdToAbbrev(move), "132?");
 }
 
-void makeRandomMove(HunterView hv) {
-  int numMoves = 0;
-  PlaceId* possibleMoves = HvWhereCanIGo(hv, &numMoves);
-  registerBestPlay((char*)placeIdToAbbrev(possibleMoves[rand() % numMoves]),
-                   "Have we nothing Toulouse?");
+void HFirst(Player player) {
+  int placeId = 30;
+  // Decide on good starting positions for all hunters
+  if (player == 0) {
+    placeId = SZEGED;
+  } else if (player == 1) {
+    placeId = LONDON;
+  } else if (player == 2) {
+    placeId = SARAGOSSA;
+  } else {
+    placeId = ZURICH;
+  }
+  registerBestPlay(PLACES[placeId].abbrev, "132");
 }
 
 void decideHunterMove(HunterView hv) {
-  HunterView view = (HunterView)hv;
+  srand(time(NULL));
 
-  FILE *turnLog = fopen("turns.log", "a");
-  fprintf(turnLog, "\nHunter Move (%d)\n", HvGetRound(view));
-  fclose(turnLog);
+  /**
+   * Prioritise land locations
+   * Predictions what areas he may be in, by looking at last known location,
+   * predictions involving sea moves
+   * If known vampire location go to it
+   */
 
-  if (HvGetRound(view) == 0) {
-    makeFirstMove(view);
+  int player = HvGetPlayer(hv);
+  if (HvGetRound(hv) == 0) {
+    HFirst(player);
   } else {
-    if (view) makeRandomMove(view);
+    Round lastKnownRound = -1;
+    PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
+    if (lastKnown != NOWHERE && HvGetRound(hv) - lastKnownRound <= 3) {
+      int pathLength = 0;
+      PlaceId* path = HvGetShortestPathTo(hv, player, lastKnown, &pathLength);
+      if (pathLength > 0 && placeIsReal(path[0])) {
+        registerBestPlay(placeIdToAbbrev(path[0]), "132");
+      } else {
+        HMakeRandomMove(hv);
+      }
+    } else {
+      HMakeRandomMove(hv);
+    }
   }
 }

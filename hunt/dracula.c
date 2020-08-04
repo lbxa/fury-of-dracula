@@ -26,7 +26,6 @@
 
 void DvMakeFirstMove(DraculaView hv) {
   int place = rand() % 23;
-  printf("First: %s\n", placeIdToName(place));
   registerBestPlay((char *)PLACES[place].abbrev, "Have we nothing Toulouse?");
 }
 
@@ -62,7 +61,7 @@ void MakeMinimaxMove(DraculaView dv) {
       state, map, PLAYER_DRACULA, currentLocation, true, false, true,
       GvGetRound(state), &numReturnedMoves, false, true);
   if (numReturnedMoves == 0) {
-    registerBestPlay(placeIdToAbbrev(TELEPORT), NULL);
+    registerBestPlay(placeIdToAbbrev(TELEPORT), "");
   }
   PlaceId bestMove = 0;
   int bestEval = INT_MIN;
@@ -83,7 +82,7 @@ void MakeMinimaxMove(DraculaView dv) {
     if (eval > bestEval) {
       bestEval = eval;
       bestMove = possibleMoves[i];
-      registerBestPlay(placeIdToAbbrev(bestMove), NULL);
+      registerBestPlay(placeIdToAbbrev(bestMove), "");
     }
     free(play);
   }
@@ -107,7 +106,7 @@ void decideDraculaMove(DraculaView dv) {
     DvMakeFirstMove(view);
   } else {
     //    if (view) DvMakeRandomMove(view);
-    clock_t start, end;
+    clock_t start;
     start = clock();
     MakeMinimaxMove(view);
     double time_taken = ((double)clock() - start)/CLOCKS_PER_SEC;
