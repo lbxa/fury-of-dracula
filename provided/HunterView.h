@@ -20,9 +20,7 @@
 
 #include "Game.h"
 #include "Places.h"
-
-// Code written by:
-// Eric | Lucas | Stephen | Debbie - (20T2)
+// add your own #includes here
 
 typedef struct hunterView *HunterView;
 
@@ -96,7 +94,7 @@ int HvGetHealth(HunterView hv, Player player);
  *   Dracula.
  * - Otherwise, CITY_UNKNOWN if Dracula is in a city, and SEA_UNKNOWN if
  *   Dracula is at sea.
- *
+ * 
  * This  function should never return HIDE or DOUBLE_BACK - if Dracula's
  * latest move was a HIDE or DOUBLE_BACK, it should still be able to  be
  * resolved to a city or sea.
@@ -177,8 +175,8 @@ PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs);
  * types to be considered. For example, if road and rail are  true,  but
  * boat is false, boat connections will be ignored.
  */
-PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail, bool boat,
-                             int *numReturnedLocs);
+PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
+                             bool boat, int *numReturnedLocs);
 
 /**
  * Gets  all  the  locations  that the given player can move to in their
@@ -202,14 +200,21 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail, bool boat,
  * If the given player hasn't made a move yet, set *numReturnedLocs to 0
  * and return NULL.
  */
-PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs);
+PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
+                          int *numReturnedLocs);
 
 /**
  * Similar to HvWhereCanTheyGo but the caller can restrict the transport
  * types  to  be considered. For example, if road and rail are true, but
  * boat is false, boat connections will be ignored.
  */
-PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
-                                bool rail, bool boat, int *numReturnedLocs);
+PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
+                                bool road, bool rail, bool boat,
+                                int *numReturnedLocs);
 
-#endif  // !defined (FOD__HUNTER_VIEW_H_)
+////////////////////////////////////////////////////////////////////////
+// Your own interface functions
+
+// TODO
+
+#endif // !defined (FOD__HUNTER_VIEW_H_)

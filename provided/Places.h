@@ -163,7 +163,9 @@ PlaceType placeIdToType(PlaceId pid);
 const char *placeIdToName(PlaceId pid);
 
 /** given a place number, return its two-char code */
-const char *placeIdToAbbrev(PlaceId pid);
+// changed to return char * because registerBestPlay
+// doesn't take in const char *
+char *placeIdToAbbrev(PlaceId pid);
 
 ////////////////////////////////////////////////////////////////////////
 

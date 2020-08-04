@@ -33,10 +33,6 @@
 #include <string.h>
 
 #include "Game.h"
-
-//#define I_AM_DRACULA Used for clion builds with cmake
-
-
 #ifdef I_AM_DRACULA
 # include "dracula.h"
 # include "DraculaView.h"
@@ -64,8 +60,8 @@ typedef DraculaView View;
 # define decideMove decideDraculaMove
 # define ViewFree DvFree
 
-# define xPastPlays "GLS.... SAM.... HSA.... MPA.... DCG.V.. GMA.... SNS.... HBE.... MGE...."
-# define xMsgs { "", "", "", "", "", "", "", "", "" }
+# define xPastPlays "GZA.... SED.... HZU.... MZU...."
+# define xMsgs { "", "", "", "" }
 
 #else
 
@@ -95,7 +91,7 @@ int main(void)
 
 // Saves characters from play (and appends a terminator)
 // and saves characters from message (and appends a terminator)
-void registerBestPlay(const char *play, Message message)
+void registerBestPlay(char *play, Message message)
 {
 	strncpy(latestPlay, play, MOVE_SIZE - 1);
 	latestPlay[MOVE_SIZE - 1] = '\0';

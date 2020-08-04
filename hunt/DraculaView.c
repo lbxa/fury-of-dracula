@@ -99,7 +99,7 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps) {
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves) {
   *numReturnedMoves = 0;
-  Map map = GetMap(dv->gameView);
+  Map map = GvGetMap(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
   // Gets valid moves for dracula applying his movement restrictions
   return GetPossibleMoves(dv->gameView, map, PLAYER_DRACULA, currentLocation,
@@ -108,7 +108,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves) {
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  Map map = GetMap(dv->gameView);
+  Map map = GvGetMap(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
   // Resolves valid moves for dracula into locations and applying his movement
   // restrictions
@@ -119,7 +119,7 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs) {
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
                              int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  Map map = GetMap(dv->gameView);
+  Map map = GvGetMap(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, PLAYER_DRACULA);
   // Resolves valid moves for dracula into locations and applying his movement
   // restrictions as well as doing type restrictions
@@ -129,7 +129,7 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
 
 PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  Map map = GetMap(dv->gameView);
+  Map map = GvGetMap(dv->gameView);
   int round = GvGetRound(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
   // Resolves valid moves for given players into locations and applying relevant
@@ -141,7 +141,7 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player, int *numReturnedLocs) {
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player, bool road,
                                 bool rail, bool boat, int *numReturnedLocs) {
   *numReturnedLocs = 0;
-  Map map = GetMap(dv->gameView);
+  Map map = GvGetMap(dv->gameView);
   int round = GvGetRound(dv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(dv->gameView, player);
   // Resolves valid moves for given players into locations and applying relevant

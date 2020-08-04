@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////
+// COMP2521 20T2 ... The Fury of Dracula
+// Map.h: an interface to a Map data type
+// You can change this as much as you want!
+// If you modify this, you should submit the new version.
+//
+// 2017-11-30   v1.0    Team Dracula <cs2521@cse.unsw.edu.au>
 // 2018-12-31   v2.0    Team Dracula <cs2521@cse.unsw.edu.au>
 // 2020-07-10   v3.0    Team Dracula <cs2521@cse.unsw.edu.au>
 //
@@ -6,7 +13,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "HashTable.h"
 #include "Places.h"
 
 #ifndef FOD__MAP_H_
@@ -14,9 +20,9 @@
 
 typedef struct connNode *ConnList;
 struct connNode {
-  PlaceId p;           // ALICANTE, etc.
-  TransportType type;  // ROAD, RAIL, BOAT
-  ConnList next;       // link to next node
+	PlaceId p; // ALICANTE, etc.
+	TransportType type; // ROAD, RAIL, BOAT
+	ConnList next; // link to next node
 };
 
 // Map representation is hidden
@@ -43,4 +49,4 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
-#endif  // !defined(FOD__MAP_H_)
+#endif // !defined(FOD__MAP_H_)

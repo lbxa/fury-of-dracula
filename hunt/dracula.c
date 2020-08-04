@@ -26,7 +26,6 @@
 
 void DvMakeFirstMove(DraculaView hv) {
   int place = rand() % 23;
-  printf("First: %s\n", placeIdToName(place));
   registerBestPlay((char *)PLACES[place].abbrev, "Have we nothing Toulouse?");
 }
 
@@ -54,33 +53,44 @@ void DvMakeRandomMove(DraculaView hv) {
 
 void MakeMinimaxMove(DraculaView dv) {
   GameView state = DvGetGameView(dv);
-  Map map = GetMap(state);
+  Map map = GvGetMap(state);
   PlaceId currentLocation = DvGetPlayerLocation(dv, PLAYER_DRACULA);
   int numReturnedMoves = 0;
-  int depth = 1;
+  int depth = 4;
   PlaceId *possibleMoves = GetPossibleMoves(
       state, map, PLAYER_DRACULA, currentLocation, true, false, true,
       GvGetRound(state), &numReturnedMoves, false, true);
+  if (numReturnedMoves == 0) {
+    registerBestPlay(placeIdToAbbrev(TELEPORT), "");
+  }
   PlaceId bestMove = 0;
   int bestEval = INT_MIN;
+
+  HashTable *pathLookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
+
+  for (int i = 0; i < NUM_REAL_PLACES; i++) {
+    pathLookup[i] = NULL;
+  }
+
   for (int i = 0; i < numReturnedMoves; ++i) {
     printf("Evaluating -> %s\n", placeIdToName(possibleMoves[i]));
     GameView newState = GvClone(state);
     char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
                                           PLAYER_DRACULA, GvGetTurnNumber(state));
     GvProcessMoves(newState, play, NULL);
-    int eval = minimax(newState, depth, INT_MIN, INT_MAX);
+    int eval = minimax(newState, pathLookup, depth, INT_MIN, INT_MAX);
     if (eval > bestEval) {
       bestEval = eval;
       bestMove = possibleMoves[i];
-      registerBestPlay((char *)placeIdToAbbrev(bestMove), NULL);
+      registerBestPlay(placeIdToAbbrev(bestMove), "");
     }
+    free(play);
   }
+
+  // Free memory
 }
 
-void decideDraculaMove(void *dv) {
-  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+void decideDraculaMove(DraculaView dv) {
   DraculaView view = (DraculaView)dv;
   FILE *draculaLog = fopen("dracula.log", "a");
   fprintf(draculaLog, "\nDracula Move (%d)\n", DvGetRound(dv));
@@ -96,6 +106,10 @@ void decideDraculaMove(void *dv) {
     DvMakeFirstMove(view);
   } else {
     //    if (view) DvMakeRandomMove(view);
+    clock_t start;
+    start = clock();
     MakeMinimaxMove(view);
+    double time_taken = ((double)clock() - start)/CLOCKS_PER_SEC;
+    printf("Turn time taken: %lf\n", time_taken);
   }
 }
