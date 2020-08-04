@@ -69,7 +69,7 @@ void addMoveToPastPlays(GameView state, char *pastPlays, char *newPlay, Player c
     playStr[1] = newPlay[0];
     playStr[2] = newPlay[1];
     PlayerDetails player = GetPlayerDetailsArray(state)[currentPlayer];
-    PlaceId playerLocation = ResolveLocation(state, player, placeAbbrevToId(newPlay));
+    // PlaceId playerLocation = ResolveLocation(state, player, placeAbbrevToId(newPlay));
     getEncounterStr(state, currentPlayer, player->lastResolvedLocation, playStr);
   } else {
     // Stay at location
