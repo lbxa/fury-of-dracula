@@ -423,7 +423,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // OUR own interface functions
 // Eric | Lucas | Stephen | Debbie - (20T2)
 
-Map GetMap(GameView gameView) {
+Map GvGetMap(GameView gameView) {
   assert(gameView != NULL);
   return gameView->map;
 }
@@ -457,7 +457,7 @@ GameView GvClone(GameView state) {
   clone->roundVampirePlaced = state->roundVampirePlaced;
   clone->vampireLocation = state->vampireLocation;
   clone->turnNumber = state->turnNumber;
-  clone->map = state->map;
+  clone->map = MapNew();
   memcpy(clone->trapLocations, state->trapLocations, 6);
 
   for (int i = 0; i < NUM_PLAYERS; i++) {

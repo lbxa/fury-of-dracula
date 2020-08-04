@@ -122,7 +122,7 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round) {
 
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength) {
-  Map map = GetMap(hv->gameView);
+  Map map = GvGetMap(hv->gameView);
   // Getting data for Place
   *pathLength = 0;
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, hunter);
@@ -161,7 +161,7 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs) {
   // Initialise variables to call get possible moves
   *numReturnedLocs = 0;
-  Map map = GetMap(hv->gameView);
+  Map map = GvGetMap(hv->gameView);
   Player currentPlayer = GvGetPlayer(hv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
   int currentRound = GvGetRound(hv->gameView);
@@ -176,7 +176,7 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail, bool boat,
                              int *numReturnedLocs) {
   // Initialise variables to call get possible moves
   *numReturnedLocs = 0;
-  Map map = GetMap(hv->gameView);
+  Map map = GvGetMap(hv->gameView);
   Player currentPlayer = GvGetPlayer(hv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, currentPlayer);
   int currentRound = GvGetRound(hv->gameView);
@@ -190,7 +190,7 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail, bool boat,
 PlaceId *HvWhereCanTheyGo(HunterView hv, Player player, int *numReturnedLocs) {
   // Initialise variables to call get possible moves
   *numReturnedLocs = 0;
-  Map map = GetMap(hv->gameView);
+  Map map = GvGetMap(hv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
   int currentRound = GvGetRound(hv->gameView);
 
@@ -206,7 +206,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
   *numReturnedLocs = 0;
   bool canFree = true;
   int numReturnedMoves;
-  Map map = GetMap(hv->gameView);
+  Map map = GvGetMap(hv->gameView);
   PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, player);
 
   // Current round is more complicated -> must check if the player has already

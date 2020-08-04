@@ -33,10 +33,7 @@ void makeRandomMove(HunterView hv) {
                    "Have we nothing Toulouse?");
 }
 
-void decideHunterMove(void* hv) {
-  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-//  srand ( GvGetPlayer(1) );
+void decideHunterMove(HunterView hv) {
   HunterView view = (HunterView)hv;
 
   FILE *turnLog = fopen("turns.log", "a");

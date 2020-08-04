@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.13)
 include_directories(${CMAKE_SOURCE_DIR})
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -o3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm")
 project(fury_of_dracula C)
 project(fury_of_dracula_hunt C)
 project(fury_of_dracula_prov C)
 
-add_executable(fury_of_dracula hunt/testDraculaView.c
-        view/testUtils.c
-        view/testUtils.h
+add_executable(fury_of_dracula hunt/testGameView.c
+        hunt/testUtils.c
+        hunt/testUtils.h
         hunt/DraculaView.c
         hunt/GameView.h
         hunt/GameView.c

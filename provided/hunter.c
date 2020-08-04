@@ -40,6 +40,14 @@ void HFirst(Player player) {
 
 void decideHunterMove(HunterView hv) {
   srand(time(NULL));
+
+  /**
+   * Prioritise land locations
+   * Predictions what areas he may be in, by looking at last known location,
+   * predictions involving sea moves
+   * If known vampire location go to it
+   */
+
   int player = HvGetPlayer(hv);
   if (HvGetRound(hv) == 0) {
     HFirst(player);
