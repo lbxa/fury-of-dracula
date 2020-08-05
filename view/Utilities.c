@@ -1,6 +1,3 @@
-//
-// Created by eric on 29/7/20.
-//
 #include "Utilities.h"
 
 #include <stdio.h>
@@ -20,7 +17,7 @@ void CheckMallocSuccess(void *mem, char *errorMessage) {
 int min(int a, int b) { return (a < b) ? a : b; }
 int max(int a, int b) { return (a > b) ? a : b; }
 
-char getPlayerChar(Player player) {
+char GameUtilGetPlayerChar(Player player) {
   if (player == PLAYER_LORD_GODALMING) {
     return 'G';
   } else if (player == PLAYER_DR_SEWARD) {
@@ -33,7 +30,8 @@ char getPlayerChar(Player player) {
   return 'D';
 }
 
-void getEncounterStr(GameView state, Player currentPlayer, PlaceId playerLoc, char* playStr) {
+void GameUtilGetEncounterStr(GameView state, Player currentPlayer,
+                             PlaceId playerLoc, char *playStr) {
   int numTraps = 0;
   PlaceId *trapLocations = GvGetTrapLocations(state, &numTraps);
   int numEncounteredTraps = 0;
@@ -41,17 +39,17 @@ void getEncounterStr(GameView state, Player currentPlayer, PlaceId playerLoc, ch
   int encounterIndex = 3;
 
   for (int i = 0; i < numTraps; ++i) {
-    if (trapLocations[i] == playerLoc) {
+    if (trapLocations[i] == playerLoc && !placeIsSea(playerLoc)) {
       numEncounteredTraps++;
       playStr[encounterIndex] = 'T';
       encounterIndex++;
     }
   }
-  if (GvGetVampireLocation(state) == playerLoc) {
+  if (GvGetVampireLocation(state) == playerLoc && !placeIsSea(playerLoc)) {
     playStr[encounterIndex] = 'V';
     encounterIndex++;
   }
-  if (currentPlayer != PLAYER_DRACULA &&
+  if (currentPlayer != PLAYER_DRACULA && !placeIsSea(playerLoc) &&
       GvGetPlayerLocation(state, PLAYER_DRACULA) == playerLoc) {
     playStr[encounterIndex] = 'D';
     encounterIndex++;
@@ -61,34 +59,62 @@ void getEncounterStr(GameView state, Player currentPlayer, PlaceId playerLoc, ch
   }
 }
 
-void addMoveToPastPlays(GameView state, char *pastPlays, char *newPlay, Player currentPlayer, int turnNumber) {
-  // TODO: Handle that hunter shouldn't see all the information for dracula
+void DraculaUtilEncounterString(GameView state, Player currentPlayer,
+                                PlaceId playerLoc, char *playStr) {
+  int round = GvGetRound(state);
+  if (!placeIsSea(playerLoc)) {
+    if (round % 13 == 0) {
+      playStr[3] = '.';
+      playStr[4] = 'V';
+    } else {
+      playStr[3] = 'T';
+      playStr[4] = '.';
+    }
+  } else {
+    playStr[3] = '.';
+    playStr[4] = '.';
+  }
+
+  if (GvIsVampireMaturing(state)) {
+    playStr[5] = 'V';
+  } else if (GvGetExpiringTrap(state) != NOWHERE) {
+    playStr[5] = 'M';
+  } else {
+    playStr[5] = '.';
+  }
+
+  playStr[6] = '.';
+}
+
+char *GetPastPlayStringForMove(GameView state, char *newPlay,
+                              Player currentPlayer, int turnNumber) {
   char *playStr = malloc(sizeof(char) * 8);
-  playStr[0] = getPlayerChar(currentPlayer);
+  playStr[0] = GameUtilGetPlayerChar(currentPlayer);
   if (newPlay != NULL) {
     playStr[1] = newPlay[0];
     playStr[2] = newPlay[1];
     PlayerDetails player = GetPlayerDetailsArray(state)[currentPlayer];
-    PlaceId playerLocation = ResolveLocation(state, player, placeAbbrevToId(newPlay));
-    getEncounterStr(state, currentPlayer, player->lastResolvedLocation, playStr);
+    PlaceId playerLocation =
+        ResolveLocation(state, player, placeAbbrevToId(newPlay));
+    if (currentPlayer == PLAYER_DRACULA) {
+      DraculaUtilEncounterString(state, currentPlayer, playerLocation, playStr);
+    } else {
+      GameUtilGetEncounterStr(state, currentPlayer, playerLocation, playStr);
+    }
   } else {
     // Stay at location
     PlayerDetails player = GetPlayerDetailsArray(state)[currentPlayer];
     const char *abbrev = placeIdToAbbrev(player->lastResolvedLocation);
     playStr[1] = abbrev[0];
     playStr[2] = abbrev[1];
-    getEncounterStr(state, currentPlayer, player->lastResolvedLocation, playStr);
+    if (currentPlayer == PLAYER_DRACULA) {
+      DraculaUtilEncounterString(state, currentPlayer,
+                                 player->lastResolvedLocation, playStr);
+    } else {
+      GameUtilGetEncounterStr(state, currentPlayer,
+                              player->lastResolvedLocation, playStr);
+    }
   }
-
-  playStr[7] = ' ';
-  int length = ((turnNumber + 1) * 8);
-  if (length > 8) {
-    pastPlays[length - 9] = ' ';
-  }
-  pastPlays = realloc(pastPlays, length);
-  int offset = turnNumber * 8;
-  for (int i = 0; i < 8; i++) {
-    pastPlays[i + offset] = playStr[i];
-  }
-  pastPlays[length - 1] = '\0';
+  playStr[7] = '\0';
+  return playStr;
 }
