@@ -1,5 +1,49 @@
 import random
 import numpy as np
+import os
+import subprocess
+
+
+# Get Game Evaluation
+def extract_evaluation_scores():
+    num_games = 0
+    rounds_total = 0
+    scoresTotal = 0
+    draculaWin = 0
+
+    for f in os.listdir("logs"):
+        log = open(os.path.join("logs", f), "r")
+        content = log.read()
+        lines = content.split("\n")
+        print(f)
+        try:
+            roundNum = int(lines[-2].split(":")[-1].strip())
+            score = int(lines[-3].split(":")[-1].strip())
+            if "disq" in content:
+                print("Disqualified")
+            print("Round: ", roundNum)
+            print("Score: ", score)
+            print()
+            rounds_total += roundNum
+            scoresTotal += score
+            num_games += 1
+            if score <= 0:
+                draculaWin += 1
+        except Exception as e:
+            print("Error")
+            print(e)
+            continue
+    return scoresTotal / num_games
+
+
+def evaluate_weight_set(weight_set):
+    life_string = "#define LIFE_FACTOR {LIFE_FACTOR}"
+    score_string = "#define SCORE_FACTOR {SCORE_FACTOR}"
+    distance_string = "#define DISTANCE_FACTOR {DISTANCE_FACTOR}"
+
+    # Run evaluation using provided engine
+
+###
 
 
 def create_starting_population(individuals, chromosome_length):
@@ -90,7 +134,7 @@ def randomly_mutate_population(population, mutation_probability):
 # *************************************
 
 # Set general parameters
-chromosome_length = 4 # Number of weights
+chromosome_length = 4  # Number of weights
 population_size = 500
 maximum_generation = 200
 best_score_progress = []  # Tracks progress
