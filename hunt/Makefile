@@ -14,10 +14,10 @@ BINS = dracula hunter
 # add any other *.o files that your solution requires
 # (and add their dependencies below after DraculaView.o)
 # if you're not using Map.o or Places.o, you can remove them
-OBJS = GameView.o Map.o Places.o
+OBJS = GameView.o Map.o Places.o PathFinding.o BinaryHeap.o HashTable.o Queue.o Players.o Utilities.o minimax.o
 
 # add whatever system libraries you need here (e.g. -lm)
-LIBS =
+LIBS = -lm
 
 all: $(BINS)
 
@@ -31,11 +31,20 @@ playerHunter.o: player.c hunter.h Game.h HunterView.h GameView.h Places.h
 
 dracula.o: dracula.c dracula.h DraculaView.h GameView.h Places.h Game.h
 hunter.o: hunter.c hunter.h HunterView.h GameView.h Places.h Game.h
-GameView.o:	GameView.c GameView.h Places.h Game.h
-DraculaView.o: DraculaView.c DraculaView.h GameView.h Places.h Game.h
-HunterView.o: HunterView.c GameView.h Places.h HunterView.h Game.h
-Map.o: Map.c Map.h Places.h
-Places.o: Places.c Places.h
+
+Places.o: Places.c Places.h Game.h
+Map.o: Map.c Map.h Places.h Game.h BinaryHeap.h
+GameView.o:	GameView.c GameView.h Game.h PathFinding.h Players.h Utilities.h
+HunterView.o: HunterView.c HunterView.h Game.h
+DraculaView.o: DraculaView.c DraculaView.h Game.h
+BinaryHeap.o: BinaryHeap.c BinaryHeap.h
+HashTable.o: HashTable.c HashTable.h
+PathFinding.o: PathFinding.c PathFinding.h BinaryHeap.h HashTable.h Queue.h Utilities.h
+Players.o: Players.c Players.h
+Queue.o: Queue.c Queue.h
+Utilities.o: Utilities.c Utilities.h
+minimax.o: minimax.c minimax.h Utilities.h
+
 
 # if you use other ADTs, add dependencies for them here
 
