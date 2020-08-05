@@ -34,8 +34,7 @@
 
 #include "Game.h"
 
-//#define I_AM_DRACULA Used for clion builds with cmake
-
+#define I_AM_DRACULA
 
 #ifdef I_AM_DRACULA
 # include "dracula.h"
@@ -64,7 +63,7 @@ typedef DraculaView View;
 # define decideMove decideDraculaMove
 # define ViewFree DvFree
 
-# define xPastPlays "GLS.... SAM.... HSA.... MPA.... DCG.V.. GMA.... SNS.... HBE.... MGE...."
+# define xPastPlays "GSZ.... SLO.... HSR.... MZU.... DCO.V.. GJM.... SEC.... HBO.... MMU...."
 # define xMsgs { "", "", "", "", "", "", "", "", "" }
 
 #else
@@ -88,6 +87,8 @@ int main(void)
 	View state = ViewNew(pastPlays, msgs);
 	decideMove(state);
 	ViewFree(state);
+
+        printf("%s\n", xPastPlays);
 
 	printf("Move: %s, Message: %s\n", latestPlay, latestMessage);
 	return EXIT_SUCCESS;

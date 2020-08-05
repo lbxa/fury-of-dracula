@@ -15,6 +15,12 @@ PlayerDetails CreatePlayer(Player player, int initialHealth) {
   playerDetails->player = player;
   playerDetails->isDead = false;
   playerDetails->lastResolvedLocation = NOWHERE;
+  for (int i = 0; i < GAME_START_SCORE; ++i) {
+    playerDetails->moves[i] = 0;
+  }
+  for (int i = 0; i < GAME_START_SCORE; ++i) {
+    playerDetails->resolvedMoves[i] = 0;
+  }
   return playerDetails;
 }
 

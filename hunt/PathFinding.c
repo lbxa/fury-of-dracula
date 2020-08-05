@@ -117,10 +117,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
                                 &trailNumMoves, &canFree);
     locationHistory = GvGetLastLocations(
         gameView, PLAYER_DRACULA, TRAIL_SIZE - 1, &trailNumMoves, &canFree);
-    FILE* draculaLog = fopen("dracula.log", "a");
     for (int i = 0; i < trailNumMoves; ++i) {
-      fprintf(draculaLog, "Trail (%d): %s -> %s\n", i,
-              placeIdToName(trailMoves[i]), placeIdToName(locationHistory[i]));
       onTrailLookup[trailMoves[i]] = true;
       if (trailMoves[i] == HIDE) {
         canHide = false;
@@ -129,7 +126,6 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
         canDoubleBack = false;
       }
     }
-    fclose(draculaLog);
   }
 
   *placesCount = 0;
@@ -138,8 +134,6 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
 
   // Use as lookup to stop placing duplicates moves/locations in output
   bool placesAdded[NUM_REAL_PLACES] = {false};
-  bool placesAdjacent[NUM_REAL_PLACES] = {false};
-  placesAdjacent[currentId] = true;
 
   // Handle checking whether current place can be added as possible location
   // as dracula can only move to current location as HIDE if not HIDE not
@@ -149,11 +143,6 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
       places[0] = currentId;
     } else {
       places[0] = HIDE;
-    }
-    if (player == PLAYER_DRACULA) {
-      FILE* draculaLog = fopen("dracula.log", "a");
-      fprintf(draculaLog, "Add current->%s\n", placeIdToName(places[0]));
-      fclose(draculaLog);
     }
     (*placesCount)++;
   }
@@ -182,23 +171,10 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
           // If can use road connections then add it
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
-          placesAdjacent[cur->p] = true;
-          if (player == PLAYER_DRACULA) {
-            FILE* draculaLog = fopen("dracula.log", "a");
-            fprintf(draculaLog, "Current -> %s\n", placeIdToName(cur->p));
-            for (int i = 0; i < NUM_REAL_PLACES; ++i) {
-              if (onTrailLookup[i]) {
-                fprintf(draculaLog, "\t trail -> %s\n", placeIdToName(i));
-              }
-            }
-            fclose(draculaLog);
-          }
-
         } else if (cur->type == BOAT && boat) {
           // If can use boat connections then add it
           places[(*placesCount)++] = cur->p;
           placesAdded[cur->p] = true;
-          placesAdjacent[cur->p] = true;
         }
       }
     }
@@ -216,27 +192,23 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
       // Need to perform resolve location of moves
       PlaceId place;
       PlaceId resolved = resolvedLocations[locationCount - 1 - i];
-      if (!placesAdjacent[resolved])
-        continue;  // Can only double back to adjacent places
-      FILE* draculaLog = fopen("dracula.log", "a");
-      fprintf(draculaLog, "Adjacent\n");
-      for (int j = 0; j < NUM_REAL_PLACES; ++j) {
-        if (placesAdjacent[j] == true) {
-          fprintf(draculaLog, "\t -> %s\n", placeIdToName(j));
+      bool isAdjacent = resolved == currentId;
+      if (!isAdjacent) {
+        for (ConnList curr = connections; curr != NULL; curr = curr->next) {
+          if (curr->p == resolved) {
+            isAdjacent = true;
+            break;
+          }
         }
       }
 
-      fclose(draculaLog);
+      if (!isAdjacent) continue;  // Can only double back to adjacent places
 
       if (resolveMoves) {
         place = resolved;
       } else {
         place = DOUBLE_BACK_1 + i;
       }
-      draculaLog = fopen("dracula.log", "a");
-      fprintf(draculaLog, "%s -> %s\n", placeIdToName(resolved),
-              placeIdToName(DOUBLE_BACK_1 + i));
-      fclose(draculaLog);
       if (!placesAdded[place]) {
         placesAdded[place] = true;
         places[(*placesCount)++] = place;
@@ -253,15 +225,6 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   if (*placesCount < NUM_REAL_PLACES) {
     places = realloc(places, sizeof(PlaceId) * (*placesCount));
   }
-
-  if (player == PLAYER_DRACULA) {
-    FILE *draculaLog = fopen("dracula.log", "a");
-    for (int i = 0; i < *placesCount; ++i) {
-      fprintf(draculaLog, "\t place -> %s\n", placeIdToName(places[i]));
-    }
-
-    fclose(draculaLog);
-  }
   return places;
 }
 
@@ -273,17 +236,17 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
-                                 Place from, bool road, bool rail, bool boat,
-                                 int round, bool resolveMoves,
-                                 bool applyTrailRestrictions) {
+Path* GetPathLookupTableFrom(GameView gameView, Map map, Player player,
+                             Place from, bool road, bool rail, bool boat,
+                             int round, bool resolveMoves,
+                             bool applyTrailRestrictions) {
   // Prime numbers are suitable table sizes and not that many vertices exist
   // so can pick small value
-  HashTable distances = HashTableCreate(181);
+  Path* distances = malloc(sizeof(Path) * NUM_REAL_PLACES);
 
   for (int i = 0; i < NUM_REAL_PLACES; ++i) {
     Place p = PLACES[i];
-    HashInsert(distances, p.abbrev, CreatePath(p.abbrev, INT_MAX, NULL));
+    distances[i] = CreatePath(p.abbrev, INT_MAX, NULL);
   }
 
   // Create priority queue and push starting location with distance of 0
@@ -298,7 +261,7 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
 
     // Vertex can be added multiple times to priority queue
     // We only want to process it the first time
-    Path pathNode = (Path)HashGet(distances, currentVertex->place)->value;
+    Path pathNode = distances[currentPlace];
     if (currentDistance > pathNode->distance) continue;
     int reachableCount = 0;
 
@@ -317,7 +280,7 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
       // No weights on edges so simply add 1
       int distance = currentDistance + 1;
 
-      pathNode = (Path)HashGet(distances, vertexAbbrev)->value;
+      pathNode = distances[reachable[i]];
       int neighbourDistanceLookup = pathNode->distance;
 
       // If distance is better then what has been currently found then set that
@@ -328,7 +291,7 @@ HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
         Path new = CreatePath((char*)vertexAbbrev, distance, currentVertex);
 
         // Updated distances and insert to priority queue
-        HashInsert(distances, vertexAbbrev, new);
+        distances[reachable[i]] = new;
         HeapPush(pq, HeapItemCreate(distance, new));
       }
     }
@@ -419,7 +382,7 @@ PlaceId* GetShortestPathTo(GameView gameView, Player player, PlaceId dest,
   CheckMallocSuccess(from, "Couldn't allocate Place!\n");
 
   int round = GvGetRound(gameView);
-  HashTable pathLookup = NULL;
+  Path* pathLookup = NULL;
 
   // Finds path given appropriate player restrictions
   if (player == PLAYER_DRACULA) {
@@ -433,7 +396,7 @@ PlaceId* GetShortestPathTo(GameView gameView, Player player, PlaceId dest,
   }
   if (pathLookup == NULL) return NULL;
 
-  Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(dest))->value;
+  Path path = pathLookup[dest];
 
   *pathLength = path->distance;
   return GetOrderedPlaceIds(path);

@@ -7,7 +7,8 @@
 
 #include "GameView.h"
 #include "HashTable.h"
+#include "PathFinding.h"
 
-int minimax(GameView state, HashTable *distanceLookup, int depth, int alpha, int beta);
+int MiniMax(GameView state, Path **distanceLookup, int depth, int alpha, int beta);
 
 #endif //FURY_OF_DRACULA_HUNT_MINIMAX_H

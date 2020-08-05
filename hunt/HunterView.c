@@ -135,12 +135,12 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
   int round = GvGetRound(hv->gameView);
 
   // Create a lookup table for all paths from current location
-  HashTable pathLookup =
+  Path *pathLookup =
       GetPathLookupTableFrom(hv->gameView, map, hunter, PLACES[currentLocation],
                              true, true, true, round, true, false);
 
   // Get the path to the destination
-  Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(dest))->value;
+  Path path = pathLookup[dest];
 
   // Allocate memory for the PlaceId *array that will be returned
   // Loop through the HashNode to get the path and use charAbbrevToId to convert
@@ -150,8 +150,6 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
   PlaceId *orderedPath = GetOrderedPlaceIds(path);
 
   free(from);
-  HashTableDestroy(pathLookup, FreePathNode);
-
   return orderedPath;
 }
 
