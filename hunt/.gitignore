@@ -1,0 +1,4 @@
+dracula
+hunter
+*.o
+/logs/*
