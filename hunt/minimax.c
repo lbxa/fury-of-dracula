@@ -16,7 +16,6 @@
 #define LIFE_FACTOR 50
 #define SCORE_FACTOR 20
 #define DISTANCE_FACTOR 100
-#define TRAP_FACTOR 30
 
 int distanceScore(int numberMoves) {
   if (numberMoves > 8) return 10;
@@ -66,12 +65,6 @@ int evaluateGameState(GameView state, Path **distanceLookup) {
   }
 
   eval += (int)(scoreFactor(GvGetScore(state)) * SCORE_FACTOR);
-
-  // Trap factor
-  int numTraps;
-  PlaceId *traps = GvGetTrapLocations(state, &numTraps);
-  free(traps);
-  eval += numTraps * TRAP_FACTOR;
   return eval;
 }
 
