@@ -11,8 +11,8 @@ for f in os.listdir("logs"):
     lines = content.split("\n")
     print(f)
     try:
-        roundNum = int(lines[-1].split(":")[-1].strip())
-        score = int(lines[-2].split(":")[-1].strip())
+        roundNum = int(lines[-2].split(":")[-1].strip())
+        score = int(lines[-3].split(":")[-1].strip())
         if "disq" in content:
             print("Disqualified")
         print("Round: ", roundNum)
@@ -24,6 +24,8 @@ for f in os.listdir("logs"):
         if score <= 0:
             draculaWin += 1
     except Exception as e:
+        print("Error")
+        print(e)
         continue
 
 print("Overall Results: ")

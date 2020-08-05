@@ -25,7 +25,7 @@ typedef struct path {
  * @param end
  * @return HashTable containing all computed distances to places (place abbrev)
  */
-HashTable GetPathLookupTableFrom(GameView gameView, Map map, Player player,
+Path* GetPathLookupTableFrom(GameView gameView, Map map, Player player,
                                  Place from, bool road, bool rail, bool boat,
                                  int round, bool resolveMoves,
                                  bool applyTrailRestrictions);

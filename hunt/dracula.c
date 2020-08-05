@@ -33,19 +33,10 @@ void DvMakeRandomMove(DraculaView hv) {
   int numMoves = 0;
   PlaceId *possibleMoves = DvGetValidMoves(hv, &numMoves);
   if (numMoves == 0) {
-    FILE *draculaLog = fopen("dracula.log", "a");
-    fprintf(draculaLog, "Move (TELEPORT) (%d): %s\n", DvGetRound(hv),
-            placeIdToName(TELEPORT));
-    fclose(draculaLog);
     registerBestPlay((char *)placeIdToAbbrev(TELEPORT), "");
   } else {
     int moveIndex = rand() % numMoves;
     int placeId = possibleMoves[moveIndex];
-    FILE *draculaLog = fopen("dracula.log", "a");
-    fprintf(draculaLog, "Move (%d): %s\n", DvGetRound(hv),
-            placeIdToName(placeId));
-    fclose(draculaLog);
-
     registerBestPlay((char *)placeIdToAbbrev(placeId),
                      "Have we nothing Toulouse?");
   };
@@ -56,7 +47,7 @@ void MakeMinimaxMove(DraculaView dv) {
   Map map = GvGetMap(state);
   PlaceId currentLocation = DvGetPlayerLocation(dv, PLAYER_DRACULA);
   int numReturnedMoves = 0;
-  int depth = 15;
+  int depth = 20;
   PlaceId *possibleMoves = GetPossibleMoves(
       state, map, PLAYER_DRACULA, currentLocation, true, false, true,
       GvGetRound(state), &numReturnedMoves, false, true);
@@ -66,7 +57,7 @@ void MakeMinimaxMove(DraculaView dv) {
   PlaceId bestMove = 0;
   int bestEval = INT_MIN;
 
-  HashTable *pathLookup = malloc(sizeof(HashTable) * NUM_REAL_PLACES);
+  Path **pathLookup = malloc(sizeof(Path*) * NUM_REAL_PLACES);
 
   for (int i = 0; i < NUM_REAL_PLACES; i++) {
     pathLookup[i] = NULL;
@@ -79,7 +70,7 @@ void MakeMinimaxMove(DraculaView dv) {
                                           PLAYER_DRACULA, GvGetTurnNumber(state));
     GvProcessMoves(newState, play, NULL);
     int eval = 0;
-    eval = minimax(newState, pathLookup, depth, INT_MIN, INT_MAX);
+    eval = MiniMax(newState, pathLookup, depth, INT_MIN, INT_MAX);
     if (eval > bestEval) {
       bestEval = eval;
       bestMove = possibleMoves[i];
@@ -91,24 +82,16 @@ void MakeMinimaxMove(DraculaView dv) {
   }
 
   // Free memory
-  for (int i = 0; i < NUM_REAL_PLACES; ++i) {
-    if (pathLookup[i] != NULL) {
-      HashTableDestroy(pathLookup[i], FreePathNode);
-    }
-  }
+//  for (int i = 0; i < NUM_REAL_PLACES; ++i) {
+//    if (pathLookup[i] != NULL) {
+//
+//    }
+//  }
 
 }
 
 void decideDraculaMove(DraculaView dv) {
   DraculaView view = (DraculaView)dv;
-  FILE *draculaLog = fopen("dracula.log", "a");
-  fprintf(draculaLog, "\nDracula Move (%d)\n", DvGetRound(dv));
-  fclose(draculaLog);
-
-  FILE *turnLog = fopen("turns.log", "a");
-  fprintf(turnLog, "\nDracula Move (%d)\n", DvGetRound(dv));
-  fclose(turnLog);
-
   srand(time(NULL));
 
   if (DvGetRound(view) == 0) {
