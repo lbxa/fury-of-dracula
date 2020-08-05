@@ -1,4 +1,0 @@
-script:
-  - cd view
-  - make
-  - bash ./run_tests.sh
