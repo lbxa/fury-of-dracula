@@ -48,14 +48,19 @@ void decideHunterMove(HunterView hv) {
    * If known vampire location go to it
    * hunter stay in position as possible move
    */
-
   int player = HvGetPlayer(hv);
-  if (HvGetRound(hv) == 0) {
+  PlaceId playerLocation = HvGetPlayerLocation(hv, player);
+  int currentRound = HvGetRound(hv);
+  if (currentRound == 0) {
     HFirst(player);
   } else {
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
-    if (lastKnown != NOWHERE && HvGetRound(hv) - lastKnownRound <= 3) {
+
+    if (lastKnown == playerLocation && currentRound - lastKnownRound <= 1) {
+      // Stay at current as dracula is there
+      registerBestPlay(placeIdToAbbrev(playerLocation), "132");
+    } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 3) {
       int pathLength = 0;
       PlaceId* path = HvGetShortestPathTo(hv, player, lastKnown, &pathLength);
       if (pathLength > 0 && placeIsReal(path[0])) {

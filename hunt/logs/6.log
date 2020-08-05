@@ -1,0 +1,1224 @@
+[0;36mCreated a temp directory '/tmp/tmp.lXoor8lMwm' for checking your submission[0m
+[0;36mCopying your files into '/tmp/tmp.lXoor8lMwm'[0m
+[0;36mChecking that your submission includes all the required files[0m
+[0;36mChecking that your submission does NOT include files that shouldn't be modified[0m
+[0;36mCopying our versions of files that shouldn't be modified into '/tmp/tmp.lXoor8lMwm'[0m
+[0;36mCopying in the remaining files that you weren't required to modify or submit[0m
+[0;36mCheck your Makefile for 'LIBS'[0m
+[0;36mChecking that your code compiles[0m
+gcc -Wall -Werror -O3   -c -o dracula.o dracula.c
+gcc -Wall -Werror -O3 -DI_AM_DRACULA -c player.c -o playerDracula.o
+gcc -Wall -Werror -O3   -c -o DraculaView.o DraculaView.c
+gcc -Wall -Werror -O3   -c -o GameView.o GameView.c
+gcc -Wall -Werror -O3   -c -o Map.o Map.c
+gcc -Wall -Werror -O3   -c -o Places.o Places.c
+gcc -Wall -Werror -O3   -c -o PathFinding.o PathFinding.c
+gcc -Wall -Werror -O3   -c -o BinaryHeap.o BinaryHeap.c
+gcc -Wall -Werror -O3   -c -o HashTable.o HashTable.c
+gcc -Wall -Werror -O3   -c -o Queue.o Queue.c
+gcc -Wall -Werror -O3   -c -o Players.o Players.c
+gcc -Wall -Werror -O3   -c -o Utilities.o Utilities.c
+gcc -Wall -Werror -O3   -c -o minimax.o minimax.c
+gcc   dracula.o playerDracula.o DraculaView.o GameView.o Map.o Places.o PathFinding.o BinaryHeap.o HashTable.o Queue.o Players.o Utilities.o minimax.o /usr/lib/x86_64-linux-gnu/libm.so   -o dracula
+gcc -Wall -Werror -O3   -c -o hunter.o hunter.c
+gcc -Wall -Werror -O3 -c player.c -o playerHunter.o
+gcc -Wall -Werror -O3   -c -o HunterView.o HunterView.c
+gcc   hunter.o playerHunter.o HunterView.o GameView.o Map.o Places.o PathFinding.o BinaryHeap.o HashTable.o Queue.o Players.o Utilities.o minimax.o /usr/lib/x86_64-linux-gnu/libm.so   -o hunter
+[0;32mCompilation succeeded![0m
+
+[0;32mDryrun succeeded![0m
+gcc -Wall -Werror -O3   -c -o dracula.o dracula.c
+gcc -Wall -Werror -O3 -DI_AM_DRACULA -c player.c -o playerDracula.o
+gcc -Wall -Werror -O3   -c -o DraculaView.o DraculaView.c
+gcc -Wall -Werror -O3   -c -o GameView.o GameView.c
+gcc -Wall -Werror -O3   -c -o Map.o Map.c
+gcc -Wall -Werror -O3   -c -o Places.o Places.c
+gcc -Wall -Werror -O3   -c -o PathFinding.o PathFinding.c
+gcc -Wall -Werror -O3   -c -o BinaryHeap.o BinaryHeap.c
+gcc -Wall -Werror -O3   -c -o HashTable.o HashTable.c
+gcc -Wall -Werror -O3   -c -o Queue.o Queue.c
+gcc -Wall -Werror -O3   -c -o Players.o Players.c
+gcc -Wall -Werror -O3   -c -o Utilities.o Utilities.c
+gcc -Wall -Werror -O3   -c -o minimax.o minimax.c
+gcc   dracula.o playerDracula.o DraculaView.o GameView.o Map.o Places.o PathFinding.o BinaryHeap.o HashTable.o Queue.o Players.o Utilities.o minimax.o /usr/lib/x86_64-linux-gnu/libm.so /usr/lib/x86_64-linux-gnu/libdl.so /usr/lib/x86_64-linux-gnu/libjansson.so   -o dracula
+gcc -Wall -Werror -O3   -c -o hunter.o hunter.c
+gcc -Wall -Werror -O3 -c player.c -o playerHunter.o
+gcc -Wall -Werror -O3   -c -o HunterView.o HunterView.c
+gcc   hunter.o playerHunter.o HunterView.o GameView.o Map.o Places.o PathFinding.o BinaryHeap.o HashTable.o Queue.o Players.o Utilities.o minimax.o /usr/lib/x86_64-linux-gnu/libm.so /usr/lib/x86_64-linux-gnu/libdl.so /usr/lib/x86_64-linux-gnu/libjansson.so   -o hunter
+   The FURY of DRACULA   
+          _..._          
+        .'     '.        
+       ; __   __ ;       
+       |/  \ /  \|       
+     |\| -- ' -- |/|     
+     |(| \o| |o/ |)|     
+     _\|    U    |/_     
+  .-'  | ,.___., |  '-.  
+  \    ;  V'-'V  ;    /  
+   `\   \       /   /`   
+     `\  '-...-'  /`     
+       `\  / \  /`       
+         `\\_//`         
+...........................
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": ""
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 53,
+  "move": "SZ",
+  "message": "132"
+}
+> Game score: 366
+> Moving from: undefined
+> Life Points: 9
+> Player 0 made move:
+> +++
+  timer: 53
+  move: SZ
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "LO",
+  "message": "132",
+  "timer": 53
+}
+> Game score: 366
+> Moving from: undefined
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: LO
+  message: 132
+  timer: 53
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "SR",
+  "timer": 55
+}
+> Game score: 366
+> Moving from: undefined
+> Life Points: 9
+> Player 2 made move:
+> +++
+  message: 132
+  move: SR
+  timer: 55
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "ZU",
+  "timer": 49
+}
+> Game score: 366
+> Moving from: undefined
+> Life Points: 9
+> Player 3 made move:
+> +++
+  message: 132
+  move: ZU
+  timer: 49
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "BS",
+  "timer": 167,
+  "message": "Have we nothing Toulouse?"
+}
+> Game score: 366
+> Moving from: undefined
+> Blood Points: 40
+> Player 4 made move:
+> +++
+  move: BS
+  timer: 167
+  message: Have we nothing Toulouse?
+> ---
+> End of Round:  0
+> Starting Round:  1
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "ZA",
+  "timer": 58,
+  "message": "132?"
+}
+> Game score: 365
+> Moving from: SZ
+> Life Points: 9
+> Player 0 made move:
+> +++
+  move: ZA
+  timer: 58
+  message: 132?
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "ED",
+  "message": "132?",
+  "timer": 61
+}
+> Game score: 365
+> Moving from: LO
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: ED
+  message: 132?
+  timer: 61
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 59,
+  "move": "MR",
+  "message": "132?"
+}
+> Game score: 365
+> Moving from: SR
+> Life Points: 9
+> Player 2 made move:
+> +++
+  timer: 59
+  move: MR
+  message: 132?
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "MU",
+  "message": "132?",
+  "timer": 55
+}
+> Game score: 365
+> Moving from: ZU
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: MU
+  message: 132?
+  timer: 55
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU...."
+==============================================================
+Program Output (123): Evaluating -> Varna
+Evaluating -> Ionian Sea
+Evaluating -> Constanta
+Evaluating -> Double Back 1
+Turn time taken: 0.084632
+
+==============================================================
+Move:  {
+  "move": "VR",
+  "message": "",
+  "timer": 85892
+}
+> Game score: 365
+> Moving from: BS
+> Blood Points: 38
+> Legal Drac moves: CN VR IO D1
+> Player 4 made move:
+> +++
+  move: VR
+  message: 
+  timer: 85892
+> ---
+> End of Round:  1
+> Starting Round:  2
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SJ",
+  "message": "132?",
+  "timer": 69
+}
+> Game score: 364
+> Moving from: ZA
+> Life Points: 9
+> Player 0 made move:
+> +++
+  move: SJ
+  message: 132?
+  timer: 69
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "LO",
+  "message": "132?",
+  "timer": 56
+}
+> Game score: 364
+> Moving from: ED
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: LO
+  message: 132?
+  timer: 56
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "MR",
+  "message": "132?",
+  "timer": 56
+}
+> Game score: 364
+> Moving from: MR
+> Life Points: 9
+> Player 2 made move:
+> +++
+  move: MR
+  message: 132?
+  timer: 56
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "MU",
+  "message": "132?",
+  "timer": 60
+}
+> Game score: 364
+> Moving from: MU
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: MU
+  message: 132?
+  timer: 60
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU...."
+==============================================================
+Program Output (117): Evaluating -> Hide
+Evaluating -> Sofia
+Evaluating -> Constanta
+Evaluating -> Double Back 1
+Turn time taken: 0.081118
+
+==============================================================
+Move:  {
+  "move": "HI",
+  "message": "",
+  "timer": 81713
+}
+> Game score: 364
+> Moving from: VR
+> Blood Points: 38
+> Legal Drac moves: CN SO D1 D2 HI
+> Player 4 made move:
+> +++
+  move: HI
+  message: 
+  timer: 81713
+> ---
+> End of Round:  2
+> Starting Round:  3
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 68,
+  "message": "132?",
+  "move": "VA"
+}
+> Game score: 363
+> Moving from: SJ
+> Life Points: 9
+> Player 0 made move:
+> +++
+  timer: 68
+  message: 132?
+  move: VA
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SW",
+  "message": "132?",
+  "timer": 63
+}
+> Game score: 363
+> Moving from: LO
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: SW
+  message: 132?
+  timer: 63
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "MI",
+  "message": "132?",
+  "timer": 72
+}
+> Game score: 363
+> Moving from: MR
+> Life Points: 9
+> Player 2 made move:
+> +++
+  move: MI
+  message: 132?
+  timer: 72
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "VI",
+  "message": "132?",
+  "timer": 60
+}
+> Game score: 363
+> Moving from: MU
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: VI
+  message: 132?
+  timer: 60
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI...."
+==============================================================
+Program Output (126): Evaluating -> Sofia
+Evaluating -> Constanta
+Evaluating -> Double Back 1
+Evaluating -> Double Back 2
+Turn time taken: 0.088433
+
+==============================================================
+Move:  {
+  "timer": 89592,
+  "move": "SO",
+  "message": ""
+}
+> Game score: 363
+> Moving from: VR
+> Blood Points: 38
+> Legal Drac moves: CN SO D1 D2 D3
+> Player 4 made move:
+> +++
+  timer: 89592
+  move: SO
+  message: 
+> ---
+> End of Round:  3
+> Starting Round:  4
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DC?T..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SO",
+  "message": "132?",
+  "timer": 63
+}
+> Game score: 362
+> Moving from: VA
+> Life Points: 9
+> Player 0 made move:
+> +++
+  move: SO
+  message: 132?
+  timer: 63
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "IR",
+  "message": "132",
+  "timer": 835
+}
+> Game score: 362
+> Moving from: SW
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: IR
+  message: 132
+  timer: 835
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "VE",
+  "timer": 699
+}
+> Game score: 362
+> Moving from: MI
+> Life Points: 9
+> Player 2 made move:
+> +++
+  message: 132
+  move: VE
+  timer: 699
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "BC",
+  "message": "132",
+  "timer": 621
+}
+> Game score: 362
+> Moving from: VI
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: BC
+  message: 132
+  timer: 621
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC...."
+==============================================================
+Program Output (168): Evaluating -> Valona
+Evaluating -> Sarajevo
+Evaluating -> Salonica
+Evaluating -> Bucharest
+Evaluating -> Belgrade
+Evaluating -> Double Back 1
+Turn time taken: 0.135240
+
+==============================================================
+Move:  {
+  "move": "VA",
+  "timer": 137445,
+  "message": ""
+}
+> Game score: 362
+> Moving from: SO
+> Blood Points: 28
+> Legal Drac moves: BE BC SA SJ VA D1 D2 D3
+> Player 4 made move:
+> +++
+  move: VA
+  timer: 137445
+  message: 
+> ---
+> End of Round:  4
+> Starting Round:  5
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 65,
+  "move": "SJ",
+  "message": "132?"
+}
+> Game score: 361
+> Moving from: SO
+> Life Points: 3
+> Player 0 made move:
+> +++
+  timer: 65
+  move: SJ
+  message: 132?
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "AO",
+  "timer": 593,
+  "message": "132"
+}
+> Game score: 361
+> Moving from: IR
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: AO
+  timer: 593
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SZ",
+  "message": "132",
+  "timer": 618
+}
+> Game score: 361
+> Moving from: VE
+> Life Points: 9
+> Player 2 made move:
+> +++
+  move: SZ
+  message: 132
+  timer: 618
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "SO",
+  "timer": 667
+}
+> Game score: 361
+> Moving from: BC
+> Life Points: 9
+> Player 3 made move:
+> +++
+  message: 132
+  move: SO
+  timer: 667
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO...."
+==============================================================
+Program Output (146): Evaluating -> Ionian Sea
+Evaluating -> Sarajevo
+Evaluating -> Salonica
+Evaluating -> Athens
+Evaluating -> Double Back 1
+Turn time taken: 0.102157
+
+==============================================================
+Move:  {
+  "message": "",
+  "move": "SA",
+  "timer": 102850
+}
+> Game score: 361
+> Moving from: VA
+> Blood Points: 28
+> Legal Drac moves: AT SA SJ IO D1 D2
+> Player 4 made move:
+> +++
+  message: 
+  move: SA
+  timer: 102850
+> ---
+> End of Round:  5
+> Starting Round:  6
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DC?T..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SO",
+  "timer": 544,
+  "message": "132"
+}
+> Game score: 360
+> Moving from: SJ
+> Life Points: 3
+> Player 0 made move:
+> +++
+  move: SO
+  timer: 544
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DC?T... GSO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 484,
+  "move": "MS",
+  "message": "132"
+}
+> Game score: 360
+> Moving from: AO
+> Life Points: 9
+> Player 1 made move:
+> +++
+  timer: 484
+  move: MS
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DC?T... GSO.... SMS...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "BE",
+  "timer": 570,
+  "message": "132"
+}
+> Game score: 360
+> Moving from: SZ
+> Life Points: 9
+> Player 2 made move:
+> +++
+  move: BE
+  timer: 570
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DC?T... GSO.... SMS.... HBE...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SJ",
+  "message": "132?",
+  "timer": 72
+}
+> Game score: 360
+> Moving from: SO
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: SJ
+  message: 132?
+  timer: 72
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ...."
+==============================================================
+Program Output (79): Evaluating -> Ionian Sea
+Evaluating -> Double Back 1
+Turn time taken: 0.057513
+
+==============================================================
+Move:  {
+  "move": "IO",
+  "message": "",
+  "timer": 57880
+}
+> Game score: 360
+> Moving from: SA
+> Blood Points: 28
+> Legal Drac moves: IO D1 D2 D3
+> Player 4 made move:
+> +++
+  move: IO
+  message: 
+  timer: 57880
+> ---
+> End of Round:  6
+> Starting Round:  7
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DC?T... GSO.... SMS.... HBE.... MSJ.... DS?...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 76,
+  "move": "SA",
+  "message": "132?"
+}
+> Game score: 359
+> Moving from: SO
+> Life Points: 3
+> Player 0 made move:
+> +++
+  timer: 76
+  move: SA
+  message: 132?
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "TS",
+  "message": "132",
+  "timer": 612
+}
+> Game score: 359
+> Moving from: MS
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: TS
+  message: 132
+  timer: 612
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "timer": 466,
+  "move": "SO",
+  "message": "132"
+}
+> Game score: 359
+> Moving from: BE
+> Life Points: 9
+> Player 2 made move:
+> +++
+  timer: 466
+  move: SO
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DC?T... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SO",
+  "message": "132",
+  "timer": 719
+}
+> Game score: 359
+> Moving from: SJ
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: SO
+  message: 132
+  timer: 719
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DIO.... GSAT... STS.... HSO.... MSO...."
+==============================================================
+Program Output (155): Evaluating -> Tyrrhenian Sea
+Evaluating -> Black Sea
+Evaluating -> Athens
+Evaluating -> Adriatic Sea
+Evaluating -> Double Back 1
+Turn time taken: 0.069985
+
+==============================================================
+Move:  {
+  "move": "AT",
+  "message": "",
+  "timer": 70919
+}
+> Game score: 359
+> Moving from: IO
+> Blood Points: 26
+> Legal Drac moves: AT TS AS BS D1 D2 D3
+> Player 4 made move:
+> +++
+  move: AT
+  message: 
+  timer: 70919
+> ---
+> End of Round:  7
+> Starting Round:  8
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DC?T.M."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SA",
+  "timer": 111,
+  "message": "132?"
+}
+> Game score: 358
+> Moving from: SA
+> Life Points: 1
+> Player 0 made move:
+> +++
+  move: SA
+  timer: 111
+  message: 132?
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DC?T.M. GSA...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "IO",
+  "timer": 556
+}
+> Game score: 358
+> Moving from: TS
+> Life Points: 9
+> Player 1 made move:
+> +++
+  message: 132
+  move: IO
+  timer: 556
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DC?T.M. GSA.... SIO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SA",
+  "timer": 884,
+  "message": "132"
+}
+> Game score: 358
+> Moving from: SO
+> Life Points: 9
+> Player 2 made move:
+> +++
+  move: SA
+  timer: 884
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DC?T.M. GSA.... SIO.... HSA...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "SA",
+  "message": "132",
+  "timer": 601
+}
+> Game score: 358
+> Moving from: SO
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: SA
+  message: 132
+  timer: 601
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DIO.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA...."
+==============================================================
+Program Output (73): Evaluating -> Hide
+Evaluating -> Double Back 1
+Turn time taken: 0.035909
+
+==============================================================
+Move:  {
+  "move": "HI",
+  "timer": 36305,
+  "message": ""
+}
+> Game score: 358
+> Moving from: AT
+> Blood Points: 26
+> Legal Drac moves: D1 D2 D4 HI
+> Player 4 made move:
+> +++
+  move: HI
+  timer: 36305
+  message: 
+> ---
+> End of Round:  8
+> Starting Round:  9
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DC?T.M. GSA.... SIO.... HSA.... MSA.... DC?T.M."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132?",
+  "move": "SA",
+  "timer": 80
+}
+> Game score: 357
+> Moving from: SA
+> Life Points: 4
+> Player 0 made move:
+> +++
+  message: 132?
+  move: SA
+  timer: 80
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DC?T.M. GSA.... SIO.... HSA.... MSA.... DC?T.M. GSA...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "AT",
+  "timer": 71,
+  "message": "132?"
+}
+> Game score: 357
+> Moving from: IO
+> Life Points: 9
+> Player 1 made move:
+> +++
+  move: AT
+  timer: 71
+  message: 132?
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DC?T... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "VA",
+  "timer": 597
+}
+> Game score: 357
+> Moving from: SA
+> Life Points: 9
+> Player 2 made move:
+> +++
+  message: 132
+  move: VA
+  timer: 597
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "IO",
+  "message": "132",
+  "timer": 584
+}
+> Game score: 357
+> Moving from: SA
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: IO
+  message: 132
+  timer: 584
+> ---
+--------------------------------------------------------------------------
+> Running player 4... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DIO.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT... MIO...."
+==============================================================
+Program Output (82): Evaluating -> Double Back 1
+Evaluating -> Double Back 2
+Turn time taken: 0.016795
+
+==============================================================
+Move:  {
+  "move": "D1",
+  "message": "",
+  "timer": 17061
+}
+> Game score: 357
+> Moving from: AT
+> Blood Points: 16
+> Legal Drac moves: D1 D2 D3 D5
+> Player 4 made move:
+> +++
+  move: D1
+  message: 
+  timer: 17061
+> ---
+> End of Round:  9
+> Starting Round:  10
+--------------------------------------------------------------------------
+> Running player 0... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT... MIO.... DD1T..."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "IO",
+  "timer": 943,
+  "message": "132"
+}
+> Game score: 356
+> Moving from: SA
+> Life Points: 7
+> Player 0 made move:
+> +++
+  move: IO
+  timer: 943
+  message: 132
+> ---
+--------------------------------------------------------------------------
+> Running player 1... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT... MIO.... DD1T... GIO...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "VA",
+  "message": "132?",
+  "timer": 73
+}
+> Game score: 356
+> Moving from: AT
+> Life Points: 1
+> Player 1 made move:
+> +++
+  move: VA
+  message: 132?
+  timer: 73
+> ---
+--------------------------------------------------------------------------
+> Running player 2... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT... MIO.... DD1T... GIO.... SVA...."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "message": "132",
+  "move": "AT",
+  "timer": 522
+}
+> Game score: 356
+> Moving from: VA
+> Life Points: 7
+> Player 2 made move:
+> +++
+  message: 132
+  move: AT
+  timer: 522
+> ---
+--------------------------------------------------------------------------
+> Running player 3... 
+Running with input: "past_plays": "GSZ.... SLO.... HSR.... MZU.... DS?.... GZA.... SED.... HMR.... MMU.... DC?T... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DS?.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT... MIO.... DD1T... GIO.... SVA.... HATTD.."
+==============================================================
+Program Output (0): 
+==============================================================
+Move:  {
+  "move": "AT",
+  "message": "132",
+  "timer": 561
+}
+> Game score: 356
+> Moving from: IO
+> Life Points: 9
+> Player 3 made move:
+> +++
+  move: AT
+  message: 132
+  timer: 561
+> ---
+--------------------------------------------------------------------------
+> End of game: 
+> +++
+  score: 356
+  revealedPastPlays: GSZ.... SLO.... HSR.... MZU.... DBS.... GZA.... SED.... HMR.... MMU.... DVRT... GSJ.... SLO.... HMR.... MMU.... DHIT... GVA.... SSW.... HMI.... MVI.... DSOT... GSOTD.. SIR.... HVE.... MBC.... DVAT... GSJ.... SAO.... HSZ.... MSO.... DSAT... GSO.... SMS.... HBE.... MSJ.... DIO.... GSAT... STS.... HSO.... MSO.... DATT.M. GSA.... SIO.... HSA.... MSA.... DHIT.M. GSA.... SATTTD. HVAT... MIO.... DD1T... GIO.... SVA.... HATTD.. MATD...
+  messages: ["132","132","132","132","Have we nothing Toulouse?","132?","132?","132?","132?","","132?","132?","132?","132?","","132?","132?","132?","132?","","132?","132","132","132","","132?","132","132","132","","132","132","132","132?","","132?","132","132","132","","132?","132","132","132","","132?","132?","132","132","","132","132?","132","132"]
+> ---
+> Game Over
+356
+10

@@ -8,17 +8,22 @@ draculaWin = 0
 for f in os.listdir("logs"):
     log = open(os.path.join("logs", f), "r")
     lines = log.readlines()
-    roundNum = int(lines[-1].split(":")[-1].strip())
-    score = int(lines[-2].split(":")[-1].strip())
     print(f)
-    print("Round: ", roundNum)
-    print("Score: ", score)
-    print()
-    roundsTotal += roundNum
-    scoresTotal += score
-    numGames += 1
-    if score <= 0:
-        draculaWin += 1
+    try:
+        roundNum = int(lines[-1].split(":")[-1].strip())
+        score = int(lines[-2].split(":")[-1].strip())
+        if "disq" in log.read():
+            print("Disqualified")
+        print("Round: ", roundNum)
+        print("Score: ", score)
+        print()
+        roundsTotal += roundNum
+        scoresTotal += score
+        numGames += 1
+        if score <= 0:
+            draculaWin += 1
+    except Exception as e:
+        continue
 
 print("Overall Results: ")
 print("Dracula Won: {} games".format(draculaWin))

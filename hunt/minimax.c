@@ -13,12 +13,15 @@
 #include "PathFinding.h"
 #include "Utilities.h"
 
-#define LIFE_FACTOR 10
-#define SCORE_FACTOR 2
-#define DISTANCE_FACTOR 4
+#define LIFE_FACTOR 100
+#define SCORE_FACTOR 20
+#define DISTANCE_FACTOR 60
+#define TRAP_FACTOR 30
 
 int distanceScore(int numberMoves) {
-  return (int)log(numberMoves == 0 ? 0.00001f : (float)numberMoves);
+  if (numberMoves > 8) return 1;
+//  return (int)(2 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 4);
+  return (int)(23 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 74);
 }
 
 int lifePointScore(int hunterLife, int draculaLife) {
@@ -27,13 +30,16 @@ int lifePointScore(int hunterLife, int draculaLife) {
   return draculaLife / hunterLife;
 }
 
-int scoreFactor(int score) { return 1 - (score / GAME_START_SCORE); }
+double scoreFactor(int score) {
+  return 1.0f - ((double)score / (double)GAME_START_SCORE);
+}
 
 int evaluateGameState(GameView state, HashTable *distanceLookup) {
   int eval = 0;
   Map map = GvGetMap(state);
   int round = GvGetRound(state);
   // Loop through all hunters
+  int distance = 0;
   for (int player = 0; player < PLAYER_DRACULA; ++player) {
     PlaceId draculaLocation = GvGetPlayerLocation(state, PLAYER_DRACULA);
     PlaceId hunterLocation = GvGetPlayerLocation(state, player);
@@ -48,13 +54,16 @@ int evaluateGameState(GameView state, HashTable *distanceLookup) {
         pathLookup = distanceLookup[hunterLocation];
       }
       Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(hunterLocation));
-      eval += distanceScore(path->distance) * DISTANCE_FACTOR;
+      distance += distanceScore(path->distance) * DISTANCE_FACTOR;
     }
-    eval += lifePointScore(GvGetHealth(state, player),
-                           GvGetHealth(state, PLAYER_DRACULA)) *
-            LIFE_FACTOR;
   }
-  eval += scoreFactor(GvGetScore(state)) * SCORE_FACTOR;
+  eval += GvGetHealth(state, PLAYER_DRACULA) * LIFE_FACTOR;
+  eval += (int) (scoreFactor(GvGetScore(state)) * SCORE_FACTOR);
+
+  // Trap factor
+  int numTraps;
+  GvGetTrapLocations(state, &numTraps);
+  eval += numTraps * TRAP_FACTOR;
   return eval;
 }
 
