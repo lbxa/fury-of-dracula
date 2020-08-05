@@ -22,7 +22,7 @@
 #include "GameView.h"
 #include "PathFinding.h"
 #include "Utilities.h"
-#include "minimax.h"
+// #include "minimax.h"
 
 void DvMakeFirstMove(DraculaView hv) {
 //  int place = rand() % 23;
@@ -97,6 +97,7 @@ void decideDraculaMove(DraculaView dv) {
   if (DvGetRound(view) == 0) {
     DvMakeFirstMove(view);
   } else {
+    DvMakeRandomMove(view);
     //    if (view) DvMakeRandomMove(view);
     clock_t start;
     start = clock();

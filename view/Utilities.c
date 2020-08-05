@@ -94,6 +94,7 @@ char *GetPastPlayStringForMove(GameView state, char *newPlay,
     playStr[1] = newPlay[0];
     playStr[2] = newPlay[1];
     PlayerDetails player = GetPlayerDetailsArray(state)[currentPlayer];
+<<<<<<< HEAD
     PlaceId playerLocation =
         ResolveLocation(state, player, placeAbbrevToId(newPlay));
     if (currentPlayer == PLAYER_DRACULA) {
@@ -101,6 +102,10 @@ char *GetPastPlayStringForMove(GameView state, char *newPlay,
     } else {
       GameUtilGetEncounterStr(state, currentPlayer, playerLocation, playStr);
     }
+=======
+    // PlaceId playerLocation = ResolveLocation(state, player, placeAbbrevToId(newPlay));
+    getEncounterStr(state, currentPlayer, player->lastResolvedLocation, playStr);
+>>>>>>> 1191eba3817e7c5758b881f4d9454feda305af75
   } else {
     // Stay at location
     PlayerDetails player = GetPlayerDetailsArray(state)[currentPlayer];
