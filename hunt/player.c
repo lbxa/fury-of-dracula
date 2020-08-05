@@ -33,6 +33,9 @@
 #include <string.h>
 
 #include "Game.h"
+
+#define I_AM_DRACULA
+
 #ifdef I_AM_DRACULA
 # include "dracula.h"
 # include "DraculaView.h"
@@ -60,8 +63,8 @@ typedef DraculaView View;
 # define decideMove decideDraculaMove
 # define ViewFree DvFree
 
-# define xPastPlays "GZA.... SED.... HZU.... MZU...."
-# define xMsgs { "", "", "", "" }
+# define xPastPlays "GSZ.... SLO.... HSR.... MZU.... DCO.V.. GJM.... SEC.... HBO.... MMU...."
+# define xMsgs { "", "", "", "", "", "", "", "", "" }
 
 #else
 
@@ -85,13 +88,15 @@ int main(void)
 	decideMove(state);
 	ViewFree(state);
 
+        printf("%s\n", xPastPlays);
+
 	printf("Move: %s, Message: %s\n", latestPlay, latestMessage);
 	return EXIT_SUCCESS;
 }
 
 // Saves characters from play (and appends a terminator)
 // and saves characters from message (and appends a terminator)
-void registerBestPlay(const char *play, Message message)
+void registerBestPlay(char *play, Message message)
 {
 	strncpy(latestPlay, play, MOVE_SIZE - 1);
 	latestPlay[MOVE_SIZE - 1] = '\0';

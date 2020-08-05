@@ -423,7 +423,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // OUR own interface functions
 // Eric | Lucas | Stephen | Debbie - (20T2)
 
-Map GetMap(GameView gameView) {
+Map GvGetMap(GameView gameView) {
   assert(gameView != NULL);
   return gameView->map;
 }
@@ -443,10 +443,6 @@ PlaceId GvGetExpiringTrap(GameView gameView) {
 }
 
 bool GvIsVampireMaturing(GameView gameView) {
-  FILE *draculaLog = fopen("dracula.log", "a");
-  fprintf(draculaLog, "Round Placed (%d)\n", gameView->roundVampirePlaced);
-  fprintf(draculaLog, "GvIsVampireMaturing (%d)\n", (gameView->turnNumber / NUM_PLAYERS) - gameView->roundVampirePlaced);
-  fclose(draculaLog);
   if (gameView->roundVampirePlaced == -1) return false;
   return ((gameView->turnNumber / NUM_PLAYERS) - gameView->roundVampirePlaced == TRAIL_SIZE);
 }
@@ -457,7 +453,7 @@ GameView GvClone(GameView state) {
   clone->roundVampirePlaced = state->roundVampirePlaced;
   clone->vampireLocation = state->vampireLocation;
   clone->turnNumber = state->turnNumber;
-  clone->map = state->map;
+  clone->map = MapNew();
   memcpy(clone->trapLocations, state->trapLocations, 6);
 
   for (int i = 0; i < NUM_PLAYERS; i++) {

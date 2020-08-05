@@ -1,6 +1,5 @@
 #!/bin/bash
-
-blacklist=(Game.h Places.c Places.h Map.c Map.h)
+blacklist=(Game.h Places.c Places.h Map.c Map.h testDraculaView.c testHunterView.c testGameView.c testUtils.c testUtils.h player.c dracula.h hunter.h)
 
 files=(Makefile)
 

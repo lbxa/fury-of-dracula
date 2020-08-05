@@ -270,7 +270,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
  * @param gameView
  * @return
  */
-Map GetMap(GameView gameView);
+Map GvGetMap(GameView gameView);
 
 /**
  * Gets array of player detail structs. Another simple 'getter' function

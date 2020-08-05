@@ -7,17 +7,21 @@
 #include <limits.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 #include "GameView.h"
 #include "PathFinding.h"
 #include "Utilities.h"
 
-#define LIFE_FACTOR 10
-#define SCORE_FACTOR 2
-#define DISTANCE_FACTOR 4
+#define LIFE_FACTOR 50
+#define SCORE_FACTOR 20
+#define DISTANCE_FACTOR 100
+#define TRAP_FACTOR 30
 
 int distanceScore(int numberMoves) {
-  return (int)log(numberMoves == 0 ? 0.00001f : (float)numberMoves);
+  if (numberMoves > 8) return 10;
+//    return (int)(2 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 4);
+    return (int)(23 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 55);
 }
 
 int lifePointScore(int hunterLife, int draculaLife) {
@@ -26,23 +30,48 @@ int lifePointScore(int hunterLife, int draculaLife) {
   return draculaLife / hunterLife;
 }
 
-int scoreFactor(int score) { return 1 - (score / GAME_START_SCORE); }
+double scoreFactor(int score) {
+  return 1.0f - ((double)score / (double)GAME_START_SCORE);
+}
 
-int evaluateGameState(GameView state) {
+int evaluateGameState(GameView state, Path **distanceLookup) {
   int eval = 0;
-
+  Map map = GvGetMap(state);
+  int round = GvGetRound(state);
   // Loop through all hunters
+  int smallestDistance = INT_MAX;
   for (int player = 0; player < PLAYER_DRACULA; ++player) {
     PlaceId draculaLocation = GvGetPlayerLocation(state, PLAYER_DRACULA);
+    PlaceId hunterLocation = GvGetPlayerLocation(state, player);
     if (placeIsReal(draculaLocation)) {
-      int distanceApart = 0;
-      GetShortestPathTo(state, player, draculaLocation, &distanceApart);
-      eval += distanceScore(distanceApart) * DISTANCE_FACTOR;
+      Path *pathLookup;
+      if (distanceLookup[hunterLocation] == NULL) {
+        pathLookup =
+            GetPathLookupTableFrom(state, map, player, PLACES[hunterLocation],
+                                   true, false, true, round, true, true);
+        distanceLookup[hunterLocation] = pathLookup;
+      } else {
+        pathLookup = distanceLookup[hunterLocation];
+      }
+      Path path = pathLookup[draculaLocation];
+      smallestDistance = min(smallestDistance, path->distance);
     }
-    eval += lifePointScore(GvGetHealth(state, player),
-                           GvGetHealth(state, PLAYER_DRACULA)) * LIFE_FACTOR;
   }
-  eval += scoreFactor(GvGetScore(state)) * SCORE_FACTOR;
+  eval += distanceScore(smallestDistance) * DISTANCE_FACTOR;
+  int draculaHealth = GvGetHealth(state, PLAYER_DRACULA);
+  if (draculaHealth <= 10) {
+    eval += -100 * LIFE_FACTOR;
+  } else {
+    eval += draculaHealth * LIFE_FACTOR;
+  }
+
+  eval += (int)(scoreFactor(GvGetScore(state)) * SCORE_FACTOR);
+
+  // Trap factor
+  int numTraps;
+  PlaceId *traps = GvGetTrapLocations(state, &numTraps);
+  free(traps);
+  eval += numTraps * TRAP_FACTOR;
   return eval;
 }
 
@@ -51,49 +80,73 @@ bool isGameOver(GameView gameView) {
          GvGetHealth(gameView, PLAYER_DRACULA) <= 0;
 }
 
-int minimax(GameView state, int depth, int alpha, int beta) {
-  if (depth == 0 || isGameOver(state)) return evaluateGameState(state);
+int MiniMax(GameView state, Path **distanceLookup, int depth, int alpha,
+            int beta) {
+  if (depth == 0 || isGameOver(state))
+    return evaluateGameState(state, distanceLookup);
   int turnNumber = GvGetTurnNumber(state);
   Player player = turnNumber % NUM_PLAYERS;
   bool maximisingPlayer = player == PLAYER_DRACULA;
   if (maximisingPlayer) {
     int maxEval = INT_MIN;
     int numReturnedMoves = 0;
-    Map map = GetMap(state);
+    Map map = GvGetMap(state);
     PlaceId currentLocation = GvGetPlayerLocation(state, PLAYER_DRACULA);
     PlaceId *possibleMoves =
         GetPossibleMoves(state, map, PLAYER_DRACULA, currentLocation, true,
                          false, true, 0, &numReturnedMoves, false, true);
     for (int i = 0; i < numReturnedMoves; ++i) {
       GameView newState = GvClone(state);
-      printf("Evaluating -> %s\n", placeIdToName(possibleMoves[i]));
-      char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
-                               player, turnNumber);
+      char *play = GetPastPlayStringForMove(
+          state, (char *)placeIdToAbbrev(possibleMoves[i]), player, turnNumber);
       GvProcessMoves(newState, play, NULL);
-      int eval = minimax(newState, depth - 1, alpha, beta);
+      int eval = MiniMax(newState, distanceLookup, depth - 1, alpha, beta);
       maxEval = max(maxEval, eval);
       alpha = max(alpha, eval);
+      free(play);
+      GvFree(newState);
       if (beta <= alpha) break;
     }
+    free(possibleMoves);
+
     return maxEval;
   } else {
-    int minEval = INT_MAX;
-    int numReturnedMoves = 0;
-    Map map = GetMap(state);
+//    int minEval = INT_MAX;
+//    int numReturnedMoves = 0;
+    Map map = GvGetMap(state);
     PlaceId currentLocation = GvGetPlayerLocation(state, player);
-    PlaceId *possibleMoves =
-        GetPossibleMoves(state, map, player, currentLocation, true, true, true,
-                         GvGetRound(state), &numReturnedMoves, false, false);
-    for (int i = 0; i < numReturnedMoves; ++i) {
-      GameView newState = GvClone(state);
-      char *play = GetPastPlayStringForMove(state, (char *)placeIdToAbbrev(possibleMoves[i]),
-                                            player, turnNumber);
-      GvProcessMoves(newState, play, NULL);
-      int eval = minimax(newState,depth - 1, alpha, beta);
-      minEval = min(minEval, eval);
-      alpha = min(beta, eval);
-      if (beta <= alpha) break;
+
+    char *bestMove = NULL;
+    PlaceId draculaLocation = GvGetPlayerLocation(state, PLAYER_DRACULA);
+
+    Path *pathLookup;
+    if (distanceLookup[currentLocation] == NULL) {
+      pathLookup =
+          GetPathLookupTableFrom(state, map, player, PLACES[currentLocation],
+                                 true, false, true, GvGetRound(state), true, true);
+      distanceLookup[currentLocation] = pathLookup;
+    } else {
+      pathLookup = distanceLookup[currentLocation];
     }
-    return minEval;
+    Path path = pathLookup[draculaLocation];
+    Path cur = path;
+    while (cur && cur->predecessor) {
+      cur = cur->predecessor;
+    }
+
+    if (cur == NULL) {
+      bestMove = cur->place;
+    } else {
+      bestMove = placeIdToAbbrev(currentLocation);
+    }
+
+    GameView newState = GvClone(state);
+    char *play = GetPastPlayStringForMove(state, bestMove, player, turnNumber);
+    GvProcessMoves(newState, play, NULL);
+    int eval = MiniMax(newState, distanceLookup, depth - 1, alpha, beta);
+    beta = min(beta, eval);
+    GvFree(newState);
+    free(play);
+    return eval;
   }
 }

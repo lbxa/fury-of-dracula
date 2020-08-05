@@ -4,6 +4,7 @@
 
 #include "Game.h"
 
+#include <assert.h>
 #include <math.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -68,6 +69,7 @@ void GameGetEncounterStr(PlaceId playerLoc, char *playStr) {
   for (int i = encounterIndex; i < 7; i++) {
     playStr[i] = '.';
   }
+  free(trapLocations);
 }
 
 void DraculaEncounterString(PlaceId playerLoc, char *playStr) {
@@ -99,6 +101,7 @@ void DraculaEncounterString(PlaceId playerLoc, char *playStr) {
 void addBestMoveToPastPlays() {
   char *playStr = malloc(sizeof(char) * 8);
   playStr[0] = GameGetPlayerChar(currentPlayer);
+  if (currentPlayer == PLAYER_DRACULA) assert(bestPlay != NULL);
   if (bestPlay != NULL) {
     playStr[1] = bestPlay[0];
     playStr[2] = bestPlay[1];
@@ -135,12 +138,12 @@ void addBestMoveToPastPlays() {
   }
   pastPlays[length - 1] = '\0';
   // Reset
+  free(playStr);
   bestPlay = NULL;
 }
 
 int main(void) {
-
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 1; i++) {
     pastPlays = NULL;
     messages = NULL;
     bestPlay = NULL;
@@ -155,24 +158,18 @@ int main(void) {
       printf("Plays: %s\n", pastPlays);
       currentPlayer = turnNumber % NUM_PLAYERS;
       char *move = NULL;
-      pthread_t threadId;
       if (currentPlayer == PLAYER_DRACULA) {
         DraculaView dv = DvNew(pastPlays, messages);
-        pthread_create(&threadId, NULL, (void *(*)(void *))decideDraculaMove,
-                       (void *)dv);
+        decideDraculaMove(dv);
+        free(dv);
       } else {
         HunterView hv = HvNew(pastPlays, messages);
-        pthread_create(&threadId, NULL, (void *(*)(void *))decideHunterMove,
-                       (void *)hv);
+        decideHunterMove(hv);
+        free(hv);
       }
-      time_t start = clock();
-      while ((((double)(clock() - start)) / CLOCKS_PER_SEC) <
-             ((double)TURN_LIMIT_MSECS / (currentPlayer == PLAYER_DRACULA ? 1000 : 100000))) {
-      }
-      pthread_cancel(threadId);
-
       addBestMoveToPastPlays();
       turnNumber++;
+      free(state);
       state = GvNew(pastPlays, messages);
     }
 
