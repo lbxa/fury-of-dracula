@@ -13,9 +13,9 @@
 #include "PathFinding.h"
 #include "Utilities.h"
 
-#define LIFE_FACTOR 50
-#define SCORE_FACTOR 20
-#define DISTANCE_FACTOR 100
+#define LIFE_FACTOR 56
+#define SCORE_FACTOR 99
+#define DISTANCE_FACTOR 5
 
 int distanceScore(int numberMoves) {
   if (numberMoves > 8) return 10;

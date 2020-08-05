@@ -1,3 +1,4 @@
+import json
 import random
 import numpy as np
 import os
@@ -7,41 +8,45 @@ import subprocess
 # Get Game Evaluation
 def extract_evaluation_scores():
     num_games = 0
-    rounds_total = 0
-    scoresTotal = 0
-    draculaWin = 0
+    scores_total = 0
 
     for f in os.listdir("logs"):
         log = open(os.path.join("logs", f), "r")
         content = log.read()
         lines = content.split("\n")
-        print(f)
         try:
-            roundNum = int(lines[-2].split(":")[-1].strip())
             score = int(lines[-3].split(":")[-1].strip())
-            if "disq" in content:
-                print("Disqualified")
-            print("Round: ", roundNum)
-            print("Score: ", score)
-            print()
-            rounds_total += roundNum
-            scoresTotal += score
+            scores_total += score
             num_games += 1
-            if score <= 0:
-                draculaWin += 1
         except Exception as e:
             print("Error")
             print(e)
             continue
-    return scoresTotal / num_games
+    return scores_total / num_games
 
 
 def evaluate_weight_set(weight_set):
-    life_string = "#define LIFE_FACTOR {LIFE_FACTOR}"
-    score_string = "#define SCORE_FACTOR {SCORE_FACTOR}"
-    distance_string = "#define DISTANCE_FACTOR {DISTANCE_FACTOR}"
+    life_string = "#define LIFE_FACTOR {}"
+    score_string = "#define SCORE_FACTOR {}"
+    distance_string = "#define DISTANCE_FACTOR {}"
 
     # Run evaluation using provided engine
+    os.system("cp minimax.c minimax-save.c")
+
+    os.system("sed 's/{}/{}/g' minimax_template.c > minimax.c"
+              .format(life_string, life_string.format(weight_set[0])))
+
+    os.system("sed -i 's/{}/{}/g' minimax.c"
+              .format(score_string, score_string.format(weight_set[1])))
+
+    os.system("sed -i 's/{}/{}/g' minimax.c"
+              .format(distance_string, distance_string.format(weight_set[1])))
+
+    os.system("/bin/bash ./run_simulations.sh")
+
+    os.system("mv minimax-save.c minimax.c")
+
+    return extract_evaluation_scores()
 
 ###
 
@@ -55,7 +60,6 @@ def create_starting_population(individuals, chromosome_length):
         for i in range(chromosome_length):
             p.append(random.randint(0, 100))
         population.append(p)
-    print(population)
     return np.array(population)
 
 
@@ -63,12 +67,7 @@ def calculate_fitness(population):
     # Create an array of True/False compared to reference
     scores = []
     for p in population:
-        score = 0
-        for index in range(chromosome_length):
-            if index % 2 == 0:
-                score += p[index]
-            else:
-                score += 0 - p[index]
+        score = 366 - evaluate_weight_set(p)
         scores.append(score)
     return scores
 
@@ -134,9 +133,9 @@ def randomly_mutate_population(population, mutation_probability):
 # *************************************
 
 # Set general parameters
-chromosome_length = 4  # Number of weights
-population_size = 500
-maximum_generation = 200
+chromosome_length = 3  # Number of weights
+population_size = 10
+maximum_generation = 20
 best_score_progress = []  # Tracks progress
 
 # Create reference solution
@@ -146,7 +145,7 @@ population = create_starting_population(population_size, chromosome_length)
 
 # Display best score in starting population
 scores = calculate_fitness(population)
-best_score = np.max(scores) / chromosome_length * 100
+best_score = np.max(scores)
 print('Starting best score, % target: ', best_score)
 
 # Add starting best score to progress tracker
@@ -154,6 +153,7 @@ best_score_progress.append(best_score)
 
 # Now we'll go through the generations of genetic algorithm
 for generation in range(maximum_generation):
+    print("Processing Generation: ", generation)
     # Create an empty list for new population
     new_population = []
 
@@ -176,7 +176,15 @@ for generation in range(maximum_generation):
     scores = calculate_fitness(population)
     best_score = np.max(scores) / chromosome_length * 100
     best_score_progress.append(best_score)
+    with open("train.log", "a") as f:
+        f.write("Generation {} best score: {}\n".format(generation, best_score))
+        f.write("Weight set: {}\n".format(json.dumps(population)))
+    print("Generation best score:", best_score)
+    print("Weight set:", population[0])
 
 # GA has completed required generation
 print('End best score, % target: ', best_score)
 print(population[0])
+with open("train.log", "a") as f:
+    f.write("Overall best score: {}\n".format(best_score))
+    f.write("Weight set: {}\n".format(json.dumps(population)))
