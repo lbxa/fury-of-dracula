@@ -7,12 +7,13 @@ draculaWin = 0
 
 for f in os.listdir("logs"):
     log = open(os.path.join("logs", f), "r")
-    lines = log.readlines()
+    content = log.read()
+    lines = content.split("\n")
     print(f)
     try:
         roundNum = int(lines[-1].split(":")[-1].strip())
         score = int(lines[-2].split(":")[-1].strip())
-        if "disq" in log.read():
+        if "disq" in content:
             print("Disqualified")
         print("Round: ", roundNum)
         print("Score: ", score)

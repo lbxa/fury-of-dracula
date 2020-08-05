@@ -1,6 +1,8 @@
 #!/bin/bash
 
-numSimulations=1
+numSimulations=4
+
+rm ./logs/*
 
 for i in $( eval echo {0..$numSimulations} )
 do

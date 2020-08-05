@@ -25,8 +25,8 @@
 #include "minimax.h"
 
 void DvMakeFirstMove(DraculaView hv) {
-  int place = rand() % 23;
-  registerBestPlay((char *)PLACES[place].abbrev, "Have we nothing Toulouse?");
+//  int place = rand() % 23;
+  registerBestPlay((char *)PLACES[COLOGNE].abbrev, "Have we nothing Toulouse?");
 }
 
 void DvMakeRandomMove(DraculaView hv) {
@@ -86,10 +86,17 @@ void MakeMinimaxMove(DraculaView dv) {
       printf("Best move updated: %d %s", bestMove, placeIdToName(bestMove));
       registerBestPlay(placeIdToAbbrev(bestMove), "");
     }
+    GvFree(newState);
     free(play);
   }
 
   // Free memory
+  for (int i = 0; i < NUM_REAL_PLACES; ++i) {
+    if (pathLookup[i] != NULL) {
+      HashTableDestroy(pathLookup[i], FreePathNode);
+    }
+  }
+
 }
 
 void decideDraculaMove(DraculaView dv) {
