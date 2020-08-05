@@ -1,6 +1,6 @@
 #!/bin/bash
 
-numSimulations=20
+numSimulations=1
 
 for i in $( eval echo {0..$numSimulations} )
 do
