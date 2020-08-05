@@ -47,6 +47,7 @@ void decideHunterMove(HunterView hv) {
    * predictions involving sea moves
    * If known vampire location go to it
    * hunter stay in position as possible move
+   * Research turn
    */
   int player = HvGetPlayer(hv);
   PlaceId playerLocation = HvGetPlayerLocation(hv, player);

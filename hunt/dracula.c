@@ -56,7 +56,7 @@ void MakeMinimaxMove(DraculaView dv) {
   Map map = GvGetMap(state);
   PlaceId currentLocation = DvGetPlayerLocation(dv, PLAYER_DRACULA);
   int numReturnedMoves = 0;
-  int depth = 3;
+  int depth = 15;
   PlaceId *possibleMoves = GetPossibleMoves(
       state, map, PLAYER_DRACULA, currentLocation, true, false, true,
       GvGetRound(state), &numReturnedMoves, false, true);
@@ -83,6 +83,7 @@ void MakeMinimaxMove(DraculaView dv) {
     if (eval > bestEval) {
       bestEval = eval;
       bestMove = possibleMoves[i];
+      printf("Best move updated: %d %s", bestMove, placeIdToName(bestMove));
       registerBestPlay(placeIdToAbbrev(bestMove), "");
     }
     free(play);
