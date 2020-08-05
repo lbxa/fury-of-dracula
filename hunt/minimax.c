@@ -53,7 +53,7 @@ int evaluateGameState(GameView state, HashTable *distanceLookup) {
       } else {
         pathLookup = distanceLookup[hunterLocation];
       }
-      Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(hunterLocation));
+      Path path = (Path)HashGet(pathLookup, placeIdToAbbrev(draculaLocation));
       distance += distanceScore(path->distance) * DISTANCE_FACTOR;
     }
   }
