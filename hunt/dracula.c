@@ -21,7 +21,7 @@
 #include "GameView.h"
 #include "PathFinding.h"
 #include "Utilities.h"
-// #include "minimax.h"
+#include "minimax.h"
 
 void DvMakeFirstMove(DraculaView hv) {
 //  int place = rand() % 23;
