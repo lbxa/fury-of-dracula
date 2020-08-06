@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.13)
 include_directories(${CMAKE_SOURCE_DIR})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -o3")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -o3")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm")
+
+set (CMAKE_CXX_FLAGS "-o3")
+
 project(fury_of_dracula C)
 project(fury_of_dracula_hunt C)
 project(fury_of_dracula_player_hunt C)
@@ -47,6 +50,7 @@ add_executable(fury_of_dracula_player_hunt hunt/player.c
         hunt/Utilities.c
         hunt/Places.c hunt/Players.h hunt/BinaryHeap.c hunt/BinaryHeap.h hunt/HashTable.c hunt/HashTable.h hunt/PathFinding.c hunt/PathFinding.h hunt/Queue.c hunt/Queue.h hunt/Players.c hunt/minimax.c hunt/minimax.h)
 
+#target_compile_options(fury_of_dracula_player_hunt PRIVATE -O3)
 
 find_package(Threads REQUIRED)
 if(THREADS_HAVE_PTHREAD_ARG)

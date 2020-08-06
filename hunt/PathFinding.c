@@ -108,7 +108,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
   PlaceId* locationHistory = NULL;
   bool canHide = placeIsLand(currentId);
   bool canDoubleBack = true;
-  bool onTrailLookup[NUM_REAL_PLACES] = {false};
+//  bool onTrailLookup[NUM_REAL_PLACES] = {false};
 
   // Determine whether can hide and double back based on if those moves are in
   // trail
@@ -118,7 +118,7 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
     locationHistory = GvGetLastLocations(
         gameView, PLAYER_DRACULA, TRAIL_SIZE - 1, &trailNumMoves, &canFree);
     for (int i = 0; i < trailNumMoves; ++i) {
-      onTrailLookup[trailMoves[i]] = true;
+//      onTrailLookup[trailMoves[i]] = true;
       if (trailMoves[i] == HIDE) {
         canHide = false;
       } else if (trailMoves[i] >= DOUBLE_BACK_1 &&
@@ -166,7 +166,13 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
     if (cur->p != currentId &&
         !(player == PLAYER_DRACULA && cur->p == HOSPITAL_PLACE)) {
       // Applies movement restriction if dracula
-      if (!placesAdded[cur->p] && !onTrailLookup[cur->p]) {
+      bool onTrail = false;
+      if (player == PLAYER_DRACULA) {
+        for (int i = 0; i < trailNumMoves; ++i) {
+          if (trailMoves[i] == cur->p) onTrail = true;
+        }
+      }
+      if (!placesAdded[cur->p] && !onTrail) {
         if (cur->type == ROAD && road) {
           // If can use road connections then add it
           places[(*placesCount)++] = cur->p;
@@ -194,8 +200,8 @@ PlaceId* GetPossibleMoves(GameView gameView, Map map, Player player,
       PlaceId resolved = resolvedLocations[locationCount - 1 - i];
       bool isAdjacent = resolved == currentId;
       if (!isAdjacent) {
-        for (ConnList curr = connections; curr != NULL; curr = curr->next) {
-          if (curr->p == resolved) {
+        for (ConnList curr = MapGetConnections(map, currentId); curr != NULL; curr = curr->next) {
+          if (curr->p == resolved && curr->type != RAIL) {
             isAdjacent = true;
             break;
           }
