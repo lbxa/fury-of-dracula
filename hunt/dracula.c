@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
 #include "DraculaView.h"
 #include "Game.h"
 #include "GameView.h"
