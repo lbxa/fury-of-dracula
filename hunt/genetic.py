@@ -45,8 +45,9 @@ def evaluate_weight_set(weight_set):
     os.system("/bin/bash ./run_simulations.sh")
 
     os.system("mv minimax-save.c minimax.c")
-
-    return extract_evaluation_scores()
+    score = extract_evaluation_scores()
+    print("Weight set: {} -> Score: {}".format(weight_set, score))
+    return score
 
 ###
 
@@ -66,7 +67,8 @@ def create_starting_population(individuals, chromosome_length):
 def calculate_fitness(population):
     # Create an array of True/False compared to reference
     scores = []
-    for p in population:
+    for i, p in enumerate(population):
+        print("Calculating population member:", i)
         score = 366 - evaluate_weight_set(p)
         scores.append(score)
     return scores
@@ -134,19 +136,26 @@ def randomly_mutate_population(population, mutation_probability):
 
 # Set general parameters
 chromosome_length = 3  # Number of weights
-population_size = 10
-maximum_generation = 20
-best_score_progress = []  # Tracks progress
+population_size = 8
+maximum_generation = 40
+best_score_progress = []  # Tracks prpythogress
 
 # Create reference solution
 # (this is used just to illustrate GAs)
 # Create starting population
-population = create_starting_population(population_size, chromosome_length)
+# population = create_starting_population(population_size, chromosome_length)
+population = np.array([[40, 66, 40], [32, 66, 30], [40, 66, 30], [40, 66, 30], [32, 66, 40], [32, 66, 30], [32, 66, 40], [32, 66, 30]])
 
 # Display best score in starting population
 scores = calculate_fitness(population)
 best_score = np.max(scores)
-print('Starting best score, % target: ', best_score)
+best_index = np.where(scores == best_score)
+print('Starting best score: ', best_score)
+print("Best weight: {}".format(population[best_index]))
+with open("train.log", "a") as f:
+    f.write("Generation 0 best score: {}\n".format(0, best_score))
+    f.write("Weight set: {}\n".format(json.dumps(population.tolist())))
+    f.write("Best weight: {}".format(population[best_index].tolist()))
 
 # Add starting best score to progress tracker
 best_score_progress.append(best_score)
@@ -174,16 +183,21 @@ for generation in range(maximum_generation):
 
     # Score best solution, and add to tracker
     scores = calculate_fitness(population)
-    best_score = np.max(scores) / chromosome_length * 100
+    best_score = np.max(scores)
+    best_index = np.where(scores == best_score)
     best_score_progress.append(best_score)
     with open("train.log", "a") as f:
         f.write("Generation {} best score: {}\n".format(generation, best_score))
-        f.write("Weight set: {}\n".format(json.dumps(population)))
+        f.write("Weight set: {}\n".format(json.dumps(population.tolist())))
+        f.write("Best weight: {}".format(population[best_index].tolist()))
     print("Generation best score:", best_score)
-    print("Weight set:", population[0])
+    best_index = np.where(scores == best_score)
+    print("Best weight: {}".format(population[best_index]))
+    print("Weight sets:", population.tolist())
+    print("Scores:", scores)
 
 # GA has completed required generation
-print('End best score, % target: ', best_score)
+print('End best score: ', best_score)
 print(population[0])
 with open("train.log", "a") as f:
     f.write("Overall best score: {}\n".format(best_score))
