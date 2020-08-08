@@ -54,6 +54,8 @@ void decideHunterMove(HunterView hv) {
   int currentRound = HvGetRound(hv);
   if (currentRound == 0) {
     HFirst(player);
+  } else if (currentRound == 1) {
+    registerBestPlay(placeIdToAbbrev(playerLocation), "132");
   } else {
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
