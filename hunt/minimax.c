@@ -13,14 +13,38 @@
 #include "PathFinding.h"
 #include "Utilities.h"
 
-#define LIFE_FACTOR 60
+#define LIFE_FACTOR 20
 #define SCORE_FACTOR 50
-#define DISTANCE_FACTOR 60
+#define DISTANCE_FACTOR 70
 
-int distanceScore(int numberMoves) {
-  if (numberMoves > 12) return 10;
-//    return (int)(2 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 4);
-    return (int)(30 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 74);
+double distanceScore(int numberMoves, int draculaHealth) {
+  //  if (numberMoves > 12) return 2;
+  ////    return (int)(2 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves)
+  ///- 4);
+  //    return (int)(30 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves)
+  //    - 74);
+
+  double weight = 1;
+  if (draculaHealth < 10)
+    weight = 10;
+  else if (draculaHealth < 20)
+    weight = 1;
+  else if (draculaHealth > 40)
+    weight = 0.6;
+  else if (draculaHealth >= 50)
+    weight = 0.3;
+  else if (draculaHealth >= 60)
+    weight = 0.1;
+
+  if (numberMoves == 0) return -50 * weight;
+  if (numberMoves == 1) return -25 * weight;
+  if (numberMoves == 2) return -10.0f * weight;
+  if (numberMoves == 3) return -5.0f * weight;
+  if (numberMoves == 4) return -3.0f * weight;
+  if (numberMoves == 5) return -2.0f * weight;
+  if (numberMoves == 6) return 1.0f * weight;
+  if (numberMoves == 7) return 2.0f * weight;
+  return 5 * weight;
 }
 
 double scoreFactor(int score) {
@@ -34,6 +58,7 @@ int evaluateGameState(GameView state, Path **distanceLookup) {
   // Loop through all hunters
   int smallestDistance = INT_MAX;
   PlaceId draculaLocation = GvGetPlayerLocation(state, PLAYER_DRACULA);
+  int draculaHealth = GvGetHealth(state, PLAYER_DRACULA);
   for (int player = 0; player < PLAYER_DRACULA; ++player) {
     PlaceId hunterLocation = GvGetPlayerLocation(state, player);
     if (placeIsReal(draculaLocation)) {
@@ -49,18 +74,18 @@ int evaluateGameState(GameView state, Path **distanceLookup) {
       Path path = pathLookup[draculaLocation];
       smallestDistance = min(smallestDistance, path->distance);
       smallestDistance += path->distance;
-      eval += distanceScore(path->distance) * DISTANCE_FACTOR;
+      eval += distanceScore(path->distance, draculaHealth) * DISTANCE_FACTOR;
     }
   }
-  eval += distanceScore(smallestDistance) * DISTANCE_FACTOR;
-  int draculaHealth = GvGetHealth(state, PLAYER_DRACULA);
-  if (draculaHealth <= 2) {
-    eval += -10000 * LIFE_FACTOR;
-  } else if (draculaHealth <= 10) {
-    eval += -100 * LIFE_FACTOR;
-  } else {
-    eval += draculaHealth * LIFE_FACTOR;
-  }
+  eval += distanceScore(smallestDistance, draculaHealth) * DISTANCE_FACTOR;
+  eval += draculaHealth * LIFE_FACTOR;
+  //  if (draculaHealth <= 2) {
+  //    eval += -10000 * LIFE_FACTOR;
+  //  } else if (draculaHealth <= 10) {
+  //    eval += -100 * LIFE_FACTOR;
+  //  } else {
+  //    eval += draculaHealth * LIFE_FACTOR;
+  //  }
 
   eval += (int)(scoreFactor(GvGetScore(state)) * SCORE_FACTOR);
   return eval;
@@ -102,8 +127,8 @@ int MiniMax(GameView state, Path **distanceLookup, int depth, int alpha,
 
     return maxEval;
   } else {
-//    int minEval = INT_MAX;
-//    int numReturnedMoves = 0;
+    //    int minEval = INT_MAX;
+    //    int numReturnedMoves = 0;
     Map map = GvGetMap(state);
     PlaceId currentLocation = GvGetPlayerLocation(state, player);
 
@@ -112,9 +137,9 @@ int MiniMax(GameView state, Path **distanceLookup, int depth, int alpha,
 
     Path *pathLookup;
     if (distanceLookup[currentLocation] == NULL) {
-      pathLookup =
-          GetPathLookupTableFrom(state, map, player, PLACES[currentLocation],
-                                 true, false, true, GvGetRound(state), true, true);
+      pathLookup = GetPathLookupTableFrom(state, map, player,
+                                          PLACES[currentLocation], true, false,
+                                          true, GvGetRound(state), true, true);
       distanceLookup[currentLocation] = pathLookup;
     } else {
       pathLookup = distanceLookup[currentLocation];

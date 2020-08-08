@@ -1,10 +1,11 @@
 import os
+import statistics
 
 numGames = 0
 roundsTotal = 0
 scoresTotal = 0
 draculaWin = 0
-
+scores = []
 for f in os.listdir("logs"):
     log = open(os.path.join("logs", f), "r")
     content = log.read()
@@ -20,6 +21,7 @@ for f in os.listdir("logs"):
         print()
         roundsTotal += roundNum
         scoresTotal += score
+        scores.append(score)
         numGames += 1
         if score <= 0:
             draculaWin += 1
@@ -34,3 +36,4 @@ print("Hunters Won: {} games".format(numGames - draculaWin))
 print()
 print("Average rounds in games: {}".format(roundsTotal / numGames))
 print("Average score in games: {}".format(scoresTotal / numGames))
+print("Standard Score Deviation: {}".format(statistics.stdev(scores)))
