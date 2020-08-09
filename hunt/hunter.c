@@ -23,6 +23,35 @@ void HMakeRandomMove(HunterView view) {
   int numMoves = 0;
   PlaceId* possibleMoves = HvWhereCanIGo(view, &numMoves);
   PlaceId move = possibleMoves[rand() % numMoves];
+                                
+  int currentRound = HvGetRound(view);
+  if (currentRound > 4) {
+    GameView gameView = HvGetGameView(view);
+    int player = HvGetPlayer(view);
+    int numReturnedMoves = 0;
+    bool canFree = true;
+    PlaceId *moveHistory = GvGetMoveHistory(gameView, player, 
+                                &numReturnedMoves, &canFree);
+    
+    for (int i = 0; i < numMoves; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (possibleMoves[i] == moveHistory[j]) {
+                possibleMoves[i] = NOWHERE;
+            }
+        }
+    }
+    int countForwardMoves = 0;
+    PlaceId possibleForwardMoves[numMoves];
+    for (int i = 0; i < numMoves; i++) {
+        if (possibleMoves[i] != NOWHERE) {
+            possibleForwardMoves[i] = possibleMoves[i];
+            countForwardMoves++;
+        }
+    }
+    move = possibleForwardMoves[rand() % countForwardMoves];
+  }
+            
+  
   registerBestPlay((char*)placeIdToAbbrev(move), "132?");
 
   // remove resting & test for health checks
@@ -67,12 +96,11 @@ void decideHunterMove(HunterView hv) {
     // research move
     registerBestPlay(placeIdToAbbrev(playerLocation), "132");
   } else {
-    PlaceId vampireLocation = HvGetVampireLocation(hv);
     
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
 
-    if (lastKnownRound > 10) {
+    if (currentRound - lastKnownRound > 10) {
       // research turn if the last known location was only 10 rounds ago
       registerBestPlay(placeIdToAbbrev(playerLocation), PLAYER_MSG1);
     }    
@@ -90,12 +118,19 @@ void decideHunterMove(HunterView hv) {
         for (int i = 0; i < pathLength; i++) {
           if (placeIsSea(path[i]) == true) {
             // tell the spread the hunters out on the map
-            // finish this off... 
+            // finish this off...
+            
           }
 
           // if there is a vampire -- then go to it!
           if (lastKnownVampire == path[i]) {
             // send hunters toward the location of the vampire.
+            // if we're only going to the vampire if it's on the path anyway
+            // then just following the path is already the way to the vampire
+            // this code doesn't make sense
+            // beyond this you need to know if the vampire is reachable before
+            // it matures, otherwise there is no point in going to it
+                
           }
           
         }
@@ -104,15 +139,6 @@ void decideHunterMove(HunterView hv) {
       } else {
         HMakeRandomMove(hv);
       }
-    } else if (vampireLocation != NOWHERE) {
-      int pathLength = 0;
-      PlaceId *pathToVampire = HvGetShortestPathTo(hv, player, vampireLocation, &pathLength);
-      int roundsToMature = currentRound - HvGetRoundVampirePlaced(hv);
-      if (pathLength < roundsToMature && pathLength > 0 && placeIsReal(pathToVampire[0])) {
-        registerBestPlay(placeIdToAbbrev(pathToVampire[0]) "132");
-      }
-    } else {
-      HMakeRandomMove(hv);
     }
   }
 }

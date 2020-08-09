@@ -228,7 +228,3 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
 GameView HvGetGameView(HunterView view) {
   return view->gameView;
 }
-
-int HvGetRoundVampirePlaced(HunterView view) {
-  return GvGetRoundVampirePlaced(view->gameView);
-}
