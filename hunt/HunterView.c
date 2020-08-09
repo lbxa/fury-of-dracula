@@ -265,3 +265,4 @@ PlaceId *HvGetShortestPathToNoRail(HunterView hv, Player hunter, PlaceId dest,
   free(from);
   return orderedPath;
 }
+

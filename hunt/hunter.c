@@ -161,6 +161,8 @@ void decideHunterMove(HunterView hv) {
     // research move
     registerBestPlay(placeIdToAbbrev(playerLocation), "132");
   } else {
+    PlaceId vampireLocation = HvGetVampireLocation(hv);
+    
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
 
@@ -198,6 +200,13 @@ void decideHunterMove(HunterView hv) {
         }
       } else {
         HMakeRandomMove(hv);
+      }
+    } else if (vampireLocation != NOWHERE) {
+      int pathLength = 0;
+      PlaceId *pathToVampire = HvGetShortestPathTo(hv, player, vampireLocation, &pathLength);
+      int roundsToMature = currentRound - HvGetRoundVampirePlaced(hv);
+      if (pathLength < roundsToMature && pathLength > 0 && placeIsReal(pathToVampire[0])) {
+        registerBestPlay(placeIdToAbbrev(pathToVampire[0]) "132");
       }
     } else {
       HMakeRandomMove(hv);
