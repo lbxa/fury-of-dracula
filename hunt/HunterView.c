@@ -228,3 +228,36 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
 GameView HvGetGameView(HunterView view) {
   return view->gameView;
 }
+
+PlaceId *HvGetShortestPathToNoRail(HunterView hv, Player hunter, PlaceId dest,
+                             int *pathLength) {
+  Map map = GvGetMap(hv->gameView);
+  // Getting data for Place
+  *pathLength = 0;
+  PlaceId currentLocation = GvGetPlayerLocation(hv->gameView, hunter);
+  // Return nothing for start == dest
+  if (currentLocation == dest) return NULL;
+  // Allocate memory for place
+  Place *from = malloc(sizeof(struct place));
+  CheckMallocSuccess(from, "Couldn't allocate Place!\n");
+
+  int round = GvGetRound(hv->gameView);
+
+  // Create a lookup table for all paths from current location
+  Path *pathLookup =
+      GetPathLookupTableFrom(hv->gameView, map, hunter, PLACES[currentLocation],
+                             true, false, true, round, true, false);
+
+  // Get the path to the destination
+  Path path = pathLookup[dest];
+
+  // Allocate memory for the PlaceId *array that will be returned
+  // Loop through the HashNode to get the path and use charAbbrevToId to convert
+  // char *key into PlaceId Update length of the array with each node added to
+  // the path and return the full array
+  *pathLength = path->distance;
+  PlaceId *orderedPath = GetOrderedPlaceIds(path);
+
+  free(from);
+  return orderedPath;
+}
