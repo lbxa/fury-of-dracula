@@ -41,7 +41,7 @@ PlaceId PredictDracula(HunterView view, Player player,
         for (int j = 0; j < numReturnedMoves; j++) {
             currentLoc = whereCanHeGo[j];
             int pathLength = 0;
-            PlaceId *path = HvGetShortestPathTo(view, player,
+            PlaceId *path = HvGetShortestPathToNoRail(view, player,
                             currentLoc, &pathLength);
             path = path;
             if (pathLength > maxPathLength && placeIsSea(currentLoc) != true) {
@@ -162,27 +162,26 @@ void decideHunterMove(HunterView hv) {
     if (lastKnown == playerLocation && currentRound - lastKnownRound <= 1) {
       // Stay at current as dracula is there
       registerBestPlay(placeIdToAbbrev(playerLocation), "132");
-    } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 3) {
+    } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 5) {
       int pathLength = 0;
-      PlaceId* path = HvGetShortestPathTo(hv, player, lastKnown, &pathLength);
+      PlaceId predictedLocation = PredictDracula(hv, player,
+                        lastKnown, lastKnownRound);
+      PlaceId* path = HvGetShortestPathTo(hv, player, 
+                        predictedLocation, &pathLength);
       PlaceId lastKnownVampire = HvGetVampireLocation(hv);
       
       if (pathLength > 0 && placeIsReal(path[0])) {
-        // find out if Dracula went to sea (which he did a lot in the simulations)
-        for (int i = 0; i < pathLength; i++) {
-          if (placeIsSea(path[i]) == true) {
-            // tell the spread the hunters out on the map
-            // finish this off... 
-          }
-
-          // if there is a vampire -- then go to it!
-          if (lastKnownVampire == path[i]) {
-            // send hunters toward the location of the vampire.
-          }
-          
-        }
-
         registerBestPlay(placeIdToAbbrev(path[0]), "132");
+      } else  if (lastKnownVampire >= 0 && lastKnownVampire < 100) {
+        int roundVampirePlaced = HvGetRoundVampirePlaced(hv);
+        int roundsToMature = currentRound - roundVampirePlaced;
+        int lengthToVampire;
+        PlaceId *pathToVampire = HvGetShortestPathTo(hv, player, 
+                                lastKnownVampire, &lengthToVampire);
+        if (lengthToVampire < roundsToMature) {
+            registerBestPlay(placeIdToAbbrev(pathToVampire[0]), "Hunting!");
+        }
+        free(pathToVampire);
       } else {
         HMakeRandomMove(hv);
       }
