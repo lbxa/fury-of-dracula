@@ -447,6 +447,10 @@ bool GvIsVampireMaturing(GameView gameView) {
   return ((gameView->turnNumber / NUM_PLAYERS) - gameView->roundVampirePlaced == TRAIL_SIZE);
 }
 
+int GvGetRoundVampirePlaced(GameView gameView) {
+    return gameView->roundVampirePlaced;
+}
+
 GameView GvClone(GameView state) {
   GameView clone = ConstructGameView();
   clone->gameScore = state->gameScore;
