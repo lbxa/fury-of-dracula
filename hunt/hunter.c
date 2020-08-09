@@ -161,8 +161,6 @@ void decideHunterMove(HunterView hv) {
     // research move
     registerBestPlay(placeIdToAbbrev(playerLocation), "132");
   } else {
-    PlaceId vampireLocation = HvGetVampireLocation(hv);
-    
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
 
