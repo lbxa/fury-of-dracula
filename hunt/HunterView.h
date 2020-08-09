@@ -220,4 +220,6 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player, bool road,
  */
 GameView HvGetGameView(HunterView view);
 
+PlaceId *HvGetShortestPathToNoRail(HunterView hv, Player hunter, PlaceId dest,
+                             int *pathLength);
 #endif  // !defined (FOD__HUNTER_VIEW_H_)
