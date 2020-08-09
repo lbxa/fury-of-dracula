@@ -33,7 +33,7 @@ void HMakeRandomMove(HunterView view) {
     PlaceId *moveHistory = GvGetMoveHistory(gameView, player, 
                                 &numReturnedMoves, &canFree);
     
-    for (int i = 0; i < numMoves; i++) {
+    for (int i = 0; i < numMoves - 1; i++) {
         for (int j = 0; j < 3; j++) {
             if (possibleMoves[i] == moveHistory[j]) {
                 possibleMoves[i] = NOWHERE;
@@ -99,6 +99,7 @@ void decideHunterMove(HunterView hv) {
     
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
+    printf("ahsdj,as");
 
     if (currentRound - lastKnownRound > 10) {
       // research turn if the last known location was only 10 rounds ago
@@ -111,6 +112,7 @@ void decideHunterMove(HunterView hv) {
     } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 3) {
       int pathLength = 0;
       PlaceId* path = HvGetShortestPathTo(hv, player, lastKnown, &pathLength);
+      printf("2");
       PlaceId lastKnownVampire = HvGetVampireLocation(hv);
       
       if (pathLength > 0 && placeIsReal(path[0])) {
