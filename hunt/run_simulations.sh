@@ -1,6 +1,6 @@
 #!/bin/bash
 
-numSimulations=20
+numSimulations=15
 
 rm ./logs/*
 

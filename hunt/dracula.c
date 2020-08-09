@@ -25,11 +25,6 @@
 #include "Utilities.h"
 #include "minimax.h"
 
-int LocationDistanceScore(int numberMoves) {
-  if (numberMoves > 10) return 10;
-  return (int)(30 * log(numberMoves == 0 ? 0.00001f : (float)numberMoves) - 74);
-}
-
 void DvMakeFirstMove(DraculaView dv) {
   // Find best starting location
   GameView state = DvGetGameView(dv);
@@ -47,13 +42,13 @@ void DvMakeFirstMove(DraculaView dv) {
 
   for (int place = 0; place < NUM_REAL_PLACES; ++place) {
     double locationScore = 0.0f;
-    if (place == HOSPITAL_PLACE) continue;
+    if (place == HOSPITAL_PLACE || place == CASTLE_DRACULA) continue;
 
     for (int player = 0; player < PLAYER_DRACULA; ++player) {
       int numMoves = distanceLookup[player][place]->distance;
-      locationScore += LocationDistanceScore(numMoves);
+      locationScore += numMoves;
     }
-    if (placeIsSea(place)) locationScore *= 0.8;
+    if (placeIsSea(place)) locationScore *= 0.2;
     if (locationScore > bestLocationScore) {
       bestLocation = place;
       bestLocationScore = locationScore;

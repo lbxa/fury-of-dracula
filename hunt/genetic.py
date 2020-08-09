@@ -40,7 +40,7 @@ def evaluate_weight_set(weight_set):
               .format(score_string, score_string.format(weight_set[1])))
 
     os.system("sed -i 's/{}/{}/g' minimax.c"
-              .format(distance_string, distance_string.format(weight_set[1])))
+              .format(distance_string, distance_string.format(weight_set[2])))
 
     os.system("/bin/bash ./run_simulations.sh")
 
@@ -145,7 +145,7 @@ best_score_progress = []  # Tracks prpythogress
 # Create starting population
 population = create_starting_population(population_size, chromosome_length)
 # population = np.array([[40, 66, 40], [32, 66, 30], [40, 66, 30], [40, 66, 30], [32, 66, 40], [32, 66, 30], [32, 66, 40], [32, 66, 30]])
-
+# population = np.array([[45, 64, 86], [49, 96, 68], [49, 81, 87], [92, 83, 60], [45, 64, 68], [36, 64, 68], [36, 64, 68], [45, 64, 68]])
 # Display best score in starting population
 scores = calculate_fitness(population)
 best_score = np.max(scores)

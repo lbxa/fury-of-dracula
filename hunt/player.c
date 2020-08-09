@@ -34,7 +34,7 @@
 
 #include "Game.h"
 
-//#define I_AM_DRACULA
+#define I_AM_DRACULA
 
 #ifdef I_AM_DRACULA
 # include "dracula.h"
