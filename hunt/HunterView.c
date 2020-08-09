@@ -229,6 +229,10 @@ GameView HvGetGameView(HunterView view) {
   return view->gameView;
 }
 
+int HvGetRoundVampirePlaced(HunterView view) {
+  return GvGetRoundVampirePlaced(view->gameView);
+}
+
 PlaceId *HvGetShortestPathToNoRail(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength) {
   Map map = GvGetMap(hv->gameView);
