@@ -23,23 +23,27 @@
 
 PlaceId PredictDracula(HunterView view, Player player,
                         PlaceId LastKnown, int roundLastSeen) {
+    printf("1");
     PlaceId currentLocation = LastKnown;
-    PlaceId *whereCanHeGo;
     PlaceId currentLoc;
     int currentRound = HvGetRound(view);
     int roundsSinceSeen = currentRound - roundLastSeen;
+    if (roundsSinceSeen < 3) {
+        return LastKnown;
+    }
     for (int i = 0; i < roundsSinceSeen; i++) {
         GameView state = HvGetGameView(view);
         Map map = GvGetMap(state);
         int numReturnedMoves = 0;
         int maxPathLength = -1;
-        
-        whereCanHeGo = GetPossibleMoves(state, map, PLAYER_DRACULA,
+        printf("1");
+        PlaceId *whereCanHeGo = GetPossibleMoves(state, map, PLAYER_DRACULA,
                         currentLocation, true, false, true,  currentRound,
-                        &numReturnedMoves, false, false);
+                        &numReturnedMoves, true, false);
         
         for (int j = 0; j < numReturnedMoves; j++) {
             currentLoc = whereCanHeGo[j];
+            printf("2");
             int pathLength = 0;
             PlaceId *path = HvGetShortestPathToNoRail(view, player,
                             currentLoc, &pathLength);
@@ -51,7 +55,7 @@ PlaceId PredictDracula(HunterView view, Player player,
         }
         
     }
-    
+    printf("predicting");
     return currentLocation;
 }
 
@@ -154,7 +158,7 @@ void decideHunterMove(HunterView hv) {
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
 
-    if (currentRound - lastKnownRound > 10) {
+    if (currentRound - lastKnownRound > 6) {
       // research turn if the last known location was only 10 rounds ago
       registerBestPlay(placeIdToAbbrev(playerLocation), PLAYER_MSG1);
     }    
@@ -163,7 +167,9 @@ void decideHunterMove(HunterView hv) {
       // Stay at current as dracula is there
       registerBestPlay(placeIdToAbbrev(playerLocation), "132");
     } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 5) {
+      printf("1");
       int pathLength = 0;
+      printf("1");
       PlaceId predictedLocation = PredictDracula(hv, player,
                         lastKnown, lastKnownRound);
       PlaceId* path = HvGetShortestPathTo(hv, player, 
@@ -174,14 +180,16 @@ void decideHunterMove(HunterView hv) {
         registerBestPlay(placeIdToAbbrev(path[0]), "132");
       } else  if (lastKnownVampire >= 0 && lastKnownVampire < 100) {
         int roundVampirePlaced = HvGetRoundVampirePlaced(hv);
-        int roundsToMature = currentRound - roundVampirePlaced;
-        int lengthToVampire;
-        PlaceId *pathToVampire = HvGetShortestPathTo(hv, player, 
-                                lastKnownVampire, &lengthToVampire);
-        if (lengthToVampire < roundsToMature) {
-            registerBestPlay(placeIdToAbbrev(pathToVampire[0]), "Hunting!");
-        }
+        if (roundVampirePlaced >= 0) {
+            int roundsToMature = currentRound - roundVampirePlaced;
+            int lengthToVampire;
+            PlaceId *pathToVampire = HvGetShortestPathTo(hv, player, 
+                                    lastKnownVampire, &lengthToVampire);
+            if (lengthToVampire < roundsToMature) {
+                registerBestPlay(placeIdToAbbrev(pathToVampire[0]), "Hunting!");
+            }
         free(pathToVampire);
+        }
       } else {
         HMakeRandomMove(hv);
       }
