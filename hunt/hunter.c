@@ -16,8 +16,44 @@
 
 #include "Game.h"
 #include "HunterView.h"
+#include "GameView.h"
+#include "PathFinding.h"
 
 #define PLAYER_MSG1 "nah bro, don't think so"
+
+PlaceId PredictDracula(HunterView view, Player player,
+                        PlaceId LastKnown, int roundLastSeen) {
+    PlaceId currentLocation = LastKnown;
+    PlaceId *whereCanHeGo;
+    PlaceId currentLoc;
+    int currentRound = HvGetRound(view);
+    int roundsSinceSeen = currentRound - roundLastSeen;
+    for (int i = 0; i < roundsSinceSeen; i++) {
+        GameView state = HvGetGameView(view);
+        Map map = GvGetMap(state);
+        int numReturnedMoves = 0;
+        int maxPathLength = -1;
+        
+        whereCanHeGo = GetPossibleMoves(state, map, PLAYER_DRACULA,
+                        currentLocation, true, false, true,  currentRound,
+                        &numReturnedMoves, false, false);
+        
+        for (int j = 0; j < numReturnedMoves; j++) {
+            currentLoc = whereCanHeGo[j];
+            int pathLength = 0;
+            PlaceId *path = HvGetShortestPathTo(view, player,
+                            currentLoc, &pathLength);
+            path = path;
+            if (pathLength > maxPathLength && placeIsSea(currentLoc) != true) {
+                currentLocation =  currentLoc;
+                maxPathLength = pathLength;
+            }
+        }
+        
+    }
+    
+    return currentLocation;
+}
 
 void HMakeRandomMove(HunterView view) {
   int numMoves = 0;
@@ -25,13 +61,15 @@ void HMakeRandomMove(HunterView view) {
   PlaceId move = possibleMoves[rand() % numMoves];
                                 
   int currentRound = HvGetRound(view);
-  if (currentRound > 4) {
+  if (currentRound > 4 && numMoves > 3) {
     GameView gameView = HvGetGameView(view);
     int player = HvGetPlayer(view);
     int numReturnedMoves = 0;
     bool canFree = true;
     PlaceId *moveHistory = GvGetMoveHistory(gameView, player, 
                                 &numReturnedMoves, &canFree);
+    // removes moves that were done in the last 3 moves, reduces chance for 
+    // random move to go backwards
     
     for (int i = 0; i < numMoves - 1; i++) {
         for (int j = 0; j < 3; j++) {
@@ -40,17 +78,34 @@ void HMakeRandomMove(HunterView view) {
             }
         }
     }
+    // Gets a new random move from only the list of forward moves
     int countForwardMoves = 0;
     PlaceId possibleForwardMoves[numMoves];
     for (int i = 0; i < numMoves; i++) {
-        if (possibleMoves[i] != NOWHERE) {
-            possibleForwardMoves[i] = possibleMoves[i];
+        if (possibleMoves[i] >= 0 && 
+                possibleMoves[i] < 100) {
+            possibleForwardMoves[countForwardMoves] = possibleMoves[i];
             countForwardMoves++;
         }
     }
+    
+    // Check if near the hospital, if not near the hospital and low on health
+    // consider resting as one random move
+    int pathLength = 0;
+    PlaceId* path = HvGetShortestPathTo(view, player, 
+                        HOSPITAL_PLACE, &pathLength);
+    free(path);
+                        
+    if (pathLength > 6 && HvGetHealth(view, player) < 3) {
+        PlaceId currentLocation = HvGetPlayerLocation(view, player);
+        possibleForwardMoves[countForwardMoves] = currentLocation;
+        countForwardMoves++;
+    } 
+    
+    
     move = possibleForwardMoves[rand() % countForwardMoves];
   }
-            
+  
   
   registerBestPlay((char*)placeIdToAbbrev(move), "132?");
 
@@ -96,10 +151,8 @@ void decideHunterMove(HunterView hv) {
     // research move
     registerBestPlay(placeIdToAbbrev(playerLocation), "132");
   } else {
-    
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
-    printf("ahsdj,as");
 
     if (currentRound - lastKnownRound > 10) {
       // research turn if the last known location was only 10 rounds ago
@@ -112,7 +165,6 @@ void decideHunterMove(HunterView hv) {
     } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 3) {
       int pathLength = 0;
       PlaceId* path = HvGetShortestPathTo(hv, player, lastKnown, &pathLength);
-      printf("2");
       PlaceId lastKnownVampire = HvGetVampireLocation(hv);
       
       if (pathLength > 0 && placeIsReal(path[0])) {
@@ -120,19 +172,12 @@ void decideHunterMove(HunterView hv) {
         for (int i = 0; i < pathLength; i++) {
           if (placeIsSea(path[i]) == true) {
             // tell the spread the hunters out on the map
-            // finish this off...
-            
+            // finish this off... 
           }
 
           // if there is a vampire -- then go to it!
           if (lastKnownVampire == path[i]) {
             // send hunters toward the location of the vampire.
-            // if we're only going to the vampire if it's on the path anyway
-            // then just following the path is already the way to the vampire
-            // this code doesn't make sense
-            // beyond this you need to know if the vampire is reachable before
-            // it matures, otherwise there is no point in going to it
-                
           }
           
         }
@@ -141,6 +186,8 @@ void decideHunterMove(HunterView hv) {
       } else {
         HMakeRandomMove(hv);
       }
+    } else {
+      HMakeRandomMove(hv);
     }
   }
 }
