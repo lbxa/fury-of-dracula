@@ -23,14 +23,19 @@
 
 PlaceId PredictDracula(HunterView view, Player player,
                         PlaceId LastKnown, int roundLastSeen) {
-    printf("1");
     PlaceId currentLocation = LastKnown;
     PlaceId currentLoc;
     int currentRound = HvGetRound(view);
     int roundsSinceSeen = currentRound - roundLastSeen;
-    if (roundsSinceSeen < 3) {
+    
+    int checkLastKnownPathLength = 0;
+    PlaceId *LastKnownPath = HvGetShortestPathToNoRail(view, player,
+                            LastKnown, &checkLastKnownPathLength);
+    if (roundsSinceSeen < 3 && checkLastKnownPathLength < 2) {
         return LastKnown;
     }
+    free(LastKnownPath);
+        
     for (int i = 0; i < roundsSinceSeen; i++) {
         GameView state = HvGetGameView(view);
         Map map = GvGetMap(state);
@@ -47,7 +52,7 @@ PlaceId PredictDracula(HunterView view, Player player,
             int pathLength = 0;
             PlaceId *path = HvGetShortestPathToNoRail(view, player,
                             currentLoc, &pathLength);
-            path = path;
+            free(path);
             if (pathLength > maxPathLength && placeIsSea(currentLoc) != true) {
                 currentLocation =  currentLoc;
                 maxPathLength = pathLength;
@@ -55,7 +60,8 @@ PlaceId PredictDracula(HunterView view, Player player,
         }
         
     }
-    printf("predicting");
+
+
     return currentLocation;
 }
 
