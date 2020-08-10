@@ -41,14 +41,12 @@ PlaceId PredictDracula(HunterView view, Player player,
         Map map = GvGetMap(state);
         int numReturnedMoves = 0;
         int maxPathLength = -1;
-        printf("1");
         PlaceId *whereCanHeGo = GetPossibleMoves(state, map, PLAYER_DRACULA,
                         currentLocation, true, false, true,  currentRound,
                         &numReturnedMoves, true, false);
         
         for (int j = 0; j < numReturnedMoves; j++) {
             currentLoc = whereCanHeGo[j];
-            printf("2");
             int pathLength = 0;
             PlaceId *path = HvGetShortestPathToNoRail(view, player,
                             currentLoc, &pathLength);
@@ -128,13 +126,13 @@ void HFirst(Player player) {
   int placeId = 30;
   // Decide on good starting positions for all hunters
   if (player == 0) {
-    placeId = SZEGED;
-  } else if (player == 1) {
     placeId = LONDON;
+  } else if (player == 1) {
+    placeId = STRASBOURG;
   } else if (player == 2) {
-    placeId = SARAGOSSA;
+    placeId = KLAUSENBURG;
   } else {
-    placeId = ZURICH;
+    placeId = TOULOUSE;
   }
   registerBestPlay(PLACES[placeId].abbrev, "132");
 }
@@ -164,7 +162,7 @@ void decideHunterMove(HunterView hv) {
     Round lastKnownRound = -1;
     PlaceId lastKnown = HvGetLastKnownDraculaLocation(hv, &lastKnownRound);
 
-    if (currentRound - lastKnownRound > 6) {
+    if (currentRound - lastKnownRound > 18) {
       // research turn if the last known location was only 10 rounds ago
       registerBestPlay(placeIdToAbbrev(playerLocation), PLAYER_MSG1);
     }    
@@ -172,10 +170,8 @@ void decideHunterMove(HunterView hv) {
     if (lastKnown == playerLocation && currentRound - lastKnownRound <= 1) {
       // Stay at current as dracula is there
       registerBestPlay(placeIdToAbbrev(playerLocation), "132");
-    } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 5) {
-      printf("1");
+    } else if (lastKnown != NOWHERE && currentRound - lastKnownRound <= 17) {
       int pathLength = 0;
-      printf("1");
       PlaceId predictedLocation = PredictDracula(hv, player,
                         lastKnown, lastKnownRound);
       PlaceId* path = HvGetShortestPathTo(hv, player, 
