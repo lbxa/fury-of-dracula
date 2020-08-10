@@ -324,4 +324,6 @@ GameView GvClone(GameView state);
  */
 GameView GvProcessMoves(GameView gameView, char *pastPlays, Message messages[]);
 
+int GvGetRoundVampirePlaced(GameView gameView);
+
 #endif  // !defined (FOD__GAME_VIEW_H_)
