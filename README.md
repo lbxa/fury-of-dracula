@@ -19,6 +19,8 @@ Tutorial Code: T17A
 
 All we do is code and win.
 
+### General 
+For reference to our team's style guide checkout our wiki. We also have a simplified git tutorial there. 
 
 ### Usage
 
